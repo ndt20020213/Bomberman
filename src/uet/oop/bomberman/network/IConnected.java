@@ -1,6 +1,5 @@
 package uet.oop.bomberman.network;
 
-/*
 import uet.oop.bomberman.entities.attack.Bomb;
 import uet.oop.bomberman.entities.attack.Flame;
 import uet.oop.bomberman.entities.background.Grass;
@@ -14,7 +13,6 @@ import uet.oop.bomberman.entities.items.BombItem;
 import uet.oop.bomberman.entities.items.FlameItem;
 import uet.oop.bomberman.entities.items.SpeedItem;
 import uet.oop.bomberman.entities.player.Bomber;
-*/
 
 public interface IConnected {
 
@@ -26,7 +24,6 @@ public interface IConnected {
 
     String toString();
 
-    /*
     static IConnected getConnectedEntity(String className, String data) {
         switch (className) {
             case "Bomber":
@@ -44,7 +41,7 @@ public interface IConnected {
             case "Bomb":
                 return new Bomb(0, 0, null, 0).update(data);
             case "Flame":
-                return new Flame(0, 0, 0, 0, 0).update(data);
+                return new Flame(0, 0, 0, 0, 0, 0).update(data);
 
             case "SpeedItem":
                 return new SpeedItem(0,0).update(data);
@@ -63,5 +60,4 @@ public interface IConnected {
         }
         return null;
     }
-    */
 }
