@@ -17,7 +17,7 @@ public class BombPassItem extends Item {
     public void use(Entity entity) {
         if (entity instanceof BombPassEffect) {
             BombPassEffect bombPassEffect = (BombPassEffect) entity;
-            //if (bombPassEffect.addBombPass(bombPass)) BombermanGame.world.removeEntity(this);
+            if (bombPassEffect.addBombPass(bombPass)) BombermanGame.world.removeEntity(this);
         }
     }
 }

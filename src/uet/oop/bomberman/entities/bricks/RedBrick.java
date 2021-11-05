@@ -23,8 +23,8 @@ public class RedBrick extends Brick {
         if (stiffness == 2) img = Sprite.brick_exploded1.getFxImage();
         else if (stiffness == 1) img = Sprite.brick_exploded2.getFxImage();
         else {
-            //if (entity != null) world.addEntity(entity);
-            //world.removeEntity(this);
+            if (entity != null) world.addEntity(entity);
+            world.removeEntity(this);
         }
     }
 }

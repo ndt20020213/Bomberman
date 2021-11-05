@@ -19,7 +19,7 @@ public class WhiteBrick extends Brick {
 
     @Override
     public final void destroy() {
-        //if (entity != null) world.addEntity(entity);
-        //world.removeEntity(this);
+        if (entity != null) world.addEntity(entity);
+        world.removeEntity(this);
     }
 }

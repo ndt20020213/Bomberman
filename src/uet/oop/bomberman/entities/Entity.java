@@ -4,6 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import uet.oop.bomberman.BombermanGame;
 //import uet.oop.bomberman.container.World;
+import uet.oop.bomberman.container.World;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.network.IConnected;
 import uet.oop.bomberman.structure.Point;
@@ -18,13 +19,14 @@ public abstract class Entity implements IConnected {
 
     protected Image img;
 
-    //protected final World world;
+    // Tham chiếu tới World.
+    protected final World world;
 
     //Khởi tạo đối tượng, chuyển từ tọa độ đơn vị sang tọa độ trong canvas
     public Entity(int xUnit, int yUnit, Image img) {
         position = new Point(xUnit * Sprite.SCALED_SIZE, yUnit * Sprite.SCALED_SIZE);
         this.img = img;
-        //world = BombermanGame.world;
+        world = BombermanGame.world;
     }
 
     public Rect getRect() {

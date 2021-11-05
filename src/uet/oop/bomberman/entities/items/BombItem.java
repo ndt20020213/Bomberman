@@ -17,7 +17,7 @@ public class BombItem extends Item {
     public void use(Entity entity) {
         if (entity instanceof BombProperty) {
             BombProperty bombProperty = (BombProperty) entity;
-            //if (bombProperty.addBomb(bomb)) BombermanGame.world.removeEntity(this);
+            if (bombProperty.addBomb(bomb)) BombermanGame.world.removeEntity(this);
         }
 
     }
