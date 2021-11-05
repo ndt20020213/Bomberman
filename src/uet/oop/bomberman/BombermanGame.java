@@ -2,13 +2,15 @@ package uet.oop.bomberman;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.scene.Group;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-
 import uet.oop.bomberman.container.World;
+import uet.oop.bomberman.display.MenuController;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.background.Grass;
 import uet.oop.bomberman.entities.background.Portal;
@@ -20,11 +22,13 @@ import uet.oop.bomberman.entities.enemies.Oneal;
 import uet.oop.bomberman.entities.items.BombItem;
 import uet.oop.bomberman.entities.items.FlameItem;
 import uet.oop.bomberman.entities.items.SpeedItem;
-import uet.oop.bomberman.entities.player.Bomber;
 import uet.oop.bomberman.graphics.Sprite;
+import uet.oop.bomberman.network.Connection;
+import uet.oop.bomberman.network.Server;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class BombermanGame extends Application {
@@ -35,8 +39,13 @@ public class BombermanGame extends Application {
     public static final World world = new World();
     public static long now = 0;
 
+    private MenuController menuController;
+    private GridPane menu;
+
     private GraphicsContext gc;
     private Canvas canvas;
+
+    private Connection connection;
 
     private int level = 1;
 
@@ -46,22 +55,24 @@ public class BombermanGame extends Application {
     }
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws IOException {
+        // Tao Menu
+        FXMLLoader menuView = new FXMLLoader(getClass().getResource("/fxml/Menu-view.fxml"));
+        menu = menuView.load();
+
         // Tao Canvas
         canvas = new Canvas(Sprite.SCALED_SIZE * WIDTH, Sprite.SCALED_SIZE * HEIGHT);
         gc = canvas.getGraphicsContext2D();
 
         // Tao root container
-        Group root = new Group();
+        HBox root = new HBox();
+        root.getChildren().add(menu);
         root.getChildren().add(canvas);
 
         // Tao scene
         Scene scene = new Scene(root);
 
-        // Them scene vao stage
-        stage.setScene(scene);
-        stage.show();
-
+        // Tao timer
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
@@ -70,12 +81,30 @@ public class BombermanGame extends Application {
                 update();
             }
         };
-        timer.start();
 
-        createMap();
 
-        Entity bomberman = new Bomber(1, 1);
-        world.entities.add(bomberman);
+        menuController = menuView.getController();
+        menuController.setWorld(world);
+        menuController.setConnectedAction(
+                connection -> {
+                    this.connection = connection;
+                    scene.setOnKeyPressed(x -> connection.onKeyPressed(x.getCode().getName()));
+                    scene.setOnKeyReleased(x -> connection.onKeyReleased(x.getCode().getName()));
+                    timer.start();
+                }
+        );
+        menuController.setStartAction(
+                startButton -> {
+                    Server server = (Server) connection;
+                    server.started = true;
+                    createMap();
+                    server.addBombers();
+                    startButton.setDisable(true);
+                }
+        );
+
+        stage.setScene(scene);
+        stage.show();
     }
 
     public void createMap() {
@@ -135,5 +164,11 @@ public class BombermanGame extends Application {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         world.stillObjects.forEach(g -> g.render(gc));
         world.entities.forEach(g -> g.render(gc));
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        if (connection != null) connection.close();
     }
 }
