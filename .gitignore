@@ -1,4 +1,11 @@
 /target
 /bin
 /.idea
+/out
+
+target/
+bin/
+.idea/
+out/
+
 *.iml
