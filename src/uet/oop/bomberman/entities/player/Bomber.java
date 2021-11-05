@@ -14,6 +14,7 @@ import uet.oop.bomberman.entities.player.properties.BombProperty;
 import uet.oop.bomberman.entities.player.properties.FlameProperty;
 import uet.oop.bomberman.entities.player.properties.SpeedProperty;
 import uet.oop.bomberman.graphics.Sprite;
+import uet.oop.bomberman.structure.Point;
 import uet.oop.bomberman.structure.Rect;
 
 public class Bomber extends Entity implements canDestroy,
@@ -32,7 +33,7 @@ public class Bomber extends Entity implements canDestroy,
 
     @Override
     public void render(GraphicsContext gc) {
-        gc.drawImage(img, position.x, position.y - 10);
+        gc.drawImage(img, position.x + 4, position.y);
     }
 
     // Di chuyển và trạng thái.
@@ -42,27 +43,30 @@ public class Bomber extends Entity implements canDestroy,
     @Override
     public void update() {
         long time = BombermanGame.now;
-        Rect newPosition = getRect();
+        Point point = new Point(position.x, position.y);
         switch (status) {
             case 'W':
-                newPosition.point.y -= speed * (time - oldTime) / 1e9;
+                point.y -= speed * (time - oldTime) / 1e9;
                 break;
             case 'S':
-                newPosition.point.y += speed * (time - oldTime) / 1e9;
+                point.y += speed * (time - oldTime) / 1e9;
                 break;
             case 'A':
-                newPosition.point.x -= speed * (time - oldTime) / 1e9;
+                point.x -= speed * (time - oldTime) / 1e9;
                 break;
             case 'D':
-                newPosition.point.x += speed * (time - oldTime) / 1e9;
+                point.x += speed * (time - oldTime) / 1e9;
                 break;
         }
         oldTime = time;
-        if (!newPosition.equals(getRect())){
-            if (!checkWallPass(newPosition)) return;
-            if (!checkBombPass(newPosition)) return;
+        Rect rect = new Rect(point.x, point.y, 14, 20);
+        rect.point.x += (Sprite.SCALED_SIZE - rect.width) / 2;
+        rect.point.y += Sprite.SCALED_SIZE - rect.height;
+        if (!rect.equals(getRect())){
+            if (!checkWallPass(rect)) return;
+            if (!checkBombPass(rect)) return;
         }
-        position = newPosition.point;
+        position = point;
     }
 
     public void keyPressed(String key) {
@@ -112,7 +116,7 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     //SpeedProperty
-    private int speed = 200;
+    private int speed = 150;
 
     @Override
     public boolean addSpeed(int speed) {
@@ -148,9 +152,8 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     @Override
-    public boolean checkWallPass(Rect newPosition) {
+    public boolean checkWallPass(Rect rect) {
         if (BombermanGame.now < wallPassTime) return true;
-        Rect rect = new Rect(newPosition.point.x + 5, newPosition.point.y + 5, newPosition.width - 10, newPosition.height - 10);
         for (Wall wall : world.walls)
             if (wall.getRect().impact(rect)) return false;
         for (Brick brick : world.bricks)
@@ -168,9 +171,8 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     @Override
-    public boolean checkBombPass(Rect newPosition) {
+    public boolean checkBombPass(Rect rect) {
         if (BombermanGame.now < bombPassTime) return true;
-        Rect rect = new Rect(newPosition.point.x + 5, newPosition.point.y + 5, newPosition.width - 10, newPosition.height - 10);
         for (Bomb bomb : world.bombs)
             if (bomb.getRect().impact(rect)) return false;
         return true;
