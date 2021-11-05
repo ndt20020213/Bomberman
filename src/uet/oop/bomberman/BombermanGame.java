@@ -17,9 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BombermanGame extends Application {
-    
-    public static final int WIDTH = 20;
-    public static final int HEIGHT = 15;
+
+    public static final int WIDTH = 31;
+    public static final int HEIGHT = 13;
+
+    public static long now = 0;
     
     private GraphicsContext gc;
     private Canvas canvas;
@@ -51,6 +53,7 @@ public class BombermanGame extends Application {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
+                BombermanGame.now = l;
                 render();
                 update();
             }
