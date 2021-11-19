@@ -11,7 +11,6 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import uet.oop.bomberman.container.World;
 import uet.oop.bomberman.display.MenuController;
-import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.background.Grass;
 import uet.oop.bomberman.entities.background.Portal;
 import uet.oop.bomberman.entities.background.Wall;
@@ -23,6 +22,7 @@ import uet.oop.bomberman.entities.items.BombItem;
 import uet.oop.bomberman.entities.items.FlameItem;
 import uet.oop.bomberman.entities.items.SpeedItem;
 import uet.oop.bomberman.graphics.Sprite;
+import uet.oop.bomberman.network.Client;
 import uet.oop.bomberman.network.Connection;
 import uet.oop.bomberman.network.Server;
 
@@ -37,13 +37,15 @@ public class BombermanGame extends Application {
     public static final int HEIGHT = 13;
 
     public static final World world = new World();
-    public static long now = 0;
 
     private MenuController menuController;
-    private GridPane menu;
 
     private GraphicsContext gc;
     private Canvas canvas;
+
+    private Scene scene;
+
+    private AnimationTimer timer;
 
     private Connection connection;
 
@@ -58,7 +60,7 @@ public class BombermanGame extends Application {
     public void start(Stage stage) throws IOException {
         // Tao Menu
         FXMLLoader menuView = new FXMLLoader(getClass().getResource("/fxml/Menu-view.fxml"));
-        menu = menuView.load();
+        GridPane menu = menuView.load();
 
         // Tao Canvas
         canvas = new Canvas(Sprite.SCALED_SIZE * WIDTH, Sprite.SCALED_SIZE * HEIGHT);
@@ -70,51 +72,46 @@ public class BombermanGame extends Application {
         root.getChildren().add(canvas);
 
         // Tao scene
-        Scene scene = new Scene(root);
+        scene = new Scene(root);
 
         // Tao timer
-        AnimationTimer timer = new AnimationTimer() {
+        timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
-                BombermanGame.now = l;
-                render();
-                update();
+                gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+                world.render(gc);
+                if (connection instanceof Server) world.update(l);
             }
         };
 
-
+        // Ket noi event Menu voi BombermanGame
         menuController = menuView.getController();
-        menuController.setWorld(world);
-        menuController.setConnectedAction(
-                connection -> {
-                    this.connection = connection;
-                    scene.setOnKeyPressed(x -> connection.onKeyPressed(x.getCode().getName()));
-                    scene.setOnKeyReleased(x -> connection.onKeyReleased(x.getCode().getName()));
-                    timer.start();
-                }
-        );
-        menuController.setStartAction(
-                startButton -> {
-                    Server server = (Server) connection;
-                    server.started = true;
-                    createMap();
-                    server.addBombers();
-                    startButton.setDisable(true);
-                }
-        );
+        menuController.createServer = this::createServer;
+        menuController.createClient = this::createClient;
+        menuController.startButton.setOnAction(x -> startGame());
 
+        Portal.endGame = this::endGame;
+
+        // Show
         stage.setScene(scene);
         stage.show();
     }
 
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        if (connection != null) connection.close();
+    }
+
     public void createMap() {
         File file = new File("res/levels/Level" + level + ".txt");
-        Scanner scanner = null;
+        Scanner scanner;
         try {
             scanner = new Scanner(file);
         } catch (FileNotFoundException e) {
             System.out.println("Load map error!");
-            System.exit(-1);
+            if (level > 0) level--;
+            else System.exit(-1);
             return;
         }
         String info = scanner.nextLine();
@@ -156,19 +153,56 @@ public class BombermanGame extends Application {
         }
     }
 
-    public void update() {
-        world.entities.forEach(Entity::update);
+    private boolean createServer(String name) {
+        try {
+            connection = new Server(world, name);
+        }
+        catch (IOException e) {
+            connection = null;
+            return false;
+        }
+        connection.setListView(menuController.chatView);
+        connection.setTextField(menuController.chatInput);
+        scene.setOnKeyPressed(x -> connection.onKeyPressed(x.getCode().getName()));
+        scene.setOnKeyReleased(x -> connection.onKeyReleased(x.getCode().getName()));
+        timer.start();
+        return true;
     }
 
-    public void render() {
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        world.stillObjects.forEach(g -> g.render(gc));
-        world.entities.forEach(g -> g.render(gc));
+    private boolean createClient(String host, String name) {
+        try {
+            connection = new Client(host, world, name);
+        }
+        catch (IOException e) {
+            connection = null;
+            return false;
+        }
+        connection.setListView(menuController.chatView);
+        connection.setTextField(menuController.chatInput);
+        scene.setOnKeyPressed(x -> connection.onKeyPressed(x.getCode().getName()));
+        scene.setOnKeyReleased(x -> connection.onKeyReleased(x.getCode().getName()));
+        return true;
     }
 
-    @Override
-    public void stop() throws Exception {
-        super.stop();
-        if (connection != null) connection.close();
+    private void startGame() {
+        System.gc();
+        if (!(connection instanceof Server)) return;
+        menuController.startButton.setDisable(true);
+        Server server = (Server) connection;
+        server.started = true;
+        createMap();
+        server.addBombers();
+    }
+
+    private void endGame(boolean isWinner) {
+        System.gc();
+        if (!(connection instanceof Server)) return;
+        menuController.startButton.setDisable(false);
+        Server server = (Server) connection;
+        server.started = false;
+        server.listen();
+        world.entities.clear();
+        world.stillObjects.clear();
+        if (isWinner) level++;
     }
 }

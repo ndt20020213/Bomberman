@@ -27,7 +27,7 @@ public class Flame extends Entity {
         }
         this.length = length;
         this.maxLength = maxLength;
-        startTime = BombermanGame.now;
+        startTime = world.time;
     }
 
     @Override

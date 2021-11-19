@@ -42,7 +42,7 @@ public class Bomber extends Entity implements canDestroy,
 
     @Override
     public void update() {
-        long time = BombermanGame.now;
+        long time = world.time;
         Point point = new Point(position.x, position.y);
         switch (status) {
             case 'W':
@@ -147,13 +147,13 @@ public class Bomber extends Entity implements canDestroy,
 
     @Override
     public boolean addWallPass(long time) {
-        wallPassTime = BombermanGame.now + time;
+        wallPassTime = world.time + time;
         return true;
     }
 
     @Override
     public boolean checkWallPass(Rect rect) {
-        if (BombermanGame.now < wallPassTime) return true;
+        if (world.time < wallPassTime) return true;
         for (Wall wall : world.walls)
             if (wall.getRect().impact(rect)) return false;
         for (Brick brick : world.bricks)
@@ -166,13 +166,13 @@ public class Bomber extends Entity implements canDestroy,
 
     @Override
     public boolean addBombPass(long time) {
-        bombPassTime = BombermanGame.now + time;
+        bombPassTime = world.time + time;
         return true;
     }
 
     @Override
     public boolean checkBombPass(Rect rect) {
-        if (BombermanGame.now < bombPassTime) return true;
+        if (world.time < bombPassTime) return true;
         for (Bomb bomb : world.bombs)
             if (bomb.getRect().impact(rect)) return false;
         return true;
@@ -183,12 +183,12 @@ public class Bomber extends Entity implements canDestroy,
 
     @Override
     public boolean addFlamePass(long time) {
-        flamePassTime = BombermanGame.now + time;
+        flamePassTime = world.time + time;
         return true;
     }
 
     @Override
     public boolean checkFlamePass(int health, int newHealth) {
-        return BombermanGame.now >= flamePassTime;
+        return world.time >= flamePassTime;
     }
 }

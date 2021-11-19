@@ -1,5 +1,6 @@
 package uet.oop.bomberman.container;
 
+import javafx.scene.canvas.GraphicsContext;
 import uet.oop.bomberman.entities.*;
 import uet.oop.bomberman.entities.attack.Bomb;
 import uet.oop.bomberman.entities.attack.Flame;
@@ -16,6 +17,8 @@ import java.util.function.Function;
 
 public class World {
 
+    public Long time = 0L;
+
     public final List<Entity> entities;
     public final List<Entity> stillObjects;
 
@@ -31,6 +34,16 @@ public class World {
     public final List<Enemy> enemies;
 
     public final List<Portal> portals;
+
+    public void update(long time) {
+        this.time = time;
+        entities.forEach(Entity::update);
+    }
+
+    public void render(GraphicsContext gc) {
+        for (Entity stillObject : stillObjects) stillObject.render(gc);
+        for (Entity entity : entities) entity.render(gc);
+    }
 
     public Function<Entity, Boolean> addAction = (Entity t) -> true;
     public Function<Entity, Boolean> removeAction = (Entity t) -> true;

@@ -16,7 +16,7 @@ public class Bomb extends Entity implements canDestroy {
         super(xUnit, yUnit, Sprite.bomb.getFxImage());
         this.bomber = bomber;
         this.length = length;
-        startTime = BombermanGame.now;
+        startTime = world.time;
         //bomber.addBomb(-1);
     }
 
@@ -25,7 +25,7 @@ public class Bomb extends Entity implements canDestroy {
      */
     @Override
     public void update() {
-        if (BombermanGame.now > startTime + 2e9) explosive();
+        if (world.time > startTime + 2e9) explosive();
     }
 
     /**

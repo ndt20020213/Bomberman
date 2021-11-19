@@ -7,22 +7,20 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import uet.oop.bomberman.container.World;
-import uet.oop.bomberman.network.Client;
-import uet.oop.bomberman.network.Connection;
-import uet.oop.bomberman.network.Server;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class MenuController implements Initializable {
 
-    private Consumer<Connection> connectedAction;
-    private Consumer<Button> startAction;
-    private World world;
+    public BiFunction<String, String, Boolean> createClient;
+    public Function<String, Boolean> createServer;
+
+    public Button startButton = new Button("Start");
 
     @FXML
     public GridPane info;
@@ -51,61 +49,35 @@ public class MenuController implements Initializable {
         try {
             host.setText(InetAddress.getLocalHost().getHostAddress());
         } catch (Exception e) {
-            System.out.println("Get my host error!");
+            System.out.println("Lấy địa chỉ IP không thành công!");
         }
     }
 
-    public void setWorld(World world) {
-        this.world = world;
-    }
-
-    public void setConnectedAction(Consumer<Connection> connectedAction) {
-        this.connectedAction = connectedAction;
-    }
-
-    public void setStartAction(Consumer<Button> startAction) {
-        this.startAction = startAction;
-    }
-
     @FXML
-    public void createServer() {
+    public void onCreateServer() {
         if (name.getText().isEmpty()) return;
-        Connection connection;
         try {
-            if (world != null) connection = new Server(world, name.getText());
-            else connection = new Server(new World(), name.getText());
             host.setText(InetAddress.getLocalHost().getHostAddress());
+        } catch (UnknownHostException e) {
+            System.out.println("Lấy địa chỉ IP không thành công!");
+        }
+        if (createServer.apply(name.getText())) {
             info.setDisable(true);
             chatView.setDisable(false);
             chatInput.setDisable(false);
             buttonContainer.getChildren().clear();
-            Button startButton = new Button("Start");
-            startButton.setOnAction(x -> startAction.accept(startButton));
             buttonContainer.getChildren().add(startButton);
-            connection.setListView(chatView);
-            connection.setTextField(chatInput);
-            connectedAction.accept(connection);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
     @FXML
-    public void joinServer() {
+    public void onJoinServer() {
         if (name.getText().isEmpty()) return;
-        Connection connection;
-        try {
-            if (world != null) connection = new Client(host.getText(), world, name.getText());
-            else connection = new Client(host.getText(), new World(), name.getText());
+        if (createClient.apply(host.getText(), name.getText())) {
             info.setDisable(true);
             chatView.setDisable(false);
             chatInput.setDisable(false);
             buttonContainer.getChildren().clear();
-            connection.setListView(chatView);
-            connection.setTextField(chatInput);
-            connectedAction.accept(connection);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
