@@ -48,12 +48,12 @@ class ClientSocket {
                     switch (command[0]) {
                         case "Start":
                             if (command.length >= 2) name = command[1];
-                            server.receiveMessage(name + " joined server!");
+                            server.receiveMessage.accept(name + " joined server!");
                             for (ClientSocket clientSocket : clientSockets)
                                 if (clientSocket != this) clientSocket.SendLine("Chat#" + name + " joined server!");
                             break;
                         case "Chat":
-                            server.receiveMessage(command[1]);
+                            server.receiveMessage.accept(command[1]);
                             for (ClientSocket clientSocket : clientSockets)
                                 if (clientSocket != this) clientSocket.SendLine(line);
                             break;
@@ -63,8 +63,7 @@ class ClientSocket {
                             else bomber.keyPressed(command[1]);
                             break;
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (Exception ignored) {
                 }
             }
         }).start();

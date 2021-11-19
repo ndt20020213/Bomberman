@@ -8,11 +8,14 @@ import uet.oop.bomberman.entities.bricks.RedBrick;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Server extends Connection {
     private final ServerSocket server;
     private final ArrayList<ClientSocket> clientSockets = new ArrayList<>();
     int maxKey = 0;
+
+    HashMap<Integer, String> statusHistory = new HashMap<>();
 
     public Server(World world, String name) throws IOException {
         super(world, name);
@@ -32,6 +35,7 @@ public class Server extends Connection {
                     ClientSocket clientSocket = new ClientSocket(this, clientSockets, server.accept());
                     clientSockets.add(clientSocket);
                 } catch (IOException e) {
+                    sendMessage("Ai đó vừa kết nối thất bại!");
                 }
             }
         }).start();
@@ -51,28 +55,45 @@ public class Server extends Connection {
 
     @Override
     public void onKeyPressed(String key) {
-        bomber.keyPressed(key);
+        if (bomber != null) bomber.keyPressed(key);
     }
 
     @Override
     public void onKeyReleased(String key) {
-        bomber.keyReleased(key);
+        if (bomber != null) bomber.keyReleased(key);
     }
 
     @Override
-    protected void sendMessage(String message) {
-        super.sendMessage(message);
+    public void sendMessage(String message) {
         clientSockets.forEach(client -> client.SendLine("Chat#" + message));
     }
 
     public void update() {
-        String states = "";
-        for (Entity entity : world.entities)
-            states = states.concat("Update#" + entity.getKey() + "#" + entity + "\r\n");
+        StringBuilder states = new StringBuilder();
+        for (Entity entity : world.entities) {
+            String temp = "Update#" + entity.getKey() + "#" + entity + "\n";
+            String oldStatus = statusHistory.get(entity.getKey());
+            if (oldStatus == null) {
+                statusHistory.put(entity.getKey(), temp);
+                states.append(temp);
+            } else if (!temp.equals(oldStatus)) {
+                statusHistory.put(entity.getKey(), temp);
+                states.append(temp);
+            }
+        }
         for (Entity entity : world.bricks)
-            if (entity instanceof RedBrick)
-                states = states.concat("Update#" + entity.getKey() + "#" + entity + "\r\n");
-        for (ClientSocket clientSocket : clientSockets) clientSocket.SendLine(states);
+            if (entity instanceof RedBrick) {
+                String temp = "Update#" + entity.getKey() + "#" + entity + "\n";
+                String oldStatus = statusHistory.get(entity.getKey());
+                if (oldStatus == null) {
+                    statusHistory.put(entity.getKey(), temp);
+                    states.append(temp);
+                } else if (!temp.equals(oldStatus)) {
+                    statusHistory.put(entity.getKey(), temp);
+                    states.append(temp);
+                }
+            }
+        for (ClientSocket clientSocket : clientSockets) clientSocket.SendLine(states.toString());
     }
 
     private boolean addEntity(Entity entity) {

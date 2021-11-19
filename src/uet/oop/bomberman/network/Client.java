@@ -46,7 +46,7 @@ public class Client extends Connection {
                         world.stillObjects.clear();
                         break;
                     case "Chat":
-                        receiveMessage(command[1]);
+                        receiveMessage.accept(command[1]);
                         break;
                     case "Add":
                         Entity entity = (Entity) IConnected.getConnectedEntity(command[2], command[3]);
@@ -56,7 +56,6 @@ public class Client extends Connection {
                         connectedEntities.put(entity.getKey(), entity);
                         break;
                     case "Update":
-                        System.out.println(line);
                         connectedEntities.get(Integer.parseInt(command[1])).update(command[2]);
                         break;
                     case "Delete":
@@ -100,8 +99,7 @@ public class Client extends Connection {
     }
 
     @Override
-    protected void sendMessage(String message) {
-        super.sendMessage(message);
+    public void sendMessage(String message) {
         out.print("Chat#" + message + "\r\n");
         out.flush();
     }

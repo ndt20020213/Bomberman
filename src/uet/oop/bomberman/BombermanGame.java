@@ -45,8 +45,6 @@ public class BombermanGame extends Application {
 
     private Scene scene;
 
-    private AnimationTimer timer;
-
     private Connection connection;
 
     private int level = 1;
@@ -75,14 +73,18 @@ public class BombermanGame extends Application {
         scene = new Scene(root);
 
         // Tao timer
-        timer = new AnimationTimer() {
+        AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
                 world.render(gc);
-                if (connection instanceof Server) world.update(l);
+                if (connection instanceof Server) {
+                    world.update(l);
+                    ((Server) connection).update();
+                }
             }
         };
+        timer.start();
 
         // Ket noi event Menu voi BombermanGame
         menuController = menuView.getController();
@@ -161,11 +163,15 @@ public class BombermanGame extends Application {
             connection = null;
             return false;
         }
-        connection.setListView(menuController.chatView);
-        connection.setTextField(menuController.chatInput);
+        connection.receiveMessage = message -> menuController.chatView.getItems().add(message);
+        menuController.chatInput.setOnAction(x -> {
+            String message = menuController.name.getText() + " : " + menuController.chatInput.getText();
+            menuController.chatView.getItems().add(message);
+            connection.sendMessage(message);
+            menuController.chatInput.clear();
+        });
         scene.setOnKeyPressed(x -> connection.onKeyPressed(x.getCode().getName()));
         scene.setOnKeyReleased(x -> connection.onKeyReleased(x.getCode().getName()));
-        timer.start();
         return true;
     }
 
@@ -177,8 +183,13 @@ public class BombermanGame extends Application {
             connection = null;
             return false;
         }
-        connection.setListView(menuController.chatView);
-        connection.setTextField(menuController.chatInput);
+        connection.receiveMessage = message -> menuController.chatView.getItems().add(message);
+        menuController.chatInput.setOnAction(x -> {
+            String message = menuController.name.getText() + " : " + menuController.chatInput.getText();
+            menuController.chatView.getItems().add(message);
+            connection.sendMessage(message);
+            menuController.chatInput.clear();
+        });
         scene.setOnKeyPressed(x -> connection.onKeyPressed(x.getCode().getName()));
         scene.setOnKeyReleased(x -> connection.onKeyReleased(x.getCode().getName()));
         return true;

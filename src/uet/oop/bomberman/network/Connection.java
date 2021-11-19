@@ -1,18 +1,14 @@
 package uet.oop.bomberman.network;
 
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import uet.oop.bomberman.container.World;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 public abstract class Connection {
 
     public final String name;
     public final World world;
-
-    private ListView listView = null;
-    private TextField textField = null;
 
     Connection(World world, String name) {
         this.world = world;
@@ -23,25 +19,9 @@ public abstract class Connection {
 
     public abstract void onKeyReleased(String key);
 
-    public void setListView(ListView listView) {
-        this.listView = listView;
-    }
+    public abstract void sendMessage(String message);
 
-    public void setTextField(TextField textField) {
-        this.textField = textField;
-        textField.setOnAction(x -> {
-            sendMessage(name + " : " + textField.getText());
-            textField.setText("");
-        });
-    }
-
-    protected void sendMessage(String message) {
-        if (listView != null) listView.getItems().add(message);
-    }
-
-    protected void receiveMessage(String message) {
-        if (listView != null) listView.getItems().add(message);
-    }
+    public Consumer<String> receiveMessage = x -> {};
 
     public abstract void close() throws IOException;
 }
