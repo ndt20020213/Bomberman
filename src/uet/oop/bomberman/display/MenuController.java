@@ -46,6 +46,7 @@ public class MenuController implements Initializable {
         info.setDisable(false);
         chatView.setDisable(true);
         chatInput.setDisable(true);
+        chatView.setFocusTraversable(false);
         try {
             host.setText(InetAddress.getLocalHost().getHostAddress());
         } catch (Exception e) {

@@ -63,6 +63,7 @@ public class BombermanGame extends Application {
         // Tao Canvas
         canvas = new Canvas(Sprite.SCALED_SIZE * WIDTH, Sprite.SCALED_SIZE * HEIGHT);
         gc = canvas.getGraphicsContext2D();
+        canvas.setFocusTraversable(true);
 
         // Tao root container
         HBox root = new HBox();
@@ -155,44 +156,44 @@ public class BombermanGame extends Application {
         }
     }
 
-    private boolean createServer(String name) {
-        try {
-            connection = new Server(world, name);
-        }
-        catch (IOException e) {
-            connection = null;
-            return false;
-        }
+    public void createConnection() {
+        // Chat event
         connection.receiveMessage = message -> menuController.chatView.getItems().add(message);
         menuController.chatInput.setOnAction(x -> {
+            canvas.requestFocus();
+            if (menuController.chatInput.getText().isEmpty()) return;
             String message = menuController.name.getText() + " : " + menuController.chatInput.getText();
             menuController.chatView.getItems().add(message);
             connection.sendMessage(message);
             menuController.chatInput.clear();
         });
+        // Move event
         scene.setOnKeyPressed(x -> connection.onKeyPressed(x.getCode().getName()));
         scene.setOnKeyReleased(x -> connection.onKeyReleased(x.getCode().getName()));
-        return true;
+    }
+
+    private boolean createServer(String name) {
+        try {
+            connection = new Server(world, name);
+            createConnection();
+            return true;
+        }
+        catch (IOException e) {
+            connection = null;
+            return false;
+        }
     }
 
     private boolean createClient(String host, String name) {
         try {
             connection = new Client(host, world, name);
+            createConnection();
+            return true;
         }
         catch (IOException e) {
             connection = null;
             return false;
         }
-        connection.receiveMessage = message -> menuController.chatView.getItems().add(message);
-        menuController.chatInput.setOnAction(x -> {
-            String message = menuController.name.getText() + " : " + menuController.chatInput.getText();
-            menuController.chatView.getItems().add(message);
-            connection.sendMessage(message);
-            menuController.chatInput.clear();
-        });
-        scene.setOnKeyPressed(x -> connection.onKeyPressed(x.getCode().getName()));
-        scene.setOnKeyReleased(x -> connection.onKeyReleased(x.getCode().getName()));
-        return true;
     }
 
     private void startGame() {
