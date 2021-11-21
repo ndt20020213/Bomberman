@@ -1,6 +1,7 @@
 package uet.oop.bomberman.entities.items;
 
 import uet.oop.bomberman.entities.Entity;
+import uet.oop.bomberman.entities.player.properties.FlameProperty;
 import uet.oop.bomberman.graphics.Sprite;
 
 public class FlameItem extends Item {
@@ -13,6 +14,9 @@ public class FlameItem extends Item {
 
     @Override
     public void use(Entity entity) {
-
+        if (entity instanceof FlameProperty) {
+            FlameProperty flameProperty = (FlameProperty) entity;
+            if (flameProperty.addFlame(flame)) world.removeEntity(this);
+        }
     }
 }

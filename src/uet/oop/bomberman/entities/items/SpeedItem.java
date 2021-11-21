@@ -1,6 +1,7 @@
 package uet.oop.bomberman.entities.items;
 
 import uet.oop.bomberman.entities.Entity;
+import uet.oop.bomberman.entities.player.properties.SpeedProperty;
 import uet.oop.bomberman.graphics.Sprite;
 
 public class SpeedItem extends Item {
@@ -13,6 +14,9 @@ public class SpeedItem extends Item {
 
     @Override
     public void use(Entity entity) {
-
+        if (entity instanceof SpeedProperty) {
+            SpeedProperty speedProperty = (SpeedProperty) entity;
+            if (speedProperty.addSpeed(speed)) world.removeEntity(this);
+        }
     }
 }

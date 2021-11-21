@@ -1,6 +1,5 @@
 package uet.oop.bomberman.entities.items;
 
-import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.player.properties.BombProperty;
 import uet.oop.bomberman.graphics.Sprite;
@@ -17,8 +16,7 @@ public class BombItem extends Item {
     public void use(Entity entity) {
         if (entity instanceof BombProperty) {
             BombProperty bombProperty = (BombProperty) entity;
-            if (bombProperty.addBomb(bomb)) BombermanGame.world.removeEntity(this);
+            if (bombProperty.addBomb(bomb)) world.removeEntity(this);
         }
-
     }
 }
