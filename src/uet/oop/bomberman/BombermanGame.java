@@ -16,7 +16,7 @@ import uet.oop.bomberman.entities.background.Portal;
 import uet.oop.bomberman.entities.background.Wall;
 import uet.oop.bomberman.entities.bricks.RedBrick;
 import uet.oop.bomberman.entities.bricks.WhiteBrick;
-import uet.oop.bomberman.entities.enemies.Balloon;
+import uet.oop.bomberman.entities.enemies.Balloom;
 import uet.oop.bomberman.entities.enemies.Oneal;
 import uet.oop.bomberman.entities.items.BombItem;
 import uet.oop.bomberman.entities.items.FlameItem;
@@ -136,7 +136,7 @@ public class BombermanGame extends Application {
                         break;
                     //Enemies
                     case '1':
-                        world.addEntity(new Balloon(j, i));
+                        world.addEntity(new Balloom(j, i));
                         break;
                     case '2':
                         world.addEntity(new Oneal(j, i));
