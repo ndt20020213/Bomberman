@@ -7,7 +7,7 @@ import uet.oop.bomberman.entities.background.Portal;
 import uet.oop.bomberman.entities.background.Wall;
 import uet.oop.bomberman.entities.bricks.RedBrick;
 import uet.oop.bomberman.entities.bricks.WhiteBrick;
-import uet.oop.bomberman.entities.enemies.Balloom;
+import uet.oop.bomberman.entities.enemies.Balloon;
 import uet.oop.bomberman.entities.enemies.Oneal;
 import uet.oop.bomberman.entities.items.BombItem;
 import uet.oop.bomberman.entities.items.FlameItem;
@@ -51,7 +51,7 @@ public interface IConnected {
                 return new FlameItem(0,0).update(data);
 
             case "Balloom":
-                return new Balloom(0, 0).update(data);
+                return new Balloon(0, 0).update(data);
             case "Oneal":
                 return new Oneal(0, 0).update(data);
 

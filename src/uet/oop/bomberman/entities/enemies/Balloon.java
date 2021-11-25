@@ -2,9 +2,9 @@ package uet.oop.bomberman.entities.enemies;
 
 import uet.oop.bomberman.graphics.Sprite;
 
-public class Balloom extends Enemy {
+public class Balloon extends Enemy {
 
-    public Balloom(int xUnit, int yUnit) {
+    public Balloon(int xUnit, int yUnit) {
         super(xUnit, yUnit, Sprite.balloom_right1.getFxImage());
     }
 
