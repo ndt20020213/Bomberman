@@ -17,6 +17,14 @@ public class Point {
         this.y = y;
     }
 
+    /**
+     * Chuyển Cell sang Point.
+     */
+    public Point(Cell cell) {
+        this.x = cell.x * Cell.SIZE;
+        this.y = cell.y * Cell.SIZE;
+    }
+
     public int getX() {
         return (int) x;
     }
