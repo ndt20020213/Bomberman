@@ -20,8 +20,8 @@ public class Cell {
      * Chuyển từ Point sang Cell
      */
     public Cell(Point point) {
-        this.x = point.getX() / SIZE + 1;
-        this.y = point.getY() / SIZE + 1;
+        this.x = point.getX() / SIZE;
+        this.y = point.getY() / SIZE;
     }
 
     /**
