@@ -137,7 +137,10 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     public void putBomb() {
-        world.entities.add(new Bomb(position.getX(), position.getY(), this, flame));
+        if (this.bomb <= 0) return;
+        Bomb bomb = new Bomb(this, flame);
+        for (Bomb bomb1 : world.bombs) if (bomb.impact(bomb1)) return;
+        world.entities.add(bomb);
     }
 
     //canDestroy
@@ -209,7 +212,7 @@ public class Bomber extends Entity implements canDestroy,
         if (world.time < bombPassTime) return true;
         for (Bomb bomb : world.bombs)
             if (bomb.getRect().impact(rect))
-                if (bomb.getPosition().distance(getPosition()) >= Sprite.SCALED_SIZE*0.75) return false;
+                if (bomb.getPosition().distance(getPosition()) >= Sprite.SCALED_SIZE * 0.75) return false;
         return true;
     }
 

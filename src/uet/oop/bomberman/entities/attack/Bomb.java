@@ -1,6 +1,6 @@
 package uet.oop.bomberman.entities.attack;
 
-import uet.oop.bomberman.BombermanGame;
+import javafx.scene.canvas.GraphicsContext;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.attack.effects.canDestroy;
 import uet.oop.bomberman.entities.player.Bomber;
@@ -12,12 +12,12 @@ public class Bomb extends Entity implements canDestroy {
     private final int length;
     private final long startTime;
 
-    public Bomb(int xUnit, int yUnit, Bomber bomber, int length) {
-        super(xUnit, yUnit, Sprite.bomb.getFxImage());
+    public Bomb(Bomber bomber, int length) {
+        super(bomber.getUnit().x, bomber.getUnit().y, Sprite.bomb.getFxImage());
         this.bomber = bomber;
         this.length = length;
         startTime = world.time;
-        //bomber.addBomb(-1);
+        bomber.addBomb(-1);
     }
 
     /**
@@ -28,11 +28,20 @@ public class Bomb extends Entity implements canDestroy {
         if (world.time > startTime + 2e9) explosive();
     }
 
+    @Override
+    public void render(GraphicsContext gc) {
+        super.render(gc);
+        img = Sprite.movingSprite(Sprite.bomb, Sprite.bomb_1, Sprite.bomb_2, world.time.intValue(), (int) 1e9).getFxImage();
+    }
+
     /**
      * Xử lý khi bomb nổ.
      */
     private void explosive() {
-        //bomber.addBomb(1);
+        bomber.addBomb(1);
+        world.removeEntity(this);
+        Flame flame = new Flame(position.getX() / Sprite.SCALED_SIZE, position.getY() / Sprite.SCALED_SIZE, length);
+        world.addEntity(flame);
     }
 
     /**

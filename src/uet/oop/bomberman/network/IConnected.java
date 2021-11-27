@@ -2,6 +2,8 @@ package uet.oop.bomberman.network;
 
 import uet.oop.bomberman.entities.attack.Bomb;
 import uet.oop.bomberman.entities.attack.Flame;
+import uet.oop.bomberman.entities.attack.HFlame;
+import uet.oop.bomberman.entities.attack.VFlame;
 import uet.oop.bomberman.entities.background.Grass;
 import uet.oop.bomberman.entities.background.Portal;
 import uet.oop.bomberman.entities.background.Wall;
@@ -39,16 +41,20 @@ public interface IConnected {
                 return new RedBrick(0, 0).update(data);
 
             case "Bomb":
-                return new Bomb(0, 0, null, 0).update(data);
+                return new Bomb(null, 0).update(data);
             case "Flame":
-                return new Flame(0, 0, 0, 0, 0, 0).update(data);
+                return new Flame(0, 0, 0).update(data);
+            case "VFlame":
+                return new VFlame(0, 0, 0).update(data);
+            case "HFlame":
+                return new HFlame(0, 0, 0).update(data);
 
             case "SpeedItem":
-                return new SpeedItem(0,0).update(data);
+                return new SpeedItem(0, 0).update(data);
             case "BombItem":
-                return new BombItem(0,0).update(data);
+                return new BombItem(0, 0).update(data);
             case "FlameItem":
-                return new FlameItem(0,0).update(data);
+                return new FlameItem(0, 0).update(data);
 
             case "Balloom":
                 return new Balloom(0, 0).update(data);
