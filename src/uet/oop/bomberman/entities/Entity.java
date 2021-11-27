@@ -3,16 +3,14 @@ package uet.oop.bomberman.entities;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import uet.oop.bomberman.BombermanGame;
-//import uet.oop.bomberman.container.World;
 import uet.oop.bomberman.container.World;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.network.IConnected;
+import uet.oop.bomberman.structure.Cell;
 import uet.oop.bomberman.structure.Point;
 import uet.oop.bomberman.structure.Rect;
 
 public abstract class Entity implements IConnected {
-    //Khóa vật thể
-    private int key = -1;
 
     //Tọa độ tính từ góc trái trên trong Canvas
     protected Point position;
@@ -29,6 +27,17 @@ public abstract class Entity implements IConnected {
         world = BombermanGame.world;
     }
 
+    // Lấy ô tương ứng
+    public Cell getUnit() {
+        return new Cell(position);
+    }
+
+    // Lấy vị trí trên world
+    public Point getPosition() {
+        return new Point(position.x, position.y);
+    }
+
+    // Lấy khung hình ảnh
     public Rect getRect() {
         return new Rect(position.x, position.y, img.getWidth(), img.getHeight());
     }
@@ -38,6 +47,10 @@ public abstract class Entity implements IConnected {
     }
 
     public abstract void update();
+
+    // IConnected
+
+    private int key = -1;
 
     @Override
     public final boolean setKey(int key) {
@@ -65,6 +78,7 @@ public abstract class Entity implements IConnected {
         return position.getX() + " " + position.getY();
     }
 
+    // Impact
     public boolean impact(Entity other) {
         return getRect().impact(other.getRect());
     }

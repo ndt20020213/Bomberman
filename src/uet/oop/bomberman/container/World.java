@@ -37,12 +37,17 @@ public class World {
 
     public void update(long time) {
         this.time = time;
-        entities.forEach(Entity::update);
+        for (int i = entities.size() - 1; i >= 0; i--) entities.get(i).update();
     }
 
     public void render(GraphicsContext gc) {
         for (Entity stillObject : stillObjects) stillObject.render(gc);
-        for (Entity entity : entities) entity.render(gc);
+        for (Entity portal : portals) portal.render(gc);
+        for (Entity item : items) item.render(gc);
+        for (Entity bomb : bombs) bomb.render(gc);
+        for (Entity flame : flames) flame.render(gc);
+        for (Entity enemy : enemies) enemy.render(gc);
+        for (Entity bomber : bombers) bomber.render(gc);
     }
 
     public Function<Entity, Boolean> addAction = (Entity t) -> true;

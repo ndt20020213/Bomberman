@@ -168,7 +168,15 @@ public class BombermanGame extends Application {
             menuController.chatInput.clear();
         });
         // Move event
-        scene.setOnKeyPressed(x -> connection.onKeyPressed(x.getCode().getName()));
+        scene.setOnKeyPressed(x -> {
+            String key = x.getCode().getName();
+            if (key.equals("Enter"))
+                menuController.chatInput.setDisable(!menuController.chatInput.isDisable());
+            else {
+                menuController.chatInput.setDisable(true);
+                connection.onKeyPressed(key);
+            }
+        });
         scene.setOnKeyReleased(x -> connection.onKeyReleased(x.getCode().getName()));
     }
 

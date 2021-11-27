@@ -1,7 +1,6 @@
 package uet.oop.bomberman.entities.player;
 
 import javafx.scene.canvas.GraphicsContext;
-import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.attack.Bomb;
 import uet.oop.bomberman.entities.attack.effects.canDestroy;
@@ -14,6 +13,7 @@ import uet.oop.bomberman.entities.player.properties.BombProperty;
 import uet.oop.bomberman.entities.player.properties.FlameProperty;
 import uet.oop.bomberman.entities.player.properties.SpeedProperty;
 import uet.oop.bomberman.graphics.Sprite;
+import uet.oop.bomberman.structure.Cell;
 import uet.oop.bomberman.structure.Point;
 import uet.oop.bomberman.structure.Rect;
 
@@ -46,27 +46,40 @@ public class Bomber extends Entity implements canDestroy,
         Point point = new Point(position.x, position.y);
         switch (status) {
             case 'W':
-                point.y -= speed * (time - oldTime) / 1e9;
+                position.y -= speed * (time - oldTime) / 1e9;
                 break;
             case 'S':
-                point.y += speed * (time - oldTime) / 1e9;
+                position.y += speed * (time - oldTime) / 1e9;
                 break;
             case 'A':
-                point.x -= speed * (time - oldTime) / 1e9;
+                position.x -= speed * (time - oldTime) / 1e9;
                 break;
             case 'D':
-                point.x += speed * (time - oldTime) / 1e9;
+                position.x += speed * (time - oldTime) / 1e9;
                 break;
         }
         oldTime = time;
-        Rect rect = new Rect(point.x, point.y, 14, 20);
-        rect.point.x += (Sprite.SCALED_SIZE - rect.width) / 2;
-        rect.point.y += Sprite.SCALED_SIZE - rect.height;
-        if (!rect.equals(getRect())){
-            if (!checkWallPass(rect)) return;
-            if (!checkBombPass(rect)) return;
-        }
-        position = point;
+        if (!checkWallPass(getRect())) position = point;
+        if (!checkBombPass(getRect())) position = point;
+    }
+
+    @Override
+    public Cell getUnit() {
+        Point position = getPosition();
+        position.x += 6;
+        position.y += 5;
+        return new Cell(position);
+    }
+
+    @Override
+    public Point getPosition() {
+        return new Point(position.x + 8, position.y + 18);
+    }
+
+    @Override
+    public Rect getRect() {
+        Point point = getPosition();
+        return new Rect(point.x, point.y, 12, 10);
     }
 
     public void keyPressed(String key) {
@@ -98,8 +111,29 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     public void keyReleased(String key) {
-        if (key == null) status = ' ';
-        else if (status == key.charAt(0)) status = ' ';
+        if (key == null) {
+            status = ' ';
+            return;
+        }
+        switch (key) {
+            case "W":
+            case "Up":
+                key = "W";
+                break;
+            case "S":
+            case "Down":
+                key = "S";
+                break;
+            case "A":
+            case "Left":
+                key = "A";
+                break;
+            case "D":
+            case "Right":
+                key = "D";
+                break;
+        }
+        if (status == key.charAt(0)) status = ' ';
     }
 
     public void putBomb() {
@@ -111,7 +145,7 @@ public class Bomber extends Entity implements canDestroy,
 
     @Override
     public void destroy() {
-        if (checkFlamePass(health, health-1)) return;
+        if (checkFlamePass(health, health - 1)) return;
         health--;
     }
 
@@ -134,7 +168,7 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     //FlameProperty
-    private int flame = 1;
+    private int flame = 5;
 
     @Override
     public boolean addFlame(int flame) {
@@ -174,7 +208,8 @@ public class Bomber extends Entity implements canDestroy,
     public boolean checkBombPass(Rect rect) {
         if (world.time < bombPassTime) return true;
         for (Bomb bomb : world.bombs)
-            if (bomb.getRect().impact(rect)) return false;
+            if (bomb.getRect().impact(rect))
+                if (bomb.getPosition().distance(getPosition()) >= Sprite.SCALED_SIZE*0.75) return false;
         return true;
     }
 
