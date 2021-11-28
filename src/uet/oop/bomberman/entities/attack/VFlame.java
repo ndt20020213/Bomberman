@@ -1,19 +1,23 @@
 package uet.oop.bomberman.entities.attack;
 
 import javafx.scene.canvas.GraphicsContext;
+import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.background.Wall;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.structure.Cell;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class VFlame extends Flame {
 
     public VFlame(int xUnit, int yUnit, int length) {
-        super(xUnit, yUnit, length);
-        if (length > 1 || length < -1) {
-            img = Sprite.explosion_vertical.getFxImage();
-        } else if (length == -1) {
+        this(xUnit, yUnit, length, new HashSet<>());
+    }
+
+    public VFlame(int xUnit, int yUnit, int length, HashSet<Entity> impactHistory) {
+        super(xUnit, yUnit, length, Sprite.explosion_vertical.getFxImage(), impactHistory);
+        if (length == -1) {
             img = Sprite.explosion_vertical_top_last.getFxImage();
         } else if (length == 1) {
             img = Sprite.explosion_vertical_down_last.getFxImage();
@@ -26,8 +30,8 @@ public class VFlame extends Flame {
         int length = this.length - this.length / Math.abs(this.length);
         ArrayList<Flame> flames = new ArrayList<>();
         Cell unit = getUnit();
-        if (length < 0) flames.add(new VFlame(unit.x, unit.y - 1, length));
-        else if (length > 0) flames.add(new VFlame(unit.x, unit.y + 1, length));
+        if (length < 0) flames.add(new VFlame(unit.x, unit.y - 1, length, impactHistory));
+        else if (length > 0) flames.add(new VFlame(unit.x, unit.y + 1, length, impactHistory));
         for (int i = flames.size() - 1; i >= 0; i--) {
             Flame flame = flames.get(i);
             for (Wall wall : world.walls)

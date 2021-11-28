@@ -7,6 +7,7 @@ import uet.oop.bomberman.entities.attack.effects.canDestroy;
 import uet.oop.bomberman.entities.background.Wall;
 import uet.oop.bomberman.entities.bricks.Brick;
 import uet.oop.bomberman.graphics.Sprite;
+import uet.oop.bomberman.network.IConnected;
 import uet.oop.bomberman.structure.Cell;
 
 import java.util.ArrayList;
@@ -17,13 +18,13 @@ public class Flame extends Entity {
     protected final long startTime;
     protected int length;
     protected boolean exploded = false;
-    protected HashSet<Entity> impactHistory = new HashSet<>();
+    protected HashSet<Entity> impactHistory;
 
     public Flame(int xUnit, int yUnit, int length) {
-        this(xUnit, yUnit, length, Sprite.bomb_exploded.getFxImage());
+        this(xUnit, yUnit, length, Sprite.bomb_exploded.getFxImage(), new HashSet<>());
     }
 
-    public Flame(int xUnit, int yUnit, int length, Image img) {
+    public Flame(int xUnit, int yUnit, int length, Image img, HashSet<Entity> impactHistory) {
         super(xUnit, yUnit, img);
         for (Brick brick : world.bricks)
             if (impact(brick)) {
@@ -33,6 +34,7 @@ public class Flame extends Entity {
             }
         this.length = length;
         startTime = world.time;
+        this.impactHistory = impactHistory;
     }
 
     @Override
@@ -54,10 +56,10 @@ public class Flame extends Entity {
         exploded = true;
         ArrayList<Flame> flames = new ArrayList<>();
         Cell unit = getUnit();
-        flames.add(new VFlame(unit.x, unit.y - 1, -length));
-        flames.add(new VFlame(unit.x, unit.y + 1, length));
-        flames.add(new HFlame(unit.x - 1, unit.y, -length));
-        flames.add(new HFlame(unit.x + 1, unit.y, length));
+        flames.add(new VFlame(unit.x, unit.y - 1, -length, impactHistory));
+        flames.add(new VFlame(unit.x, unit.y + 1, length, impactHistory));
+        flames.add(new HFlame(unit.x - 1, unit.y, -length, impactHistory));
+        flames.add(new HFlame(unit.x + 1, unit.y, length, impactHistory));
         for (int i = flames.size() - 1; i >= 0; i--) {
             Flame flame = flames.get(i);
             for (Wall wall : world.walls)
@@ -74,5 +76,19 @@ public class Flame extends Entity {
         super.render(gc);
         int dentaTime = (int) (world.time - startTime);
         img = Sprite.movingSprite(Sprite.bomb_exploded, Sprite.bomb_exploded1, Sprite.bomb_exploded2, dentaTime, (int) 8e8).getFxImage();
+    }
+
+    @Override
+    public IConnected update(String status) {
+        String[] data = status.split(" ");
+        position.x = Integer.parseInt(data[0]);
+        position.y = Integer.parseInt(data[1]);
+        length = Integer.parseInt(data[2]);
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return position.getX() + " " + position.getY() + " " + length;
     }
 }

@@ -139,7 +139,7 @@ public class World {
         }
         if (entity instanceof Item) {
             ((EntityList<Item>) items).data.remove((Item) entity);
-            ((EntityList<Entity>) stillObjects).data.remove(entity);
+            ((EntityList<Entity>) entities).data.remove(entity);
             return true;
         }
         if (entity instanceof Enemy) {
