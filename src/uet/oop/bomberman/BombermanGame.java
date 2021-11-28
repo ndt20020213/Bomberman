@@ -9,6 +9,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import uet.oop.bomberman.container.MatrixWorld;
 import uet.oop.bomberman.container.World;
 import uet.oop.bomberman.display.MenuController;
 import uet.oop.bomberman.entities.background.Grass;
@@ -36,7 +37,7 @@ public class BombermanGame extends Application {
     public static final int WIDTH = 31;
     public static final int HEIGHT = 13;
 
-    public static final World world = new World();
+    public static final World world = new MatrixWorld(WIDTH, HEIGHT);
 
     private MenuController menuController;
 
