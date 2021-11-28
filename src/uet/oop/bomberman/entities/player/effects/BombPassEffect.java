@@ -11,6 +11,6 @@ public interface BombPassEffect {
      */
     boolean addBombPass(long time);
 
-    boolean checkBombPass(Rect newPosition);
+    boolean checkBombPass(Rect oldRect, Rect newRect);
 
 }

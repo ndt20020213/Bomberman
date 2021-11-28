@@ -14,6 +14,6 @@ public interface WallPassEffect {
     /**
      * Kiểm tra va chạm với vật thể cố định.
      */
-    boolean checkWallPass(Rect newPosition);
+    boolean checkWallPass(Rect oldRect, Rect newRect);
 
 }

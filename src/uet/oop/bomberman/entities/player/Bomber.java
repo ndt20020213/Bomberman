@@ -44,7 +44,8 @@ public class Bomber extends Entity implements canDestroy,
     @Override
     public void update() {
         long time = world.time;
-        Point point = new Point(position.x, position.y);
+        Point oldPosition = new Point(position.x, position.y);
+        Rect oldRect = getRect();
         switch (status) {
             case 'W':
                 position.y -= speed * (time - oldTime) / 1e9;
@@ -60,8 +61,11 @@ public class Bomber extends Entity implements canDestroy,
                 break;
         }
         oldTime = time;
-        if (!checkWallPass(getRect())) position = point;
-        if (!checkBombPass(getRect())) position = point;
+        Rect newRect = getRect();
+        if (!newRect.equals(oldRect)) {
+            if (!checkWallPass(oldRect, newRect)) position = oldPosition;
+            if (!checkBombPass(oldRect, newRect)) position = oldPosition;
+        }
     }
 
     @Override
@@ -138,17 +142,26 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     public void putBomb() {
-        if (this.bomb <= 0) return;
+        if (this.bomb <= 0 || health <= 0) return;
         Bomb bomb = new Bomb(this, flame);
         for (Bomb bomb1 : world.bombs) if (bomb.impact(bomb1)) return;
         world.entities.add(bomb);
     }
 
+    //HealthProperty
+    private int health = 3;
+
+    @Override
+    public boolean addHealth(int health) {
+        this.health += health;
+        return true;
+    }
+
     //canDestroy
     @Override
     public void destroy() {
-        if (checkFlamePass(health, health - 1)) return;
-        health--;
+        if (checkFlamePass()) health--;
+        if (health <= 0) world.removeEntity(this);
     }
 
     //SpeedProperty
@@ -170,20 +183,11 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     //FlameProperty
-    private int flame = 5;
+    private int flame = 1;
 
     @Override
     public boolean addFlame(int flame) {
         this.flame += flame;
-        return true;
-    }
-
-    //HealthProperty
-    private int health = 1;
-
-    @Override
-    public boolean addHealth(int health) {
-        this.health += health;
         return true;
     }
 
@@ -197,12 +201,12 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     @Override
-    public boolean checkWallPass(Rect rect) {
+    public boolean checkWallPass(Rect oldRect, Rect newRect) {
         if (world.time < wallPassTime) return true;
         for (Wall wall : world.walls)
-            if (wall.getRect().impact(rect)) return false;
+            if (!wall.getRect().impact(oldRect) && wall.getRect().impact(newRect)) return false;
         for (Brick brick : world.bricks)
-            if (brick.getRect().impact(rect)) return false;
+            if (!brick.getRect().impact(oldRect) && brick.getRect().impact(newRect)) return false;
         return true;
     }
 
@@ -216,11 +220,10 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     @Override
-    public boolean checkBombPass(Rect rect) {
+    public boolean checkBombPass(Rect oldRect, Rect newRect) {
         if (world.time < bombPassTime) return true;
         for (Bomb bomb : world.bombs)
-            if (bomb.getRect().impact(rect))
-                if (bomb.getPosition().distance(getPosition()) >= Sprite.SCALED_SIZE * 0.75) return false;
+            if (!bomb.getRect().impact(oldRect) && bomb.getRect().impact(newRect)) return false;
         return true;
     }
 
@@ -234,7 +237,7 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     @Override
-    public boolean checkFlamePass(int health, int newHealth) {
+    public boolean checkFlamePass() {
         return world.time >= flamePassTime;
     }
 }

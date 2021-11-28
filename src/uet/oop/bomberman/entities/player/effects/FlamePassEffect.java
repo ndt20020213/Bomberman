@@ -9,6 +9,6 @@ public interface FlamePassEffect {
      */
     boolean addFlamePass(long time);
 
-    boolean checkFlamePass(int health, int newHealth);
+    boolean checkFlamePass();
 
 }
