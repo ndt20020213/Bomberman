@@ -11,6 +11,7 @@ import uet.oop.bomberman.entities.player.effects.FlamePassEffect;
 import uet.oop.bomberman.entities.player.effects.WallPassEffect;
 import uet.oop.bomberman.entities.player.properties.BombProperty;
 import uet.oop.bomberman.entities.player.properties.FlameProperty;
+import uet.oop.bomberman.entities.player.properties.HealthProperty;
 import uet.oop.bomberman.entities.player.properties.SpeedProperty;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.structure.Cell;
@@ -18,7 +19,7 @@ import uet.oop.bomberman.structure.Point;
 import uet.oop.bomberman.structure.Rect;
 
 public class Bomber extends Entity implements canDestroy,
-        SpeedProperty, BombProperty, FlameProperty,
+        SpeedProperty, BombProperty, FlameProperty, HealthProperty,
         WallPassEffect, BombPassEffect, FlamePassEffect {
 
     private String name;
@@ -144,8 +145,6 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     //canDestroy
-    private int health = 1;
-
     @Override
     public void destroy() {
         if (checkFlamePass(health, health - 1)) return;
@@ -176,6 +175,15 @@ public class Bomber extends Entity implements canDestroy,
     @Override
     public boolean addFlame(int flame) {
         this.flame += flame;
+        return true;
+    }
+
+    //HealthProperty
+    private int health = 1;
+
+    @Override
+    public boolean addHealth(int health) {
+        this.health += health;
         return true;
     }
 
