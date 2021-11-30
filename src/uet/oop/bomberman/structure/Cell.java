@@ -2,6 +2,8 @@ package uet.oop.bomberman.structure;
 
 import uet.oop.bomberman.graphics.Sprite;
 
+import java.util.concurrent.Callable;
+
 public class Cell {
     public static final int SIZE = Sprite.SCALED_SIZE;
     public int x;
@@ -50,6 +52,16 @@ public class Cell {
      */
     public Cell Right() {
         return new Cell(this.x + 1, this.y);
+    }
+
+    public boolean equals(Object o) {
+        if (o instanceof Cell) {
+            Cell cell = (Cell) o;
+            if (this.x == cell.x && this.y == cell.y) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

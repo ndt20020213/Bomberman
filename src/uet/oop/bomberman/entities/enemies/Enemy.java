@@ -6,6 +6,7 @@ import uet.oop.bomberman.container.MatrixWorld;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.attack.effects.canDestroy;
 import uet.oop.bomberman.structure.Cell;
+import uet.oop.bomberman.structure.Point;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,19 +54,19 @@ public abstract class Enemy extends Entity implements canDestroy {
         if (!MoveHistory.empty()) {
             if (MoveHistory.peek().equals('U')) {
                 for (int i = 0; i < random.size(); i++)
-                    if (random.get(i) == 'D')
+                    if (random.get(i).equals('D'))
                         random.remove(i);
             } else if (MoveHistory.peek().equals('D')) {
                 for (int i = 0; i < random.size(); i++)
-                    if (random.get(i) == 'U')
+                    if (random.get(i).equals('U'))
                         random.remove(i);
             } else if (MoveHistory.peek().equals('L')) {
                 for (int i = 0; i < random.size(); i++)
-                    if (random.get(i) == 'R')
+                    if (random.get(i).equals('R'))
                         random.remove(i);
             } else if (MoveHistory.peek().equals('R')) {
                 for (int i = 0; i < random.size(); i++)
-                    if (random.get(i) == 'L')
+                    if (random.get(i).equals('L'))
                         random.remove(i);
             }
         }
@@ -81,13 +82,13 @@ public abstract class Enemy extends Entity implements canDestroy {
             }
 
         } else if (random.size() == 1) {
-            if (random.get(0) == 'U') {
+            if (random.get(0).equals('U')) {
                 Move.add(cell.Above());
-            } else if (random.get(0) == 'D') {
+            } else if (random.get(0).equals('D')) {
                 Move.add(cell.Bellow());
-            } else if (random.get(0) == 'L') {
+            } else if (random.get(0).equals('L')) {
                 Move.add(cell.Left());
-            } else if (random.get(0) == 'R') {
+            } else if (random.get(0).equals('R')) {
                 Move.add(cell.Right());
             }
         } else {
@@ -103,8 +104,6 @@ public abstract class Enemy extends Entity implements canDestroy {
                 Move.add(cell.Right());
             }
         }
-
-        if (entitiesMatrix[Move.get(Move.size() - 1).x][Move.get(Move.size() - 1).y] != null ) System.out.println("ERROR");
     }
 
     public boolean FindTheWay(Cell start,Cell end, int x) {
