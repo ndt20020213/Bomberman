@@ -4,6 +4,7 @@ import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.structure.Cell;
 
 public class Balloom extends Enemy {
+    public static final double speed = 1;
 
     public Balloom(int xUnit, int yUnit) {
         super(xUnit, yUnit, Sprite.balloom_right1.getFxImage());
@@ -16,7 +17,6 @@ public class Balloom extends Enemy {
             MoveRandom();
         }
         Cell move = Move.get(Move.size() - 1);
-        int speed = 1;
         position.x += speed * (move.x - cell.x);
         position.y += speed *(move.y - cell.y);
         Cell newcell = super.getUnit();

@@ -103,7 +103,41 @@ public abstract class Enemy extends Entity implements canDestroy {
                 Move.add(cell.Right());
             }
         }
-        if (entitiesMatrix[Move.get(0).x][Move.get(0).y] != null ) System.out.println("ERROR");
+
+        if (entitiesMatrix[Move.get(Move.size() - 1).x][Move.get(Move.size() - 1).y] != null ) System.out.println("ERROR");
+    }
+
+    public boolean FindTheWay(Cell start,Cell end, int x) {
+        if (start.x == end.x && start.y == end.y) {
+            return true;
+        }
+        if (x == 5) return false;
+        visited[start.x][start.y] = 1;
+        if (entitiesMatrix[start.Above().x][start.Above().y] == null && visited[start.x][start.y] != 1) {
+            if (FindTheWay(start.Above(),end,x + 1)) {
+                Move.add(start.Above());
+                return true;
+            }
+        }
+        if (entitiesMatrix[start.Bellow().x][start.Bellow().y] == null && visited[start.x][start.y] != 1) {
+            if (FindTheWay(start.Bellow(),end,x + 1)) {
+                Move.add(start.Bellow());
+                return true;
+            }
+        }
+        if (entitiesMatrix[start.Left().x][start.Left().y] == null && visited[start.x][start.y] != 1) {
+            if (FindTheWay(start.Left(),end,x + 1)) {
+                Move.add(start.Left());
+                return true;
+            }
+        }
+        if (entitiesMatrix[start.Right().x][start.Right().y] == null && visited[start.x][start.y] != 1) {
+            if (FindTheWay(start.Right(),end,x + 1)) {
+                Move.add(start.Right());
+                return true;
+            }
+        }
+        return false;
     }
 }
 
