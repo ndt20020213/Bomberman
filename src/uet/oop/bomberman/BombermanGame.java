@@ -80,10 +80,9 @@ public class BombermanGame extends Application {
             public void handle(long l) {
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
                 world.render(gc);
-                if (connection instanceof Server) {
-                    world.update(l);
-                    ((Server) connection).update();
-                }
+                if (connection instanceof Server) world.update(l);
+                if (connection instanceof Client) world.time = l;
+                if (connection != null) connection.update();
             }
         };
         timer.start();
@@ -171,12 +170,10 @@ public class BombermanGame extends Application {
         // Move event
         scene.setOnKeyPressed(x -> {
             String key = x.getCode().getName();
-            if (key.equals("Enter"))
-                menuController.chatInput.setDisable(!menuController.chatInput.isDisable());
-            else {
+            if (key.equals("Enter")) menuController.chatInput.setDisable(!menuController.chatInput.isDisable());
+            else connection.onKeyPressed(key);
+            if (key.equals("Up") || key.equals("Down") || key.equals("Left") || key.equals("Right"))
                 menuController.chatInput.setDisable(true);
-                connection.onKeyPressed(key);
-            }
         });
         scene.setOnKeyReleased(x -> connection.onKeyReleased(x.getCode().getName()));
     }

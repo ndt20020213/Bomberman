@@ -41,7 +41,7 @@ public interface IConnected {
                 return new RedBrick(0, 0).update(data);
 
             case "Bomb":
-                return new Bomb(null, 0).update(data);
+                return new Bomb(new Bomber(-1, -1), 0).update(data);
             case "Flame":
                 return new Flame(0, 0, 0).update(data);
             case "VFlame":
