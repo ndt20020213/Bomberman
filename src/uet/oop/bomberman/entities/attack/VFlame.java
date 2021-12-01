@@ -51,19 +51,19 @@ public class VFlame extends Flame {
             img = Sprite.movingSprite(Sprite.explosion_vertical,
                     Sprite.explosion_vertical1,
                     Sprite.explosion_vertical2,
-                    dentaTime, (int) 8e8
+                    dentaTime, circle
             ).getFxImage();
         } else if (length == -1) {
             img = Sprite.movingSprite(Sprite.explosion_vertical_top_last,
                     Sprite.explosion_vertical_top_last1,
                     Sprite.explosion_vertical_top_last2,
-                    dentaTime, (int) 8e8
+                    dentaTime, circle
             ).getFxImage();
         } else if (length == 1) {
             img = Sprite.movingSprite(Sprite.explosion_vertical_down_last,
                     Sprite.explosion_vertical_down_last1,
                     Sprite.explosion_vertical_down_last2,
-                    dentaTime, (int) 8e8
+                    dentaTime, circle
             ).getFxImage();
         }
     }

@@ -4,11 +4,10 @@ import uet.oop.bomberman.entities.attack.Bomb;
 import uet.oop.bomberman.entities.attack.Flame;
 import uet.oop.bomberman.entities.attack.HFlame;
 import uet.oop.bomberman.entities.attack.VFlame;
+import uet.oop.bomberman.entities.background.Brick;
 import uet.oop.bomberman.entities.background.Grass;
 import uet.oop.bomberman.entities.background.Portal;
 import uet.oop.bomberman.entities.background.Wall;
-import uet.oop.bomberman.entities.bricks.RedBrick;
-import uet.oop.bomberman.entities.bricks.WhiteBrick;
 import uet.oop.bomberman.entities.enemies.Balloom;
 import uet.oop.bomberman.entities.enemies.Oneal;
 import uet.oop.bomberman.entities.items.BombItem;
@@ -35,10 +34,8 @@ public interface IConnected {
                 return new Wall(0, 0).update(data);
             case "Grass":
                 return new Grass(0, 0).update(data);
-            case "WhiteBrick":
-                return new WhiteBrick(0, 0).update(data);
-            case "RedBrick":
-                return new RedBrick(0, 0).update(data);
+            case "Brick":
+                return new Brick(-1, -1);
 
             case "Bomb":
                 return new Bomb(new Bomber(-1, -1), 0).update(data);

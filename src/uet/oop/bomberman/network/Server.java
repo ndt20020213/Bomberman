@@ -2,7 +2,6 @@ package uet.oop.bomberman.network;
 
 import uet.oop.bomberman.container.World;
 import uet.oop.bomberman.entities.Entity;
-import uet.oop.bomberman.entities.bricks.RedBrick;
 import uet.oop.bomberman.entities.player.Bomber;
 
 import java.io.IOException;
@@ -96,18 +95,6 @@ public class Server extends Connection {
                 states.append(temp);
             }
         }
-        for (Entity entity : world.bricks)
-            if (entity instanceof RedBrick) {
-                String temp = "Update#" + entity.getKey() + "#" + entity + "\n";
-                String oldStatus = statusHistory.get(entity.getKey());
-                if (oldStatus == null) {
-                    statusHistory.put(entity.getKey(), temp);
-                    states.append(temp);
-                } else if (!temp.equals(oldStatus)) {
-                    statusHistory.put(entity.getKey(), temp);
-                    states.append(temp);
-                }
-            }
         String command = states.toString();
         if (command.length() > 0)
             for (ClientSocket clientSocket : clientSockets)

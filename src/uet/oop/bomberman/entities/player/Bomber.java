@@ -2,21 +2,13 @@ package uet.oop.bomberman.entities.player;
 
 import javafx.scene.canvas.GraphicsContext;
 import uet.oop.bomberman.entities.Entity;
+import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.entities.attack.Bomb;
 import uet.oop.bomberman.entities.attack.effects.canDestroy;
-import uet.oop.bomberman.entities.background.Wall;
-import uet.oop.bomberman.entities.bricks.Brick;
-import uet.oop.bomberman.entities.player.effects.BombPassEffect;
-import uet.oop.bomberman.entities.player.effects.FlamePassEffect;
-import uet.oop.bomberman.entities.player.effects.WallPassEffect;
-import uet.oop.bomberman.entities.player.properties.BombProperty;
-import uet.oop.bomberman.entities.player.properties.FlameProperty;
-import uet.oop.bomberman.entities.player.properties.HealthProperty;
-import uet.oop.bomberman.entities.player.properties.SpeedProperty;
-import uet.oop.bomberman.graphics.Sprite;
-import uet.oop.bomberman.structure.Cell;
-import uet.oop.bomberman.structure.Point;
-import uet.oop.bomberman.structure.Rect;
+import uet.oop.bomberman.entities.background.*;
+import uet.oop.bomberman.entities.player.effects.*;
+import uet.oop.bomberman.entities.player.properties.*;
+import uet.oop.bomberman.structure.*;
 
 public class Bomber extends Entity implements canDestroy,
         SpeedProperty, BombProperty, FlameProperty, HealthProperty,

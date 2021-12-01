@@ -12,7 +12,7 @@ import java.util.HashSet;
 public class HFlame extends Flame {
 
     public HFlame(int xUnit, int yUnit, int length) {
-       this(xUnit, yUnit, length, new HashSet<>());
+        this(xUnit, yUnit, length, new HashSet<>());
     }
 
     public HFlame(int xUnit, int yUnit, int length, HashSet<Entity> impactHistory) {
@@ -51,19 +51,19 @@ public class HFlame extends Flame {
             img = Sprite.movingSprite(Sprite.explosion_horizontal,
                     Sprite.explosion_horizontal1,
                     Sprite.explosion_horizontal2,
-                    dentaTime, (int) 8e8
+                    dentaTime, circle
             ).getFxImage();
         } else if (length == -1) {
             img = Sprite.movingSprite(Sprite.explosion_horizontal_left_last,
                     Sprite.explosion_horizontal_left_last1,
                     Sprite.explosion_horizontal_left_last2,
-                    dentaTime, (int) 8e8
+                    dentaTime, circle
             ).getFxImage();
         } else if (length == 1) {
             img = Sprite.movingSprite(Sprite.explosion_horizontal_right_last,
                     Sprite.explosion_horizontal_right_last1,
                     Sprite.explosion_horizontal_right_last2,
-                    dentaTime, (int) 8e8
+                    dentaTime, circle
             ).getFxImage();
         }
     }
