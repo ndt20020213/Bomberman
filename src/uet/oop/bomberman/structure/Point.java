@@ -1,5 +1,8 @@
 package uet.oop.bomberman.structure;
 
+import java.util.List;
+import java.util.Random;
+
 public class Point {
 
     // Tọa độ theo phương x.

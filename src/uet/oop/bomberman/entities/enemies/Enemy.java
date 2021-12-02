@@ -18,13 +18,10 @@ public abstract class Enemy extends Entity implements canDestroy {
 
     /* MoveHistory sử dụng kí hiệu 'U' là di chuyển lên,
      'D' là xuống, 'R' là sang phải, 'L' là sang trái. */
-    protected Stack<Character> MoveHistory = new Stack<>();
+    protected Stack<Cell> MoveHistory = new Stack<>();
 
     /* Lưu các bước sẽ đi */
-    protected List<Cell> Move = new ArrayList<>();
-
-    /* Mảng check các ô đã đi.*/
-    protected int[][] visited;
+    protected Stack<Cell> Move = new Stack<>();
 
     protected Entity[][] entitiesMatrix = null;
 
@@ -38,108 +35,36 @@ public abstract class Enemy extends Entity implements canDestroy {
      */
     public void MoveRandom() {
         Cell cell = super.getUnit();
-        System.out.println(cell.x + " " + cell.y);
-        List<Character> random = new ArrayList<>();
-        if (entitiesMatrix[cell.Above().x][cell.Above().y] == null) {
-            random.add('U');
+        List<Cell> random = new ArrayList<>();
+        if (MoveHistory.empty()) {
+            MoveHistory.add(cell.Above());
         }
-        if (entitiesMatrix[cell.Bellow().x][cell.Bellow().y] == null) {
-            random.add('D');
+        if (entitiesMatrix[cell.Above().x][cell.Above().y] == null && !MoveHistory.peek().equals(cell.Above())) {
+            random.add(cell.Above());
         }
-        if (entitiesMatrix[cell.Left().x][cell.Left().y] == null) {
-            random.add('L');
+        if (entitiesMatrix[cell.Bellow().x][cell.Bellow().y] == null && !MoveHistory.peek().equals(cell.Bellow())) {
+            random.add(cell.Bellow());
         }
-        if (entitiesMatrix[cell.Right().x][cell.Right().y] == null) {
-            random.add('R');
+        if (entitiesMatrix[cell.Left().x][cell.Left().y] == null && !MoveHistory.peek().equals(cell.Left())) {
+            random.add(cell.Left());
         }
-        if (!MoveHistory.empty()) {
-            if (MoveHistory.peek().equals('U')) {
-                for (int i = 0; i < random.size(); i++)
-                    if (random.get(i).equals('D'))
-                        random.remove(i);
-            } else if (MoveHistory.peek().equals('D')) {
-                for (int i = 0; i < random.size(); i++)
-                    if (random.get(i).equals('U'))
-                        random.remove(i);
-            } else if (MoveHistory.peek().equals('L')) {
-                for (int i = 0; i < random.size(); i++)
-                    if (random.get(i).equals('R'))
-                        random.remove(i);
-            } else if (MoveHistory.peek().equals('R')) {
-                for (int i = 0; i < random.size(); i++)
-                    if (random.get(i).equals('L'))
-                        random.remove(i);
-            }
-        }
-        System.out.println(random.size());
-        for (int i = 0; i < random.size(); i++) {
-            System.out.print(random.get(i) + " ");
+        if (entitiesMatrix[cell.Right().x][cell.Right().y] == null && !MoveHistory.peek().equals(cell.Right())) {
+            random.add(cell.Right());
         }
         if (random.size() == 0) {
-            if (MoveHistory.peek().equals('U')) {
-                Move.add(cell.Bellow());
-            } else if (MoveHistory.peek().equals('D')) {
-                Move.add(cell.Above());
-            } else if (MoveHistory.peek().equals('L')) {
-                Move.add(cell.Right());
-            } else if (MoveHistory.peek().equals('R')) {
-                Move.add(cell.Left());
-            }
-
+            Move.add(MoveHistory.peek());
         } else if (random.size() == 1) {
-            if (random.get(0).equals('U')) {
-                Move.add(cell.Above());
-            } else if (random.get(0).equals('D')) {
-                Move.add(cell.Bellow());
-            } else if (random.get(0).equals('L')) {
-                Move.add(cell.Left());
-            } else if (random.get(0).equals('R')) {
-                Move.add(cell.Right());
-            }
+            Move.add(random.get(0));
         } else {
             Random rand = new Random();
-            char x = random.get(rand.nextInt(random.size()));
-            if (x == 'U') {
-                Move.add(cell.Above());
-            } else if (x == 'D') {
-                Move.add(cell.Bellow());
-            } else if (x == 'L') {
-                Move.add(cell.Left());
-            } else if (x == 'R') {
-                Move.add(cell.Right());
-            }
+            Move.add(random.get(rand.nextInt(random.size())));
         }
+        MoveHistory.push(cell);
     }
 
-    public boolean FindTheWay(Cell start,Cell end, int x) {
+    public boolean FindTheWay(Cell start,Cell end, int x, Stack<Cell> move) {
         if (start.x == end.x && start.y == end.y) {
             return true;
-        }
-        if (x == 5) return false;
-        visited[start.x][start.y] = 1;
-        if (entitiesMatrix[start.Above().x][start.Above().y] == null && visited[start.x][start.y] != 1) {
-            if (FindTheWay(start.Above(),end,x + 1)) {
-                Move.add(start.Above());
-                return true;
-            }
-        }
-        if (entitiesMatrix[start.Bellow().x][start.Bellow().y] == null && visited[start.x][start.y] != 1) {
-            if (FindTheWay(start.Bellow(),end,x + 1)) {
-                Move.add(start.Bellow());
-                return true;
-            }
-        }
-        if (entitiesMatrix[start.Left().x][start.Left().y] == null && visited[start.x][start.y] != 1) {
-            if (FindTheWay(start.Left(),end,x + 1)) {
-                Move.add(start.Left());
-                return true;
-            }
-        }
-        if (entitiesMatrix[start.Right().x][start.Right().y] == null && visited[start.x][start.y] != 1) {
-            if (FindTheWay(start.Right(),end,x + 1)) {
-                Move.add(start.Right());
-                return true;
-            }
         }
         return false;
     }

@@ -19,50 +19,38 @@ public class Oneal extends Enemy {
     @Override
     public void update() {
         Cell cell = super.getUnit();
-        /*for (Bomber bomber : world.bombers)
-            if (impact(bomber)) {
-                return;
-            }*/
-        Cell end = new Cell(-1,-1);
-
-        double distance = 200;
-        for (Bomber bomber : world.bombers) {
-            double x = position.distance(bomber.getPosition());
-            if (x < distance) {
-                distance = x;
-                end = bomber.getUnit();
-            }
-        }
-        if (end.x != -1) {
-            visited = new int[BombermanGame.WIDTH][BombermanGame.HEIGHT];
-            boolean x = FindTheWay(cell, end, 0);
-        }
-
-        if (Move.isEmpty()) {
+        if (Move.empty()) {
             MoveRandom();
         }
-        Cell cmove = Move.get(Move.size() - 1);
-        Point pmove = new Point(cmove);
-
-        int x = 0;
-        int y = 0;
-        if (pmove.x - position.x < 0) x = -1;
-        else if (pmove.x - position.x > 0) x = 1;
-        if (pmove.y - position.y < 0) y = -1;
-        else if (pmove.y - position.y > 0) y = 1;
-        position.x += NormalSpeed * x;
-        position.y += NormalSpeed * y;
-        if (position.distance(pmove) == 0) {
-            if (cmove.equals(cell.Above())) {
-                MoveHistory.add('U');
-            } else if (cmove.equals(cell.Bellow())) {
-                MoveHistory.add('D');
-            } else if (cmove.equals(cell.Left())) {
-                MoveHistory.add('L');
-            } else if (cmove.equals(cell.Right())) {
-                MoveHistory.add('R');
+        Point move = new Point(Move.peek());
+        if (position.x < move.x) {
+            if (position.x + NormalSpeed >= move.x) {
+                position.x = move.x;
+                Move.pop();
+            } else {
+                position.x += NormalSpeed;
             }
-            Move.remove(Move.size() - 1);
+        } else if (position.x > move.x) {
+            if (position.x - NormalSpeed <= move.x) {
+                position.x = move.x;
+                Move.pop();
+            } else {
+                position.x -= NormalSpeed;
+            }
+        } else if (position.y < move.y) {
+            if (position.y + NormalSpeed >= move.y) {
+                position.y = move.y;
+                Move.pop();
+            } else {
+                position.y += NormalSpeed;
+            }
+        } else if (position.y > move.y) {
+            if (position.y - NormalSpeed <= move.y) {
+                position.y = move.y;
+                Move.pop();
+            } else {
+                position.y -= NormalSpeed;
+            }
         }
     }
 

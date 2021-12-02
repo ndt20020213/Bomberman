@@ -98,8 +98,8 @@ public class BombermanGame extends Application {
     }
 
     public void createMap() {
-       // File file = new File("res/levels/Level" + level + ".txt");
-        File file = new File("res/levels/test.txt");
+        File file = new File("res/levels/Level" + level + ".txt");
+        //File file = new File("res/levels/test.txt");
         Scanner scanner;
         try {
             scanner = new Scanner(file);

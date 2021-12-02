@@ -15,31 +15,38 @@ public class Balloom extends Enemy {
     @Override
     public void update() {
         Cell cell = super.getUnit();
-        if (Move.isEmpty()) {
+        if (Move.empty()) {
             MoveRandom();
         }
-        Cell cmove = Move.get(Move.size() - 1);
-        Point pmove = new Point(cmove);
-
-        int x = 0;
-        int y = 0;
-        if (pmove.x - position.x < 0) x = -1;
-        else if (pmove.x - position.x > 0) x = 1;
-        if (pmove.y - position.y < 0) y = -1;
-        else if (pmove.y - position.y > 0) y = 1;
-        position.x += speed * x;
-        position.y += speed * y;
-        if (position.distance(pmove) == 0) {
-            if (cmove.equals(cell.Above())) {
-                MoveHistory.add('U');
-            } else if (cmove.equals(cell.Bellow())) {
-                MoveHistory.add('D');
-            } else if (cmove.equals(cell.Left())) {
-                MoveHistory.add('L');
-            } else if (cmove.equals(cell.Right())) {
-                MoveHistory.add('R');
+        Point move = new Point(Move.peek());
+        if (position.x < move.x) {
+            if (position.x + speed >= move.x) {
+                position.x = move.x;
+                Move.pop();
+            } else {
+                position.x += speed;
             }
-            Move.remove(Move.size() - 1);
+        } else if (position.x > move.x) {
+            if (position.x - speed <= move.x) {
+                position.x = move.x;
+                Move.pop();
+            } else {
+                position.x -= speed;
+            }
+        } else if (position.y < move.y) {
+            if (position.y + speed >= move.y) {
+                position.y = move.y;
+                Move.pop();
+            } else {
+                position.y += speed;
+            }
+        } else if (position.y > move.y) {
+            if (position.y - speed <= move.y) {
+                position.y = move.y;
+                Move.pop();
+            } else {
+                position.y -= speed;
+            }
         }
     }
 
