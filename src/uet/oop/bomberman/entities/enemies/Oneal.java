@@ -28,8 +28,10 @@ public class Oneal extends Enemy {
         double distance = 200;
         for (Bomber bomber : world.bombers) {
             double x = position.distance(bomber.getPosition());
-            if (x < distance) distance = x;
-            end = bomber.getUnit();
+            if (x < distance) {
+                distance = x;
+                end = bomber.getUnit();
+            }
         }
         if (end.x != -1) {
             visited = new int[BombermanGame.WIDTH][BombermanGame.HEIGHT];

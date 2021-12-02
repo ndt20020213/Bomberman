@@ -38,6 +38,7 @@ public abstract class Enemy extends Entity implements canDestroy {
      */
     public void MoveRandom() {
         Cell cell = super.getUnit();
+        System.out.println(cell.x + " " + cell.y);
         List<Character> random = new ArrayList<>();
         if (entitiesMatrix[cell.Above().x][cell.Above().y] == null) {
             random.add('U');
@@ -69,6 +70,10 @@ public abstract class Enemy extends Entity implements canDestroy {
                     if (random.get(i).equals('L'))
                         random.remove(i);
             }
+        }
+        System.out.println(random.size());
+        for (int i = 0; i < random.size(); i++) {
+            System.out.print(random.get(i) + " ");
         }
         if (random.size() == 0) {
             if (MoveHistory.peek().equals('U')) {
