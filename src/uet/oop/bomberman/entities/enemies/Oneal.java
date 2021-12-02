@@ -7,6 +7,7 @@ import uet.oop.bomberman.structure.Cell;
 import uet.oop.bomberman.structure.Point;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class Oneal extends Enemy {
     public static final double NormalSpeed = 1;
@@ -19,10 +20,29 @@ public class Oneal extends Enemy {
     @Override
     public void update() {
         Cell cell = super.getUnit();
-        if (Move.empty()) {
+
+        double distance = 200;
+        Cell end = null;
+        for (Bomber bomber : world.bombers) {
+            double x = position.distance(bomber.getPosition());
+            if (x < distance) {
+                distance = x;
+                end = bomber.getUnit();
+            }
+        }
+        if (end != null) {
+            Stack<Cell> move = new Stack<>();
+            if (FindTheWay(cell, end, 0, move)) {
+                Move = move;
+            }
+        }
+
+        if (Move.isEmpty()) {
             MoveRandom();
         }
+
         Point move = new Point(Move.peek());
+
         if (position.x < move.x) {
             if (position.x + NormalSpeed >= move.x) {
                 position.x = move.x;
