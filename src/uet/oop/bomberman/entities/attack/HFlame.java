@@ -2,6 +2,7 @@ package uet.oop.bomberman.entities.attack;
 
 import javafx.scene.canvas.GraphicsContext;
 import uet.oop.bomberman.entities.Entity;
+import uet.oop.bomberman.entities.background.Brick;
 import uet.oop.bomberman.entities.background.Wall;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.structure.Cell;
@@ -30,16 +31,10 @@ public class HFlame extends Flame {
         int length = this.length - this.length / Math.abs(this.length);
         ArrayList<Flame> flames = new ArrayList<>();
         Cell unit = getUnit();
-        if (length < 0) flames.add(new HFlame(unit.x - 1, unit.y, length, impactHistory));
-        else if (length > 0) flames.add(new HFlame(unit.x + 1, unit.y, length, impactHistory));
-        for (int i = flames.size() - 1; i >= 0; i--) {
-            Flame flame = flames.get(i);
-            for (Wall wall : world.walls)
-                if (flame.impact(wall)) {
-                    flames.remove(flame);
-                    break;
-                }
-        }
+
+        if (length < 0) flames.add(checkImpact(new HFlame(unit.x - 1, unit.y, length, impactHistory)));
+        else if (length > 0) flames.add(checkImpact(new HFlame(unit.x + 1, unit.y, length, impactHistory)));
+
         for (Flame flame : flames) world.addEntity(flame);
     }
 

@@ -35,7 +35,7 @@ public interface IConnected {
             case "Grass":
                 return new Grass(0, 0).update(data);
             case "Brick":
-                return new Brick(-1, -1);
+                return new Brick(-1, -1).update(data);
 
             case "Bomb":
                 return new Bomb(new Bomber(-1, -1), 0).update(data);
