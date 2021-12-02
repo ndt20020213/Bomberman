@@ -2,12 +2,9 @@ package uet.oop.bomberman.container;
 
 import javafx.scene.canvas.GraphicsContext;
 import uet.oop.bomberman.entities.*;
+import uet.oop.bomberman.entities.background.*;
 import uet.oop.bomberman.entities.attack.Bomb;
 import uet.oop.bomberman.entities.attack.Flame;
-import uet.oop.bomberman.entities.background.Grass;
-import uet.oop.bomberman.entities.background.Portal;
-import uet.oop.bomberman.entities.background.Wall;
-import uet.oop.bomberman.entities.bricks.Brick;
 import uet.oop.bomberman.entities.enemies.Enemy;
 import uet.oop.bomberman.entities.items.Item;
 import uet.oop.bomberman.entities.player.Bomber;
@@ -42,6 +39,7 @@ public class World {
 
     public void render(GraphicsContext gc) {
         for (Entity stillObject : stillObjects) stillObject.render(gc);
+        for (Brick brick : bricks) brick.render(gc);
         for (Entity portal : portals) portal.render(gc);
         for (Entity item : items) item.render(gc);
         for (Entity bomb : bombs) bomb.render(gc);
@@ -68,7 +66,7 @@ public class World {
         }
         if (entity instanceof Brick) {
             ((EntityList<Brick>) bricks).data.add((Brick) entity);
-            ((EntityList<Entity>) stillObjects).data.add(entity);
+            ((EntityList<Entity>) entities).data.add(entity);
             return true;
         }
         if (entity instanceof Bomber) {
@@ -119,7 +117,7 @@ public class World {
         }
         if (entity instanceof Brick) {
             ((EntityList<Brick>) bricks).data.remove((Brick) entity);
-            ((EntityList<Entity>) stillObjects).data.remove(entity);
+            ((EntityList<Entity>) entities).data.remove(entity);
             return true;
         }
         if (entity instanceof Bomber) {

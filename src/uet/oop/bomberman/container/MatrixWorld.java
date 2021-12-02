@@ -4,7 +4,7 @@ import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.attack.Bomb;
 import uet.oop.bomberman.entities.background.Wall;
-import uet.oop.bomberman.entities.bricks.Brick;
+import uet.oop.bomberman.entities.background.Brick;
 import uet.oop.bomberman.structure.Cell;
 
 public class MatrixWorld extends World {

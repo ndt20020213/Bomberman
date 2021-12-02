@@ -35,7 +35,7 @@ public class MenuController implements Initializable {
     public HBox buttonContainer;
 
     @FXML
-    public ListView chatView;
+    public ListView<String> chatView;
 
     @FXML
     public TextField chatInput;

@@ -4,8 +4,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.attack.effects.canDestroy;
+import uet.oop.bomberman.entities.background.Brick;
 import uet.oop.bomberman.entities.background.Wall;
-import uet.oop.bomberman.entities.bricks.Brick;
+import uet.oop.bomberman.entities.enemies.Enemy;
+import uet.oop.bomberman.entities.player.Bomber;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.network.IConnected;
 import uet.oop.bomberman.structure.Cell;
@@ -15,9 +17,13 @@ import java.util.HashSet;
 
 public class Flame extends Entity {
 
+    protected final int circle = (int) 5e8;
+
     protected final long startTime;
     protected int length;
     protected boolean exploded = false;
+
+    protected boolean firstImpact = true;
     protected HashSet<Entity> impactHistory;
 
     public Flame(int xUnit, int yUnit, int length) {
@@ -26,12 +32,6 @@ public class Flame extends Entity {
 
     public Flame(int xUnit, int yUnit, int length, Image img, HashSet<Entity> impactHistory) {
         super(xUnit, yUnit, img);
-        for (Brick brick : world.bricks)
-            if (impact(brick)) {
-                length /= Math.abs(length);
-                brick.destroy();
-                break;
-            }
         this.length = length;
         startTime = world.time;
         this.impactHistory = impactHistory;
@@ -39,15 +39,27 @@ public class Flame extends Entity {
 
     @Override
     public void update() {
-        if (world.time > startTime + 8e8) world.removeEntity(this);
+        if (world.time > startTime + circle) world.removeEntity(this);
         if (world.time > startTime + 1e7 && !exploded) explosive();
-        for (int i = world.entities.size() - 1; i >= 0; i--) {
-            Entity entity = world.entities.get(i);
-            if (entity instanceof canDestroy) {
-                if (impact(entity) && !impactHistory.contains(entity)) {
-                    ((canDestroy) entity).destroy();
-                    impactHistory.add(entity);
+        if (firstImpact) {
+            for (int i = world.entities.size() - 1; i >= 0; i--) {
+                Entity entity = world.entities.get(i);
+                if (entity instanceof canDestroy) {
+                    if (impact(entity) && !impactHistory.contains(entity)) {
+                        ((canDestroy) entity).destroy();
+                        impactHistory.add(entity);
+                    }
                 }
+            }
+            firstImpact = false;
+        } else {
+            for (int i = world.bombers.size() - 1; i >= 0; i--) {
+                Bomber bomber = world.bombers.get(i);
+                if (impact(bomber)) bomber.destroy();
+            }
+            for (int i = world.enemies.size() - 1; i >= 0; i--) {
+                Enemy enemy = world.enemies.get(i);
+                if (impact(enemy)) enemy.destroy();
             }
         }
     }
@@ -56,26 +68,34 @@ public class Flame extends Entity {
         exploded = true;
         ArrayList<Flame> flames = new ArrayList<>();
         Cell unit = getUnit();
-        flames.add(new VFlame(unit.x, unit.y - 1, -length, impactHistory));
-        flames.add(new VFlame(unit.x, unit.y + 1, length, impactHistory));
-        flames.add(new HFlame(unit.x - 1, unit.y, -length, impactHistory));
-        flames.add(new HFlame(unit.x + 1, unit.y, length, impactHistory));
-        for (int i = flames.size() - 1; i >= 0; i--) {
-            Flame flame = flames.get(i);
-            for (Wall wall : world.walls)
-                if (flame.impact(wall)) {
-                    flames.remove(flame);
-                    break;
-                }
+
+        flames.add(checkImpact(new VFlame(unit.x, unit.y - 1, -length, impactHistory)));
+        flames.add(checkImpact(new VFlame(unit.x, unit.y + 1, length, impactHistory)));
+        flames.add(checkImpact(new HFlame(unit.x - 1, unit.y, -length, impactHistory)));
+        flames.add(checkImpact(new HFlame(unit.x + 1, unit.y, length, impactHistory)));
+
+        for (Flame flame : flames)
+            if (flame != null) world.addEntity(flame);
+    }
+
+    protected Flame checkImpact(Flame flame) {
+        for (Wall wall : world.walls)
+            if (flame.impact(wall)) return null;
+        for (int j = world.bricks.size() - 1; j >= 0; j--) {
+            Brick brick = world.bricks.get(j);
+            if (flame.impact(brick)) {
+                flame.length /= Math.abs(flame.length);
+                return flame;
+            }
         }
-        for (Flame flame : flames) world.addEntity(flame);
+        return flame;
     }
 
     @Override
     public void render(GraphicsContext gc) {
-        super.render(gc);
         int dentaTime = (int) (world.time - startTime);
-        img = Sprite.movingSprite(Sprite.bomb_exploded, Sprite.bomb_exploded1, Sprite.bomb_exploded2, dentaTime, (int) 8e8).getFxImage();
+        img = Sprite.movingSprite(Sprite.bomb_exploded, Sprite.bomb_exploded1, Sprite.bomb_exploded2, dentaTime, circle).getFxImage();
+        super.render(gc);
     }
 
     @Override

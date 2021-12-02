@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class Client extends Connection {
 
@@ -18,52 +19,32 @@ public class Client extends Connection {
 
     private final HashMap<Integer, IConnected> connectedEntities = new HashMap<>();
 
+    private final LinkedList<String> commands = new LinkedList<>();
+
     public Client(String host, World world, String name) throws IOException {
         super(world, name);
         client = new Socket(host, "BaTe".hashCode() % 5000 + 1000);
         out = new PrintWriter(client.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(client.getInputStream()));
         listen();
-        out.print("Start#" + name + "\r\n");
-        out.flush();
+        sendLine("Start#" + name);
     }
 
     private void listen() {
         new Thread(() -> {
-            String line;
-            while (!client.isClosed()) {
+            while (!client.isClosed() && client.isConnected()) {
                 try {
-                    line = in.readLine();
-                } catch (Exception e) {
-                    continue;
-                }
-                String[] command = line.split("#");
-                if (command.length <= 0) continue;
-                switch (command[0]) {
-                    case "Start":
-                    case "End":
-                        world.entities.clear();
-                        world.stillObjects.clear();
-                        break;
-                    case "Chat":
-                        receiveMessage.accept(command[1]);
-                        break;
-                    case "Add":
-                        Entity entity = (Entity) IConnected.getConnectedEntity(command[2], command[3]);
-                        if (entity == null) break;
-                        entity.setKey(Integer.parseInt(command[1]));
-                        world.addEntity(entity);
-                        connectedEntities.put(entity.getKey(), entity);
-                        break;
-                    case "Update":
-                        connectedEntities.get(Integer.parseInt(command[1])).update(command[2]);
-                        break;
-                    case "Delete":
-                        world.removeEntity((Entity) connectedEntities.remove(Integer.parseInt(command[1])));
-                        break;
+                    String line = in.readLine();
+                    commands.add(line);
+                } catch (Exception ignored) {
                 }
             }
         }).start();
+    }
+
+    private void sendLine(String command) {
+        out.println(command);
+        out.flush();
     }
 
     private String status = "";
@@ -81,31 +62,74 @@ public class Client extends Connection {
             case "D":
             case "Right":
                 status = key;
-                out.print("Move#" + key + "\r\n");
-                out.flush();
+                sendLine("Move#" + key);
                 return;
             case "Space":
-                out.print("Move#Space\r\n");
-                out.flush();
+                sendLine("Move#Space");
         }
     }
 
     @Override
     public void onKeyReleased(String key) {
         if (status.equals(key)) {
-            out.print("Move#" + "\r\n");
-            out.flush();
+            status = "";
+            sendLine("Move#");
         }
     }
 
     @Override
     public void sendMessage(String message) {
-        out.print("Chat#" + message + "\r\n");
-        out.flush();
+        sendLine("Chat#" + message);
+    }
+
+    @Override
+    public void update() {
+        while (commands.size() > 0) {
+            try {
+                String command = commands.poll();
+                if (command == null) continue;
+                String[] data = command.split("#");
+                if (data.length <= 0) continue;
+                switch (data[0]) {
+                    case "Start":
+                    case "End":
+                        world.entities.clear();
+                        world.stillObjects.clear();
+                        break;
+                    case "Chat":
+                        receiveMessage.accept(data[1]);
+                        break;
+                    case "Add":
+                        Entity entity = (Entity) IConnected.getConnectedEntity(data[2], data[3]);
+                        if (entity == null) break;
+                        entity.setKey(Integer.parseInt(data[1]));
+                        world.addEntity(entity);
+                        connectedEntities.put(entity.getKey(), entity);
+                        break;
+                    case "Update":
+                        connectedEntities.get(Integer.parseInt(data[1])).update(data[2]);
+                        break;
+                    case "Remove":
+                        world.removeEntity((Entity) connectedEntities.remove(Integer.parseInt(data[1])));
+                        break;
+                    case "Close":
+                        out.close();
+                        in.close();
+                        client.close();
+                        System.exit(0);
+                }
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     @Override
     public void close() throws IOException {
-        client.close();
+        if (!client.isClosed()) {
+            sendLine("Close#");
+            out.close();
+            in.close();
+            client.close();
+        }
     }
 }

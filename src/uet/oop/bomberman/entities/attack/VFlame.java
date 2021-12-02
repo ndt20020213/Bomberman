@@ -2,6 +2,7 @@ package uet.oop.bomberman.entities.attack;
 
 import javafx.scene.canvas.GraphicsContext;
 import uet.oop.bomberman.entities.Entity;
+import uet.oop.bomberman.entities.background.Brick;
 import uet.oop.bomberman.entities.background.Wall;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.structure.Cell;
@@ -30,17 +31,12 @@ public class VFlame extends Flame {
         int length = this.length - this.length / Math.abs(this.length);
         ArrayList<Flame> flames = new ArrayList<>();
         Cell unit = getUnit();
-        if (length < 0) flames.add(new VFlame(unit.x, unit.y - 1, length, impactHistory));
-        else if (length > 0) flames.add(new VFlame(unit.x, unit.y + 1, length, impactHistory));
-        for (int i = flames.size() - 1; i >= 0; i--) {
-            Flame flame = flames.get(i);
-            for (Wall wall : world.walls)
-                if (flame.impact(wall)) {
-                    flames.remove(flame);
-                    break;
-                }
-        }
-        for (Flame flame : flames) world.addEntity(flame);
+
+        if (length < 0) flames.add(checkImpact(new VFlame(unit.x, unit.y - 1, length, impactHistory)));
+        else if (length > 0) flames.add(checkImpact(new VFlame(unit.x, unit.y + 1, length, impactHistory)));
+
+        for (Flame flame : flames)
+            if (flame != null) world.addEntity(flame);
     }
 
     @Override
@@ -51,19 +47,19 @@ public class VFlame extends Flame {
             img = Sprite.movingSprite(Sprite.explosion_vertical,
                     Sprite.explosion_vertical1,
                     Sprite.explosion_vertical2,
-                    dentaTime, (int) 8e8
+                    dentaTime, circle
             ).getFxImage();
         } else if (length == -1) {
             img = Sprite.movingSprite(Sprite.explosion_vertical_top_last,
                     Sprite.explosion_vertical_top_last1,
                     Sprite.explosion_vertical_top_last2,
-                    dentaTime, (int) 8e8
+                    dentaTime, circle
             ).getFxImage();
         } else if (length == 1) {
             img = Sprite.movingSprite(Sprite.explosion_vertical_down_last,
                     Sprite.explosion_vertical_down_last1,
                     Sprite.explosion_vertical_down_last2,
-                    dentaTime, (int) 8e8
+                    dentaTime, circle
             ).getFxImage();
         }
     }

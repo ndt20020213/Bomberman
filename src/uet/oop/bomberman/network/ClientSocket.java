@@ -1,5 +1,6 @@
 package uet.oop.bomberman.network;
 
+import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.player.Bomber;
 
 import java.io.BufferedReader;
@@ -48,12 +49,12 @@ class ClientSocket {
                     switch (command[0]) {
                         case "Start":
                             if (command.length >= 2) name = command[1];
-                            server.receiveMessage.accept(name + " joined server!");
+                            server.messageHistory.add(name + " Tham gia Server!");
                             for (ClientSocket clientSocket : clientSockets)
-                                if (clientSocket != this) clientSocket.SendLine("Chat#" + name + " joined server!");
+                                if (clientSocket != this) clientSocket.SendLine("Chat#" + name + " Tham gia Server!");
                             break;
                         case "Chat":
-                            server.receiveMessage.accept(command[1]);
+                            server.messageHistory.add(command[1]);
                             for (ClientSocket clientSocket : clientSockets)
                                 if (clientSocket != this) clientSocket.SendLine(line);
                             break;
@@ -62,6 +63,15 @@ class ClientSocket {
                             else if (command.length < 2) bomber.keyReleased(null);
                             else bomber.keyPressed(command[1]);
                             break;
+                        case "Close":
+                            clientSockets.remove(this);
+                            BombermanGame.world.removeEntity(bomber);
+                            server.messageHistory.add(name + " đã thoát!");
+                            for (ClientSocket clientSocket : clientSockets)
+                                if (clientSocket != this) clientSocket.SendLine("Chat#" + name + " đã thoát!");
+                            out.close();
+                            in.close();
+                            socket.close();
                     }
                 } catch (Exception ignored) {
                 }
@@ -75,6 +85,11 @@ class ClientSocket {
     }
 
     public void close() throws IOException {
-        socket.close();
+        if (!socket.isClosed()) {
+            SendLine("Close#");
+            out.close();
+            in.close();
+            socket.close();
+        }
     }
 }

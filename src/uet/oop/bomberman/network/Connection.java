@@ -15,6 +15,8 @@ public abstract class Connection {
         this.name = name;
     }
 
+    public abstract void update();
+
     public abstract void onKeyPressed(String key);
 
     public abstract void onKeyReleased(String key);

@@ -1,21 +1,25 @@
 package uet.oop.bomberman.network;
 
 import uet.oop.bomberman.container.World;
-import uet.oop.bomberman.entities.player.Bomber;
 import uet.oop.bomberman.entities.Entity;
-import uet.oop.bomberman.entities.bricks.RedBrick;
+import uet.oop.bomberman.entities.player.Bomber;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class Server extends Connection {
     private final ServerSocket server;
     private final ArrayList<ClientSocket> clientSockets = new ArrayList<>();
-    int maxKey = 0;
+    private int maxKey = 0;
 
-    HashMap<Integer, String> statusHistory = new HashMap<>();
+    // Lịch sử trạng thái các Entity
+    private final HashMap<Integer, String> statusHistory = new HashMap<>();
+
+    // Bộ đệm lưu message
+    public final LinkedList<String> messageHistory = new LinkedList<>();
 
     public Server(World world, String name) throws IOException {
         super(world, name);
@@ -25,9 +29,11 @@ public class Server extends Connection {
         world.removeAction = this::removeEntity;
     }
 
-    public boolean started = false;
+    // Lắng nghe kết nối client
+    public boolean started = true;
 
     public void listen() {
+        if (!started) return;
         started = false;
         new Thread(() -> {
             while (!started && !server.isClosed()) {
@@ -41,6 +47,7 @@ public class Server extends Connection {
         }).start();
     }
 
+    // Bomber đại diện
     private Bomber bomber;
     public void addBombers() {
         bomber = new Bomber(1,1);
@@ -68,7 +75,14 @@ public class Server extends Connection {
         clientSockets.forEach(client -> client.SendLine("Chat#" + message));
     }
 
+    @Override
     public void update() {
+        // Đọc tin nhắn
+        while (messageHistory.size() > 0) {
+            String message = messageHistory.poll();
+            if (message != null) receiveMessage.accept(message);
+        }
+        // Gửi trạng thái world từ server tới client
         StringBuilder states = new StringBuilder();
         for (Entity entity : world.entities) {
             String temp = "Update#" + entity.getKey() + "#" + entity + "\n";
@@ -81,29 +95,23 @@ public class Server extends Connection {
                 states.append(temp);
             }
         }
-        for (Entity entity : world.bricks)
-            if (entity instanceof RedBrick) {
-                String temp = "Update#" + entity.getKey() + "#" + entity + "\n";
-                String oldStatus = statusHistory.get(entity.getKey());
-                if (oldStatus == null) {
-                    statusHistory.put(entity.getKey(), temp);
-                    states.append(temp);
-                } else if (!temp.equals(oldStatus)) {
-                    statusHistory.put(entity.getKey(), temp);
-                    states.append(temp);
-                }
-            }
-        for (ClientSocket clientSocket : clientSockets) clientSocket.SendLine(states.toString());
+        String command = states.toString();
+        if (command.length() > 0)
+            for (ClientSocket clientSocket : clientSockets)
+                clientSocket.SendLine(command);
     }
 
+    // Gửi yêu cầu thêm Entity đến client
     private boolean addEntity(Entity entity) {
         entity.setKey(maxKey);
         String data = entity.toString();
-        clientSockets.forEach(client -> client.SendLine("Add#" + maxKey + "#" + entity.getClass().getSimpleName() + "#" + data));
+        String command = "Add#" + maxKey + "#" + entity.getClass().getSimpleName() + "#" + data;
+        clientSockets.forEach(client -> client.SendLine(command));
         maxKey++;
         return true;
     }
 
+    // Gửi yêu cầu xóa Entity đến client
     private boolean removeEntity(Entity entity) {
         clientSockets.forEach(client -> client.SendLine("Remove#" + entity.getKey()));
         return true;

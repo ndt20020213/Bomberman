@@ -12,20 +12,11 @@ import javafx.stage.Stage;
 import uet.oop.bomberman.container.MatrixWorld;
 import uet.oop.bomberman.container.World;
 import uet.oop.bomberman.display.MenuController;
-import uet.oop.bomberman.entities.background.Grass;
-import uet.oop.bomberman.entities.background.Portal;
-import uet.oop.bomberman.entities.background.Wall;
-import uet.oop.bomberman.entities.bricks.RedBrick;
-import uet.oop.bomberman.entities.bricks.WhiteBrick;
-import uet.oop.bomberman.entities.enemies.Balloom;
-import uet.oop.bomberman.entities.enemies.Oneal;
-import uet.oop.bomberman.entities.items.BombItem;
-import uet.oop.bomberman.entities.items.FlameItem;
-import uet.oop.bomberman.entities.items.SpeedItem;
+import uet.oop.bomberman.entities.background.*;
+import uet.oop.bomberman.entities.enemies.*;
+import uet.oop.bomberman.entities.items.*;
 import uet.oop.bomberman.graphics.Sprite;
-import uet.oop.bomberman.network.Client;
-import uet.oop.bomberman.network.Connection;
-import uet.oop.bomberman.network.Server;
+import uet.oop.bomberman.network.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -80,10 +71,9 @@ public class BombermanGame extends Application {
             public void handle(long l) {
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
                 world.render(gc);
-                if (connection instanceof Server) {
-                    world.update(l);
-                    ((Server) connection).update();
-                }
+                if (connection instanceof Server) world.update(l);
+                if (connection instanceof Client) world.time = l;
+                if (connection != null) connection.update();
             }
         };
         timer.start();
@@ -131,10 +121,10 @@ public class BombermanGame extends Application {
                 else world.addEntity(new Grass(j, i));
                 switch (c) {
                     case '*':
-                        world.addEntity(new WhiteBrick(j, i));
+                        world.addEntity(new Brick(j, i));
                         break;
                     case 'x':
-                        world.addEntity(new RedBrick(j, i, new Portal(j, i)));
+                        world.addEntity(new Brick(j, i, new Portal(j, i)));
                         break;
                     //Enemies
                     case '1':
@@ -145,13 +135,13 @@ public class BombermanGame extends Application {
                         break;
                     //Items.
                     case 'b':
-                        world.addEntity(new RedBrick(j, i, new BombItem(j, i)));
+                        world.addEntity(new Brick(j, i, new BombItem(j, i)));
                         break;
                     case 'f':
-                        world.addEntity(new RedBrick(j, i, new FlameItem(j, i)));
+                        world.addEntity(new Brick(j, i, new FlameItem(j, i)));
                         break;
                     case 's':
-                        world.addEntity(new RedBrick(j, i, new SpeedItem(j, i)));
+                        world.addEntity(new Brick(j, i, new SpeedItem(j, i)));
                         break;
                 }
             }
@@ -172,12 +162,10 @@ public class BombermanGame extends Application {
         // Move event
         scene.setOnKeyPressed(x -> {
             String key = x.getCode().getName();
-            if (key.equals("Enter"))
-                menuController.chatInput.setDisable(!menuController.chatInput.isDisable());
-            else {
+            if (key.equals("Enter")) menuController.chatInput.setDisable(!menuController.chatInput.isDisable());
+            else connection.onKeyPressed(key);
+            if (key.equals("Up") || key.equals("Down") || key.equals("Left") || key.equals("Right"))
                 menuController.chatInput.setDisable(true);
-                connection.onKeyPressed(key);
-            }
         });
         scene.setOnKeyReleased(x -> connection.onKeyReleased(x.getCode().getName()));
     }
@@ -187,8 +175,7 @@ public class BombermanGame extends Application {
             connection = new Server(world, name);
             createConnection();
             return true;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             connection = null;
             return false;
         }
@@ -199,8 +186,7 @@ public class BombermanGame extends Application {
             connection = new Client(host, world, name);
             createConnection();
             return true;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             connection = null;
             return false;
         }
