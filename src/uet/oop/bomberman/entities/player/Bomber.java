@@ -1,7 +1,9 @@
 package uet.oop.bomberman.entities.player;
 
 import javafx.scene.canvas.GraphicsContext;
+import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.Entity;
+import uet.oop.bomberman.graphics.Sound;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.entities.attack.Bomb;
 import uet.oop.bomberman.entities.attack.effects.canDestroy;
@@ -33,11 +35,20 @@ public class Bomber extends Entity implements canDestroy,
     private long oldTime = 0;
     private char status = ' ';
 
+    public boolean isMove = false;
+
+    public Sound sound = Sound.getInstance();
+
+
     @Override
     public void update() {
-        long time = world.time;
+        long time = world.time; //tg hiện tại
         Point oldPosition = new Point(position.x, position.y);
         Rect oldRect = getRect();
+
+        // tg hiện tại >= tg lần trước gần nhất gọi âm thanh + độ dài âm thanh thì mới gọi tiếp
+
+
         switch (status) {
             case 'W':
                 position.y -= speed * (time - oldTime) / 1e9;
@@ -53,6 +64,7 @@ public class Bomber extends Entity implements canDestroy,
                 break;
         }
         oldTime = time;
+
         Rect newRect = getRect();
         if (!newRect.equals(oldRect)) {
             if (!checkWallPass(oldRect, newRect)) position = oldPosition;
@@ -80,6 +92,7 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     public void keyPressed(String key) {
+        sound.setFile(0);
         switch (key) {
             case "W":
             case "Up":
@@ -103,6 +116,8 @@ public class Bomber extends Entity implements canDestroy,
                 break;
             case "Space":
                 putBomb();
+                sound.setFile(3);
+                sound.play();
                 break;
         }
     }
@@ -116,18 +131,22 @@ public class Bomber extends Entity implements canDestroy,
             case "W":
             case "Up":
                 key = "W";
+                isMove = false;
                 break;
             case "S":
             case "Down":
                 key = "S";
+                isMove = false;
                 break;
             case "A":
             case "Left":
                 key = "A";
+                isMove = false;
                 break;
             case "D":
             case "Right":
                 key = "D";
+                isMove = false;
                 break;
         }
         if (status == key.charAt(0)) status = ' ';

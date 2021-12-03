@@ -41,6 +41,7 @@ public class BombermanGame extends Application {
 
     private int level = 1;
 
+    public static boolean isMove = true;
 
     public static void main(String[] args) {
         Application.launch(BombermanGame.class);
@@ -98,7 +99,7 @@ public class BombermanGame extends Application {
     }
 
     public void createMap() {
-        File file = new File("res/levels/Level" + level + ".txt");
+        File file = new File("D:\\btl\\Bomberman\\res\\levels\\Level" + level + ".txt");
         //File file = new File("res/levels/test.txt");
         Scanner scanner;
         try {
