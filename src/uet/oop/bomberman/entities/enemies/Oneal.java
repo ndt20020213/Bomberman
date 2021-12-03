@@ -20,32 +20,9 @@ public class Oneal extends Enemy {
 
     @Override
     public void update() {
-        Cell cell = super.getUnit();
-
-        double distance = 100;
-        Cell end = null;
-        for (Bomber bomber : world.bombers) {
-            double x = position.distance(bomber.getPosition());
-            if (x < distance) {
-                distance = x;
-                end = bomber.getUnit();
-                System.out.println("tìm đường");
-            }
-        }
-        if (end != null) {
-            System.out.println("Đang tìm");
-            List<Cell> move = new ArrayList<>();
-            if (FindTheWay(cell, end, move)) {
-                Move.clear();
-                for (int i = move.size() - 1; i >=0; i--) {
-                    Move.add(move.get(i));
-                }
-                System.out.println(Move.size());
-            }
-        }
 
         if (Move.isEmpty()) {
-            MoveRandom();
+            getMove();
         }
 
         Point move = new Point(Move.peek());
@@ -78,6 +55,34 @@ public class Oneal extends Enemy {
             } else {
                 position.y -= NormalSpeed;
             }
+        } else {
+            Move.pop();
+        }
+    }
+
+    private void getMove() {
+        Cell cell = super.getUnit();
+
+        double distance = 200;
+        Cell end = null;
+        for (Bomber bomber : world.bombers) {
+            double x = position.distance(bomber.getPosition());
+            if (x < distance) {
+                distance = x;
+                end = bomber.getUnit();
+            }
+        }
+        if (end != null) {
+            Stack<Cell> move = new Stack<>();
+            if (FindTheWay(cell, end, move)) {
+                Move = move;
+                System.out.println("Successfully!");
+            }
+            //System.out.println(Move.size());
+        }
+
+        if (Move.isEmpty()) {
+            MoveRandom();
         }
     }
 

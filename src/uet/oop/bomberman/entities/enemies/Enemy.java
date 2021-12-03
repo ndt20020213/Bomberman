@@ -18,7 +18,7 @@ public abstract class Enemy extends Entity implements canDestroy {
 
     /* MoveHistory sử dụng kí hiệu 'U' là di chuyển lên,
      'D' là xuống, 'R' là sang phải, 'L' là sang trái. */
-    protected Stack<Cell> MoveHistory = new Stack<>();
+    protected Cell MoveHistory = new Cell(0,0);
 
     /* Lưu các bước sẽ đi */
     protected Stack<Cell> Move = new Stack<>();
@@ -34,32 +34,22 @@ public abstract class Enemy extends Entity implements canDestroy {
      * Tạo bước di chuyển ngẫu nhiên.
      */
     public void MoveRandom() {
+
         Cell cell = super.getUnit();
         List<Cell> random = new ArrayList<>();
-        if (MoveHistory.isEmpty()) {
-            MoveHistory.add(cell.Above());
-        }
-        if (entitiesMatrix[cell.Above().x][cell.Above().y] == null && !MoveHistory.peek().equals(cell.Above())) {
-            random.add(cell.Above());
-        }
-        if (entitiesMatrix[cell.Bellow().x][cell.Bellow().y] == null && !MoveHistory.peek().equals(cell.Bellow())) {
-            random.add(cell.Bellow());
-        }
-        if (entitiesMatrix[cell.Left().x][cell.Left().y] == null && !MoveHistory.peek().equals(cell.Left())) {
-            random.add(cell.Left());
-        }
-        if (entitiesMatrix[cell.Right().x][cell.Right().y] == null && !MoveHistory.peek().equals(cell.Right())) {
-            random.add(cell.Right());
-        }
+        random.add(cell.Above());
+        random.add(cell.Bellow());
+        random.add(cell.Left());
+        random.add(cell.Right());
+        random.removeIf(element -> entitiesMatrix[element.x][element.y] != null || element.equals(MoveHistory));
+
         if (random.size() == 0) {
-            Move.add(MoveHistory.peek());
-        } else if (random.size() == 1) {
-            Move.add(random.get(0));
+            Move.add(MoveHistory);
         } else {
             Random rand = new Random();
             Move.add(random.get(rand.nextInt(random.size())));
         }
-        MoveHistory.push(cell);
+        MoveHistory = cell;
     }
 
     public boolean FindTheWay(Cell start,Cell end, List<Cell> move) {
