@@ -7,10 +7,11 @@ import uet.oop.bomberman.structure.Cell;
 import uet.oop.bomberman.structure.Point;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class Oneal extends Enemy {
-    public static final double NormalSpeed = 1;
+    public static final double NormalSpeed = 0.3;
     public static final double HighSpeed = 1.5;
 
     public Oneal(int xUnit, int yUnit) {
@@ -21,19 +22,25 @@ public class Oneal extends Enemy {
     public void update() {
         Cell cell = super.getUnit();
 
-        double distance = 200;
+        double distance = 100;
         Cell end = null;
         for (Bomber bomber : world.bombers) {
             double x = position.distance(bomber.getPosition());
             if (x < distance) {
                 distance = x;
                 end = bomber.getUnit();
+                System.out.println("tìm đường");
             }
         }
         if (end != null) {
-            Stack<Cell> move = new Stack<>();
-            if (FindTheWay(cell, end, 0, move)) {
-                Move = move;
+            System.out.println("Đang tìm");
+            List<Cell> move = new ArrayList<>();
+            if (FindTheWay(cell, end, move)) {
+                Move.clear();
+                for (int i = move.size() - 1; i >=0; i--) {
+                    Move.add(move.get(i));
+                }
+                System.out.println(Move.size());
             }
         }
 

@@ -36,7 +36,7 @@ public abstract class Enemy extends Entity implements canDestroy {
     public void MoveRandom() {
         Cell cell = super.getUnit();
         List<Cell> random = new ArrayList<>();
-        if (MoveHistory.empty()) {
+        if (MoveHistory.isEmpty()) {
             MoveHistory.add(cell.Above());
         }
         if (entitiesMatrix[cell.Above().x][cell.Above().y] == null && !MoveHistory.peek().equals(cell.Above())) {
@@ -62,39 +62,39 @@ public abstract class Enemy extends Entity implements canDestroy {
         MoveHistory.push(cell);
     }
 
-    public boolean FindTheWay(Cell start,Cell end, int x, Stack<Cell> move) {
-        if (start.x == end.x && start.y == end.y) {
+    public boolean FindTheWay(Cell start,Cell end, List<Cell> move) {
+        if (start.equals(end)) {
             return true;
         }
-        if (move.search(start) != -1) {
+        if (move.contains(start)) {
             return false;
         }
-        if (x == 5) {
+        if (move.size() == 5) {
             return false;
         }
         if (start.Above() == null) {
-            move.push(start.Above());
-            if (FindTheWay(start.Above(), end, x + 1, move)) {
+            move.add(start.Above());
+            if (FindTheWay(start.Above(), end, move)) {
                 return true;
-            } else move.pop();
+            } else move.remove(move.size() - 1);
         }
         if (start.Bellow() == null) {
-            move.push(start.Bellow());
-            if (FindTheWay(start.Bellow(), end, x + 1, move)) {
+            move.add(start.Bellow());
+            if (FindTheWay(start.Bellow(), end, move)) {
                 return true;
-            } else move.pop();
+            } else move.remove(move.size() - 1);
         }
         if (start.Left() == null) {
-            move.push(start.Left());
-            if (FindTheWay(start.Left(), end, x + 1, move)) {
+            move.add(start.Left());
+            if (FindTheWay(start.Left(), end, move)) {
                 return true;
-            } else move.pop();
+            } else move.remove(move.size() - 1);
         }
         if (start.Right() == null) {
-            move.push(start.Right());
-            if (FindTheWay(start.Right(), end, x + 1, move)) {
+            move.add(start.Right());
+            if (FindTheWay(start.Right(), end, move)) {
                 return true;
-            } else move.pop();
+            } else move.remove(move.size() - 1);
         }
         return false;
     }
