@@ -8,10 +8,7 @@ import uet.oop.bomberman.entities.attack.effects.canDestroy;
 import uet.oop.bomberman.structure.Cell;
 import uet.oop.bomberman.structure.Point;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Stack;
+import java.util.*;
 
 public abstract class Enemy extends Entity implements canDestroy {
     protected int hp;
@@ -21,7 +18,7 @@ public abstract class Enemy extends Entity implements canDestroy {
     protected Cell MoveHistory = new Cell(0,0);
 
     /* Lưu các bước sẽ đi */
-    protected Stack<Cell> Move = new Stack<>();
+    protected Queue<Cell> Move = new LinkedList<>();
 
     protected Entity[][] entitiesMatrix = null;
 
