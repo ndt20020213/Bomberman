@@ -76,14 +76,14 @@ public abstract class Enemy extends Entity implements canDestroy {
             } else move.remove(move.size() - 1);
         }
 
-        if (entitiesMatrix[start.Left().x][start.Left().y] == null && move.contains(start.Left())) {
+        if (entitiesMatrix[start.Left().x][start.Left().y] == null && !move.contains(start.Left())) {
             move.add(start.Left());
             if (FindTheWay(start.Left(), end, move)) {
                 return true;
             } else move.remove(move.size() - 1);
         }
 
-        if (entitiesMatrix[start.Right().x][start.Right().y] == null && move.contains(start.Right())) {
+        if (entitiesMatrix[start.Right().x][start.Right().y] == null && !move.contains(start.Right())) {
             move.add(start.Right());
             if (FindTheWay(start.Right(), end, move)) {
                 return true;
