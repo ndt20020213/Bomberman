@@ -90,16 +90,15 @@ public class Oneal extends Enemy {
                     Move.clear();
                     Move.addAll(move);
                     System.out.println("Successfully!");
-                }  else {
-                MoveEnd = null;
-                status = 0;
+                    return;
                 }
             }
-            //System.out.println(Move.size());
-        } else {
-            MoveEnd = null;
-            status = 0;
         }
+
+        MoveEnd = null;
+
+        status = 0;
+
 
         if (Move.isEmpty()) {
             MoveRandom();
