@@ -31,7 +31,6 @@ public class Bomber extends Entity implements canDestroy,
     private String status = "Stand";    // Stand Move Dead
     private char direction = 'D';       // W D S A
 
-    private final int circle = 800;     // Đơn vị: ms
     private final int deadCircle = (int) 8e8;   // Đơn vị: ns
 
     @Override
@@ -69,6 +68,7 @@ public class Bomber extends Entity implements canDestroy,
     public void render(GraphicsContext gc) {
         int time = (int) (world.time / 1e6);
         if (status.equals("Move")) {
+            final int circle = 1500 * Sprite.SCALED_SIZE / speed;     // Đơn vị: ms
             switch (direction) {
                 case 'W':
                     img = Sprite.movingSprite(Sprite.player_up_1, Sprite.player_up_2, time, circle).getFxImage();
@@ -228,7 +228,7 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     //SpeedProperty
-    private int speed = 100;
+    private int speed = 96;    // Đơn vị pixel/s:  96pixel/s = 3cell/s
 
     @Override
     public boolean addSpeed(int speed) {
