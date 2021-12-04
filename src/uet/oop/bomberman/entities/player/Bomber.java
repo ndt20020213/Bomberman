@@ -35,7 +35,7 @@ public class Bomber extends Entity implements canDestroy,
     private long oldTime = 0;
     private char status = ' ';
 
-    public boolean isMove = false;
+    public boolean playing = false;
 
     public Sound sound = Sound.getInstance();
 
@@ -52,15 +52,31 @@ public class Bomber extends Entity implements canDestroy,
         switch (status) {
             case 'W':
                 position.y -= speed * (time - oldTime) / 1e9;
+                if (playing && time > oldTime + 1e8/5) {
+                    sound.setFile(0);
+                    sound.play();
+                }
                 break;
             case 'S':
                 position.y += speed * (time - oldTime) / 1e9;
+                if (playing && time > oldTime + 1e8/5) {
+                    sound.setFile(0);
+                    sound.play();
+                }
                 break;
             case 'A':
                 position.x -= speed * (time - oldTime) / 1e9;
+                if (playing && time > oldTime + 1e8/5) {
+                    sound.setFile(0);
+                    sound.play();
+                }
                 break;
             case 'D':
                 position.x += speed * (time - oldTime) / 1e9;
+                if (playing && time > oldTime + 1e8/5) {
+                    sound.setFile(0);
+                    sound.play();
+                }
                 break;
         }
         oldTime = time;
@@ -92,27 +108,30 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     public void keyPressed(String key) {
-        sound.setFile(0);
         switch (key) {
             case "W":
             case "Up":
                 status = 'W';
                 img = Sprite.player_up.getFxImage();
+                playing = true;
                 break;
             case "S":
             case "Down":
                 status = 'S';
                 img = Sprite.player_down.getFxImage();
+                playing = true;
                 break;
             case "A":
             case "Left":
                 status = 'A';
                 img = Sprite.player_left.getFxImage();
+                playing = true;
                 break;
             case "D":
             case "Right":
                 status = 'D';
                 img = Sprite.player_right.getFxImage();
+                playing = true;
                 break;
             case "Space":
                 putBomb();
@@ -131,22 +150,22 @@ public class Bomber extends Entity implements canDestroy,
             case "W":
             case "Up":
                 key = "W";
-                isMove = false;
+                playing = false;
                 break;
             case "S":
             case "Down":
                 key = "S";
-                isMove = false;
+                playing = false;
                 break;
             case "A":
             case "Left":
                 key = "A";
-                isMove = false;
+                playing = false;
                 break;
             case "D":
             case "Right":
                 key = "D";
-                isMove = false;
+                playing = false;
                 break;
         }
         if (status == key.charAt(0)) status = ' ';

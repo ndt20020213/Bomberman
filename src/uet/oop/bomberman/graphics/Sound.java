@@ -60,9 +60,14 @@ public class Sound {
     }
     
 
-    public Clip getClip() {
-        return clip;
+    public void close() {
+        clip.close();
     }
+
+    public void reset() {
+        clip.setMicrosecondPosition(0);
+    }
+
     public void stop() {
         if (clip.isRunning()) {
             clip.stop();
