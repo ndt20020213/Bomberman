@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Oneal extends Enemy {
-    public static final double NormalSpeed = 0.3;
-    public static final double HighSpeed = 0.6;
+    public static final double NormalSpeed = 1;
+    public static final double HighSpeed = 1.5;
 
     private int status = 0;
 
@@ -93,7 +93,7 @@ public class Oneal extends Enemy {
                 }  else {
                 MoveEnd = null;
                 status = 0;
-            }
+                }
             }
             //System.out.println(Move.size());
         } else {
