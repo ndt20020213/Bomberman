@@ -53,39 +53,43 @@ public abstract class Enemy extends Entity implements canDestroy {
     }
 
     public boolean FindTheWay(Cell start,Cell end, List<Cell> move) {
+
         if (start.equals(end)) {
             return true;
         }
-        if (move.contains(start)) {
-            return false;
-        }
+
         if (move.size() == 5) {
             return false;
         }
-        if (entitiesMatrix[start.Above().x][start.Above().y] == null) {
+
+        if (entitiesMatrix[start.Above().x][start.Above().y] == null && !move.contains(start.Above())) {
             move.add(start.Above());
             if (FindTheWay(start.Above(), end, move)) {
                 return true;
             } else move.remove(move.size() - 1);
         }
-        if (entitiesMatrix[start.Bellow().x][start.Bellow().y] == null) {
+
+        if (entitiesMatrix[start.Bellow().x][start.Bellow().y] == null && !move.contains(start.Bellow())) {
             move.add(start.Bellow());
             if (FindTheWay(start.Bellow(), end, move)) {
                 return true;
             } else move.remove(move.size() - 1);
         }
-        if (entitiesMatrix[start.Left().x][start.Left().y] == null) {
+
+        if (entitiesMatrix[start.Left().x][start.Left().y] == null && move.contains(start.Left())) {
             move.add(start.Left());
             if (FindTheWay(start.Left(), end, move)) {
                 return true;
             } else move.remove(move.size() - 1);
         }
-        if (entitiesMatrix[start.Right().x][start.Right().y] == null) {
+
+        if (entitiesMatrix[start.Right().x][start.Right().y] == null && move.contains(start.Right())) {
             move.add(start.Right());
             if (FindTheWay(start.Right(), end, move)) {
                 return true;
             } else move.remove(move.size() - 1);
         }
+
         return false;
     }
 }
