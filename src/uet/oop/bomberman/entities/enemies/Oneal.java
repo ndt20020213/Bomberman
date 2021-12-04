@@ -21,9 +21,7 @@ public class Oneal extends Enemy {
     @Override
     public void update() {
 
-        if (Move.isEmpty()) {
-            getMove();
-        }
+        getMove();
 
         Point move = new Point(Move.peek());
 
@@ -73,9 +71,12 @@ public class Oneal extends Enemy {
             }
         }
         if (end != null) {
-            Stack<Cell> move = new Stack<>();
+            List<Cell> move = new ArrayList<>();
             if (FindTheWay(cell, end, move)) {
-                Move = move;
+                Move.clear();
+                for (int i = move.size() - 1; i >= 0; i--) {
+                    Move.add(move.get(i));
+                }
                 System.out.println("Successfully!");
             }
             //System.out.println(Move.size());
