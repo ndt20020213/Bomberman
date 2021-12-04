@@ -55,11 +55,11 @@ public class Flame extends Entity {
         } else {
             for (int i = world.bombers.size() - 1; i >= 0; i--) {
                 Bomber bomber = world.bombers.get(i);
-                if (impact(bomber)) bomber.destroy();
+                if (impact(bomber) && !impactHistory.contains(bomber)) bomber.destroy();
             }
             for (int i = world.enemies.size() - 1; i >= 0; i--) {
                 Enemy enemy = world.enemies.get(i);
-                if (impact(enemy)) enemy.destroy();
+                if (impact(enemy) && !impactHistory.contains(enemy)) enemy.destroy();
             }
         }
     }
