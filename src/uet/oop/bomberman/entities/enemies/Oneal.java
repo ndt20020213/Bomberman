@@ -32,7 +32,7 @@ public class Oneal extends Enemy {
         } else {
             speed = HighSpeed;
         }
-
+        System.out.println(Move.size());
         Point move = new Point(Move.peek());
 
         if (position.x < move.x) {
@@ -90,11 +90,14 @@ public class Oneal extends Enemy {
                     Move.clear();
                     Move.addAll(move);
                     System.out.println("Successfully!");
-                    System.out.println(MoveEnd.x + " " + MoveEnd.y);
-                }
+                }  else {
+                MoveEnd = null;
+                status = 0;
+            }
             }
             //System.out.println(Move.size());
         } else {
+            MoveEnd = null;
             status = 0;
         }
 
