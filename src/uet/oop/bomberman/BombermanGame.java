@@ -25,10 +25,10 @@ import java.util.Scanner;
 
 public class BombermanGame extends Application {
 
-    public static final int WIDTH = 31;
-    public static final int HEIGHT = 13;
+    public static int WIDTH = 31;
+    public static int HEIGHT = 13;
 
-    public static final World world = new MatrixWorld(WIDTH, HEIGHT);
+    public static final World world = new MatrixWorld();
 
     private MenuController menuController;
 
@@ -74,6 +74,7 @@ public class BombermanGame extends Application {
                 if (connection instanceof Server) world.update(l);
                 if (connection instanceof Client) world.time = l;
                 if (connection != null) connection.update();
+                if (world.bombers.size() == 0 && world.enemies.size() > 0) endGame(false);
             }
         };
         timer.start();
@@ -84,7 +85,7 @@ public class BombermanGame extends Application {
         menuController.createClient = this::createClient;
         menuController.startButton.setOnAction(x -> startGame());
 
-        Portal.endGame = this::endGame;
+        Portal.endGame = () -> endGame(true);
 
         // Show
         stage.setScene(scene);
@@ -98,8 +99,7 @@ public class BombermanGame extends Application {
     }
 
     public void createMap() {
-       // File file = new File("res/levels/Level" + level + ".txt");
-        File file = new File("res/levels/test.txt");
+        File file = new File("res/levels/Level" + level + ".txt");
         Scanner scanner;
         try {
             scanner = new Scanner(file);
@@ -110,41 +110,54 @@ public class BombermanGame extends Application {
             return;
         }
         String info = scanner.nextLine();
-        int L = Integer.getInteger(info.split(" ")[0], 1);
-        int R = Integer.getInteger(info.split(" ")[1], 13);
-        int C = Integer.getInteger(info.split(" ")[2], 31);
-        for (int i = 0; i < R; i++) {
-            String temp = scanner.nextLine();
-            for (int j = 0; j < C; j++) {
-                char c = temp.charAt(j);
-                if (c == '#') world.addEntity(new Wall(j, i));
-                else world.addEntity(new Grass(j, i));
-                switch (c) {
-                    case '*':
-                        world.addEntity(new Brick(j, i));
-                        break;
-                    case 'x':
-                        world.addEntity(new Brick(j, i, new Portal(j, i)));
-                        break;
-                    //Enemies
-                    case '1':
-                        world.addEntity(new Balloom(j, i));
-                        break;
-                    case '2':
-                        world.addEntity(new Oneal(j, i));
-                        break;
-                    //Items.
-                    case 'b':
-                        world.addEntity(new Brick(j, i, new BombItem(j, i)));
-                        break;
-                    case 'f':
-                        world.addEntity(new Brick(j, i, new FlameItem(j, i)));
-                        break;
-                    case 's':
-                        world.addEntity(new Brick(j, i, new SpeedItem(j, i)));
-                        break;
+        int L = Integer.parseInt(info.split(" ")[0]);
+        int R = Integer.parseInt(info.split(" ")[1]);
+        int C = Integer.parseInt(info.split(" ")[2]);
+        try {
+            reSizeMap(C, R);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.exit(-1);
+            return;
+        }
+        try {
+            for (int i = 0; i < R; i++) {
+                String temp = scanner.nextLine();
+                for (int j = 0; j < C; j++) {
+                    char c = temp.charAt(j);
+                    if (c == '#') world.addEntity(new Wall(j, i));
+                    else world.addEntity(new Grass(j, i));
+                    switch (c) {
+                        case '*':
+                            world.addEntity(new Brick(j, i));
+                            break;
+                        case 'x':
+                            world.addEntity(new Brick(j, i, new Portal(j, i)));
+                            break;
+                        //Enemies
+                        case '1':
+                            world.addEntity(new Balloom(j, i));
+                            break;
+                        case '2':
+                            world.addEntity(new Oneal(j, i));
+                            break;
+                        //Items.
+                        case 'b':
+                            world.addEntity(new Brick(j, i, new BombItem(j, i)));
+                            break;
+                        case 'f':
+                            world.addEntity(new Brick(j, i, new FlameItem(j, i)));
+                            break;
+                        case 's':
+                            world.addEntity(new Brick(j, i, new SpeedItem(j, i)));
+                            break;
+                    }
                 }
             }
+            level = L;
+        } catch (Exception e) {
+            System.out.println("Kích cỡ bản đồ không hợp lệ!");
+            System.exit(-1);
         }
     }
 
@@ -185,11 +198,25 @@ public class BombermanGame extends Application {
         try {
             connection = new Client(host, world, name);
             createConnection();
+            ((Client) connection).getMap(((MatrixWorld) world)::reSize);
             return true;
         } catch (IOException e) {
             connection = null;
             return false;
         }
+    }
+
+    private void reSizeMap(int width, int height) throws Exception {
+        if (WIDTH <= 0 || HEIGHT <= 0)
+            throw new Exception("Bản đồ không hợp lệ!");
+        if (!(world instanceof MatrixWorld) || !(connection instanceof Server))
+            throw new Exception("Không thể thay đổi bản đồ!");
+        WIDTH = width;
+        HEIGHT = height;
+        ((MatrixWorld) world).reSize(WIDTH, HEIGHT);
+        ((Server) connection).setMap(WIDTH, HEIGHT);
+        canvas.setWidth(WIDTH * Sprite.SCALED_SIZE);
+        canvas.setHeight(HEIGHT * Sprite.SCALED_SIZE);
     }
 
     private void startGame() {
