@@ -234,7 +234,6 @@ public class BombermanGame extends Application {
         if (!(connection instanceof Server)) return;
         menuController.startButton.setDisable(false);
         Server server = (Server) connection;
-        server.started = false;
         server.listen();
         world.entities.clear();
         world.stillObjects.clear();
