@@ -1,10 +1,10 @@
 package uet.oop.bomberman.entities.enemies;
 
+import javafx.scene.canvas.GraphicsContext;
 import uet.oop.bomberman.entities.player.Bomber;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.structure.Cell;
 import uet.oop.bomberman.structure.Point;
-import uet.oop.bomberman.structure.Rect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,15 @@ public class Oneal extends Enemy {
         } else {
             speed = HighSpeed;
         }
-        if (Move.isEmpty()) getMove();
+        if (Move.isEmpty()) {
+            getMove();
+            if (Move.isEmpty()) return;
+            if (entitiesMatrix[Move.peek().x][Move.peek().y] != null) {
+                Move.clear();
+                getMove();
+            }
+        }
+
         if (Move.isEmpty()) return;
 
         Point move = new Point(Move.peek());
@@ -42,14 +50,15 @@ public class Oneal extends Enemy {
         }
 
         if (position.x < move.x) {
+            direction = "Right";
             if (position.x + speed >= move.x) {
                 position.x = move.x;
                 Move.poll();
-
             } else {
                 position.x += speed;
             }
         } else if (position.x > move.x) {
+            direction = "Left";
             if (position.x - speed <= move.x) {
                 position.x = move.x;
                 Move.poll();
@@ -113,6 +122,21 @@ public class Oneal extends Enemy {
             MoveRandom();
         }
     }
+
+    @Override
+    public void render(GraphicsContext gc) {
+        int time = (int) (world.time / 1e6);
+        final int circle = 1500 * Sprite.SCALED_SIZE / 96;
+        if (direction.equals("Left")) {
+            img = Sprite.movingSprite(Sprite.oneal_left1, Sprite.oneal_left2, Sprite.oneal_left3, time, circle).getFxImage();
+        } else if (direction.equals("Right")) {
+            img = Sprite.movingSprite(Sprite.oneal_right1, Sprite.oneal_right2, Sprite.oneal_right3, time, circle).getFxImage();
+        }
+        gc.drawImage(img, position.x, position.y);
+    }
+
+
+
 
     @Override
     public void destroy() {

@@ -14,6 +14,8 @@ import java.util.*;
 public abstract class Enemy extends Entity implements canDestroy {
     protected int hp;
 
+    protected String direction = "Left";
+
     protected Cell MoveHistory = new Cell(0,0);
 
     /* Lưu các bước sẽ đi */

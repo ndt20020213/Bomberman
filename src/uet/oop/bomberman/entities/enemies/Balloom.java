@@ -24,6 +24,7 @@ public class Balloom extends Enemy {
         }
         Point move = new Point(Move.peek());
         if (position.x < move.x) {
+            direction = "Right";
             if (position.x + speed >= move.x) {
                 position.x = move.x;
                 Move.poll();
@@ -31,6 +32,7 @@ public class Balloom extends Enemy {
                 position.x += speed;
             }
         } else if (position.x > move.x) {
+            direction = "Left";
             if (position.x - speed <= move.x) {
                 position.x = move.x;
                 Move.poll();
@@ -52,6 +54,18 @@ public class Balloom extends Enemy {
                 position.y -= speed;
             }
         }
+    }
+
+    @Override
+    public void render(GraphicsContext gc) {
+        int time = (int) (world.time / 1e6);
+        final int circle = 1500 * Sprite.SCALED_SIZE / 96;
+        if (direction.equals("Left")) {
+            img = Sprite.movingSprite(Sprite.balloom_left1, Sprite.balloom_left2, Sprite.balloom_left3, time, circle).getFxImage();
+        } else if (direction.equals("Right")) {
+            img = Sprite.movingSprite(Sprite.balloom_right1, Sprite.balloom_right2, Sprite.balloom_right3, time, circle).getFxImage();
+        }
+        gc.drawImage(img, position.x, position.y);
     }
 
     @Override
