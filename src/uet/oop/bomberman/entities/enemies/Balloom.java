@@ -18,6 +18,9 @@ public class Balloom extends Enemy {
     public void update() {
 
         if (hp == 0) {
+            if (world.time >= timedead + deadtime) {
+                world.removeEntity(this);
+            }
             direction = "Dead";
             return;
         }
@@ -73,10 +76,16 @@ public class Balloom extends Enemy {
     public void render(GraphicsContext gc) {
         int time = (int) (world.time / 1e6);
         final int circle = 1500 * Sprite.SCALED_SIZE / 96;
-        if (direction.equals("Left")) {
-            img = Sprite.movingSprite(Sprite.balloom_left1, Sprite.balloom_left2, Sprite.balloom_left3, time, circle).getFxImage();
-        } else if (direction.equals("Right")) {
-            img = Sprite.movingSprite(Sprite.balloom_right1, Sprite.balloom_right2, Sprite.balloom_right3, time, circle).getFxImage();
+        switch (direction) {
+            case "Left":
+                img = Sprite.movingSprite(Sprite.balloom_left1, Sprite.balloom_left2, Sprite.balloom_left3, time, circle).getFxImage();
+                break;
+            case "Right":
+                img = Sprite.movingSprite(Sprite.balloom_right1, Sprite.balloom_right2, Sprite.balloom_right3, time, circle).getFxImage();
+                break;
+            case "Dead":
+                img = Sprite.balloom_dead.getFxImage();
+                break;
         }
         gc.drawImage(img, position.x, position.y);
     }
@@ -84,5 +93,8 @@ public class Balloom extends Enemy {
     @Override
     public void destroy() {
         hp--;
+        if (hp == 0) {
+            timedead = world.time;
+        }
     }
 }

@@ -16,6 +16,9 @@ public class Minvo extends Enemy {
     @Override
     public void update() {
         if (hp == 0) {
+            if (world.time >= timedead + deadtime) {
+                world.removeEntity(this);
+            }
             direction = "Dead";
             return;
         }
@@ -80,7 +83,7 @@ public class Minvo extends Enemy {
                 img = Sprite.movingSprite(Sprite.minvo_right1, Sprite.minvo_right2, Sprite.minvo_right3, time, circle).getFxImage();
                 break;
             case "Dead":
-
+                img = Sprite.minvo_dead.getFxImage();
                 break;
         }
         gc.drawImage(img, position.x, position.y);
@@ -89,5 +92,8 @@ public class Minvo extends Enemy {
     @Override
     public void destroy() {
         hp--;
+        if (hp == 0) {
+            timedead = world.time;
+        }
     }
 }

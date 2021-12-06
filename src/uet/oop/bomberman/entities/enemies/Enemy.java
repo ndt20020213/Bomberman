@@ -9,10 +9,15 @@ import uet.oop.bomberman.entities.attack.effects.canDestroy;
 import uet.oop.bomberman.structure.Cell;
 import uet.oop.bomberman.structure.Point;
 
+import java.sql.Time;
 import java.util.*;
 
 public abstract class Enemy extends Entity implements canDestroy {
     protected int hp = 1;
+
+    protected long timedead;
+
+    protected long deadtime = (long) 8e8 ;
 
     protected String direction = "Left";
 
