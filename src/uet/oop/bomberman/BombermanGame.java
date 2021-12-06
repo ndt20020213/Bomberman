@@ -6,17 +6,25 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import uet.oop.bomberman.container.MatrixWorld;
 import uet.oop.bomberman.container.World;
 import uet.oop.bomberman.display.MenuController;
-import uet.oop.bomberman.entities.background.*;
-import uet.oop.bomberman.entities.enemies.*;
+import uet.oop.bomberman.entities.background.Brick;
+import uet.oop.bomberman.entities.background.Grass;
+import uet.oop.bomberman.entities.background.Portal;
+import uet.oop.bomberman.entities.background.Wall;
+import uet.oop.bomberman.entities.enemies.Balloom;
+import uet.oop.bomberman.entities.enemies.Oneal;
 import uet.oop.bomberman.entities.items.*;
 import uet.oop.bomberman.graphics.Sprite;
-import uet.oop.bomberman.network.*;
+import uet.oop.bomberman.network.Client;
+import uet.oop.bomberman.network.Connection;
+import uet.oop.bomberman.network.Server;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,8 +33,8 @@ import java.util.Scanner;
 
 public class BombermanGame extends Application {
 
-    public static int WIDTH = 31;
-    public static int HEIGHT = 13;
+    public static int WIDTH = 0;
+    public static int HEIGHT = 0;
 
     public static final World world = new MatrixWorld();
 
@@ -37,9 +45,11 @@ public class BombermanGame extends Application {
 
     private Scene scene;
 
+    private Stage stage;
+
     private Connection connection;
 
-    private int level = 1;
+    private int level = 0;
 
 
     public static void main(String[] args) {
@@ -89,6 +99,7 @@ public class BombermanGame extends Application {
 
         // Show
         stage.setScene(scene);
+        this.stage = stage;
         stage.show();
     }
 
@@ -151,6 +162,18 @@ public class BombermanGame extends Application {
                         case 's':
                             world.addEntity(new Brick(j, i, new SpeedItem(j, i)));
                             break;
+                        case 'h':
+                            world.addEntity(new Brick(j, i, new HealthItem(j, i)));
+                            break;
+                        case 'W':
+                            world.addEntity(new Brick(j, i, new WallPassItem(j, i)));
+                            break;
+                        case 'B':
+                            world.addEntity(new Brick(j, i, new BombPassItem(j, i)));
+                            break;
+                        case 'F':
+                            world.addEntity(new Brick(j, i, new FlamePassItem(j, i)));
+                            break;
                     }
                 }
             }
@@ -198,7 +221,15 @@ public class BombermanGame extends Application {
         try {
             connection = new Client(host, world, name);
             createConnection();
-            ((Client) connection).getMap(((MatrixWorld) world)::reSize);
+            // reSize map event
+            ((Client) connection).getMap((width, height) -> {
+                try {
+                    reSizeMap(width, height);
+                } catch (Exception ignored) {
+                }
+            });
+            // End event
+            connection.endGame = this::endGame;
             return true;
         } catch (IOException e) {
             connection = null;
@@ -207,16 +238,17 @@ public class BombermanGame extends Application {
     }
 
     private void reSizeMap(int width, int height) throws Exception {
-        if (WIDTH <= 0 || HEIGHT <= 0)
+        if (width <= 0 || height <= 0)
             throw new Exception("Bản đồ không hợp lệ!");
-        if (!(world instanceof MatrixWorld) || !(connection instanceof Server))
+        if (!(world instanceof MatrixWorld))
             throw new Exception("Không thể thay đổi bản đồ!");
         WIDTH = width;
         HEIGHT = height;
         ((MatrixWorld) world).reSize(WIDTH, HEIGHT);
-        ((Server) connection).setMap(WIDTH, HEIGHT);
+        if (connection instanceof Server) ((Server) connection).setMap(WIDTH, HEIGHT);
         canvas.setWidth(WIDTH * Sprite.SCALED_SIZE);
         canvas.setHeight(HEIGHT * Sprite.SCALED_SIZE);
+        stage.sizeToScene();
     }
 
     private void startGame() {
@@ -230,13 +262,30 @@ public class BombermanGame extends Application {
     }
 
     private void endGame(boolean isWinner) {
-        System.gc();
-        if (!(connection instanceof Server)) return;
-        menuController.startButton.setDisable(false);
-        Server server = (Server) connection;
-        server.listen();
+        if (connection instanceof Server) {
+            menuController.startButton.setDisable(false);
+            Server server = (Server) connection;
+            server.listen();
+            server.endGame.accept(isWinner);
+        }
         world.entities.clear();
         world.stillObjects.clear();
-        if (isWinner) level++;
+        System.gc();
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        if (isWinner) {
+            level++;
+            alert.setTitle("End Game");
+            alert.setHeaderText("Winner");
+            alert.setContentText("You are winner.");
+        } else {
+            alert.setTitle("Game Over");
+            alert.setHeaderText("Loser");
+            alert.setContentText("You are loser.");
+        }
+        alert.getButtonTypes().add(ButtonType.OK);
+        alert.show();
+        canvas.setWidth(0);
+        canvas.setHeight(0);
+        stage.sizeToScene();
     }
 }

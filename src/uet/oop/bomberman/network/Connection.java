@@ -10,6 +10,8 @@ public abstract class Connection {
     public final String name;
     public final World world;
 
+    public Consumer<Boolean> endGame = null;
+
     Connection(World world, String name) {
         this.world = world;
         this.name = name;
