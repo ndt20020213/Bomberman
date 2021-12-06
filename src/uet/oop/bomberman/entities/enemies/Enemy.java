@@ -12,7 +12,7 @@ import uet.oop.bomberman.structure.Point;
 import java.util.*;
 
 public abstract class Enemy extends Entity implements canDestroy {
-    protected int hp;
+    protected int hp = 1;
 
     protected String direction = "Left";
 
@@ -39,11 +39,14 @@ public abstract class Enemy extends Entity implements canDestroy {
         random.add(cell.Bellow());
         random.add(cell.Left());
         random.add(cell.Right());
-        random.removeIf(element -> entitiesMatrix[element.x][element.y] != null || element.equals(MoveHistory));
+        random.removeIf(element -> entitiesMatrix[element.x][element.y] != null);
 
         if (random.size() == 0) {
+            return;
+        } else if (random.size() == 1) {
             Move.add(MoveHistory);
         } else {
+            random.removeIf(element -> element.equals(MoveHistory));
             Random rand = new Random();
             Move.add(random.get(rand.nextInt(random.size())));
         }
@@ -89,10 +92,6 @@ public abstract class Enemy extends Entity implements canDestroy {
         }
 
         return false;
-    }
-
-    public void render(GraphicsContext gc) {
-        gc.drawImage(img, position.x, position.y);
     }
 }
 

@@ -24,6 +24,11 @@ public class Oneal extends Enemy {
     @Override
     public void update() {
 
+        if (hp == 0) {
+            direction = "Dead";
+            return;
+        }
+
         double speed;
 
         if (status == 0) {
@@ -81,6 +86,13 @@ public class Oneal extends Enemy {
             }
         } else {
             Move.poll();
+        }
+
+        for (Bomber bomber : world.bombers) {
+            if (impact(bomber)) {
+                destroy();
+                bomber.kill(1);
+            }
         }
     }
 

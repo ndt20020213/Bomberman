@@ -1,6 +1,7 @@
 package uet.oop.bomberman.entities.enemies;
 
 import javafx.scene.canvas.GraphicsContext;
+import uet.oop.bomberman.entities.player.Bomber;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.structure.Cell;
 import uet.oop.bomberman.structure.Point;
@@ -58,6 +59,13 @@ public class Minvo extends Enemy {
                 position.y -= speed;
             }
         }
+
+        for (Bomber bomber : world.bombers) {
+            if (impact(bomber)) {
+                destroy();
+                bomber.kill(1);
+            }
+        }
     }
 
     @Override
@@ -72,7 +80,7 @@ public class Minvo extends Enemy {
                 img = Sprite.movingSprite(Sprite.minvo_right1, Sprite.minvo_right2, Sprite.minvo_right3, time, circle).getFxImage();
                 break;
             case "Dead":
-                
+
                 break;
         }
         gc.drawImage(img, position.x, position.y);

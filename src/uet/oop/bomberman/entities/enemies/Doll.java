@@ -1,6 +1,7 @@
 package uet.oop.bomberman.entities.enemies;
 
 import javafx.scene.canvas.GraphicsContext;
+import uet.oop.bomberman.entities.player.Bomber;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.structure.Cell;
 import uet.oop.bomberman.structure.Point;
@@ -14,6 +15,10 @@ public class Doll extends Enemy {
 
     @Override
     public void update() {
+        if (hp == 0) {
+            direction = "Dead";
+            return;
+        }
         Cell cell = super.getUnit();
         if (Move.isEmpty()) {
             MoveRandom();
@@ -51,6 +56,13 @@ public class Doll extends Enemy {
                 Move.poll();
             } else {
                 position.y -= speed;
+            }
+        }
+
+        for (Bomber bomber : world.bombers) {
+            if (impact(bomber)) {
+                destroy();
+                bomber.kill(1);
             }
         }
     }
