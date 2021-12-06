@@ -6,7 +6,7 @@ import uet.oop.bomberman.graphics.Sprite;
 
 public class FlamePassItem extends Item {
 
-    public static final int flamePass = 10;
+    public static final int flamePass = 10;     // Đơn vị s
 
     public FlamePassItem(int xUnit, int yUnit) {
         super(xUnit, yUnit, Sprite.powerup_flamepass.getFxImage());

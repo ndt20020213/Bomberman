@@ -53,14 +53,12 @@ public class Bomber extends Entity implements canDestroy,
                     position.x += speed * (time - oldTime) / 1e9;
                     break;
             }
-            Rect newRect = getRect();
-            if (!newRect.equals(oldRect)) {
-                if (!checkWallPass(oldRect, newRect)) position = oldPosition;
-                if (!checkBombPass(oldRect, newRect)) position = oldPosition;
+            if (oldPosition.x != position.x || oldPosition.y != position.y) {
+                if (checkWallPass(oldPosition, oldRect))
+                    checkBombPass(oldPosition, oldRect);
             }
-        } else if (status.equals("Dead")) {
+        } else if (status.equals("Dead"))
             if (deadTime > 0 && world.time > deadTime + deadCircle) world.removeEntity(this);
-        }
         oldTime = time;
     }
 
@@ -216,17 +214,34 @@ public class Bomber extends Entity implements canDestroy,
         return true;
     }
 
+    @Override
+    public boolean kill(int health) {
+        this.health -= health;
+        if (health <= 0) {
+            status = "Dead";
+            deadTime = world.time;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean kill() {
+        health = 0;
+        status = "Dead";
+        deadTime = world.time;
+        return true;
+    }
+
     //canDestroy
     private long deadTime = -1L;
 
     @Override
     public void destroy() {
-        if (checkFlamePass()) health--;
+        if (world.time > flamePassTime) health--;
         if (health <= 0) {
             status = "Dead";
             deadTime = world.time;
         }
-        System.out.println(health);
     }
 
     //SpeedProperty
@@ -260,18 +275,50 @@ public class Bomber extends Entity implements canDestroy,
     private long wallPassTime = 0;
 
     @Override
-    public boolean addWallPass(long time) {
-        wallPassTime = world.time + time;
+    public boolean addWallPass(int time) {
+        wallPassTime = (long) (world.time + time * 1e9);
         return true;
     }
 
-    @Override
-    public boolean checkWallPass(Rect oldRect, Rect newRect) {
-        if (world.time < wallPassTime) return true;
+    public boolean checkWallPass(Point oldPosition, Rect oldRect) {
+        Point newPosition = position;
+        Rect newRect = getRect();
+        Entity entity = null;
         for (Wall wall : world.walls)
-            if (!wall.getRect().impact(oldRect) && wall.getRect().impact(newRect)) return false;
+            if (!wall.getRect().impact(oldRect) && wall.getRect().impact(newRect)) {
+                entity = wall;
+                break;
+            }
+        if (entity == null)
+            for (Brick brick : world.bricks)
+                if (!brick.getRect().impact(oldRect) && brick.getRect().impact(newRect)) {
+                    entity = brick;
+                    break;
+                }
+        // Không va chạm
+        if (entity == null) return true;
+        // Không có Item
+        if (world.time > wallPassTime) {
+            position = oldPosition;
+            return false;
+        }
+        // Vượt tường
+        Point vector = new Point(newPosition.x - oldPosition.x, newPosition.y - oldPosition.y);
+        double vectorLength = vector.distance(new Point(0, 0));
+        vector.x /= vectorLength;
+        vector.y /= vectorLength;
+        position.x += (entity.getRect().width + oldRect.width) * vector.x;
+        position.y += (entity.getRect().height + oldRect.height) * vector.y;
+        for (Wall wall : world.walls)
+            if (impact(wall)) {
+                position = oldPosition;
+                return false;
+            }
         for (Brick brick : world.bricks)
-            if (!brick.getRect().impact(oldRect) && brick.getRect().impact(newRect)) return false;
+            if (impact(brick)) {
+                position = oldPosition;
+                return false;
+            }
         return true;
     }
 
@@ -279,16 +326,19 @@ public class Bomber extends Entity implements canDestroy,
     private long bombPassTime = 0;
 
     @Override
-    public boolean addBombPass(long time) {
-        bombPassTime = world.time + time;
+    public boolean addBombPass(int time) {
+        bombPassTime = (long) (world.time + time * 1e9);
         return true;
     }
 
-    @Override
-    public boolean checkBombPass(Rect oldRect, Rect newRect) {
-        if (world.time < bombPassTime) return true;
+    public boolean checkBombPass(Point oldPosition, Rect oldRect) {
+        Rect newRect = getRect();
+        if (world.time <= bombPassTime) return true;
         for (Bomb bomb : world.bombs)
-            if (!bomb.getRect().impact(oldRect) && bomb.getRect().impact(newRect)) return false;
+            if (!bomb.getRect().impact(oldRect) && bomb.getRect().impact(newRect)) {
+                position = oldPosition;
+                return false;
+            }
         return true;
     }
 
@@ -296,13 +346,8 @@ public class Bomber extends Entity implements canDestroy,
     private long flamePassTime = 0;
 
     @Override
-    public boolean addFlamePass(long time) {
-        flamePassTime = world.time + time;
+    public boolean addFlamePass(int time) {
+        flamePassTime = (long) (world.time + time * 1e9);
         return true;
-    }
-
-    @Override
-    public boolean checkFlamePass() {
-        return world.time >= flamePassTime;
     }
 }
