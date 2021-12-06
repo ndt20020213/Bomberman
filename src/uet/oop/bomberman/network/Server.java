@@ -9,6 +9,7 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Server extends Connection {
     private final ServerSocket server;
@@ -27,7 +28,11 @@ public class Server extends Connection {
         listen();
         world.addAction = this::addEntity;
         world.removeAction = this::removeEntity;
-        endGame = isWinner -> clientSockets.forEach(client -> client.SendLine("End#" + isWinner));
+        endGame = isWinner -> {
+            bombersDisplay.clear();
+            changingBomberDisplay.run();
+            clientSockets.forEach(client -> client.SendLine("End#" + isWinner));
+        };
     }
 
     // Lắng nghe kết nối client
@@ -102,6 +107,19 @@ public class Server extends Connection {
                 states.append(temp);
             }
         }
+        // Gửi trạng thái Bombers cho Display và Client
+        boolean hasChanging = false;
+        for (Bomber bomber : world.bombers) {
+            String display = bomber.display();
+            String oldDisplay = bombersDisplay.get(bomber.name);
+            if (!display.equals(oldDisplay)) {
+                hasChanging = true;
+                states.append("BomberDisplay#").append(bomber.name).append("#").append(display).append("\n");
+                bombersDisplay.put(bomber.name, display);
+            }
+        }
+        if (hasChanging) changingBomberDisplay.run();
+        // Gửi cho Client
         String command = states.toString();
         if (command.length() > 0)
             for (ClientSocket clientSocket : clientSockets)

@@ -21,10 +21,27 @@ public class Bomber extends Entity implements canDestroy,
         super(x, y, Sprite.player_down.getFxImage());
     }
 
-    private String name;
+    public String name;
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String display() {
+        double wallPassTime = (this.wallPassTime - world.time) > 0 ? (this.wallPassTime - world.time) : 0;
+        double bombPassTime = (this.bombPassTime - world.time) > 0 ? (this.bombPassTime - world.time) : 0;
+        double flamePassTime = (this.flamePassTime - world.time) > 0 ? (this.flamePassTime - world.time) : 0;
+        wallPassTime /= 1e9;
+        bombPassTime /= 1e9;
+        flamePassTime /= 1e9;
+        return name + ":\t" +
+                "       Health: " + health +
+                "       Speed: " + speed + "\t" +
+                "       Bomb: " + bomb +
+                "       Flame: " + flame + "\t" +
+                "   Wall pass time: " + wallPassTime + "\t" +
+                "   Bomb pass time: " + bombPassTime + "\t" +
+                "   Flame pass time: " + flamePassTime;
     }
 
     // Di chuyển và trạng thái.

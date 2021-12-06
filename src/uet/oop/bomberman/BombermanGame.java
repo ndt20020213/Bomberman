@@ -83,8 +83,10 @@ public class BombermanGame extends Application {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
+                // render
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
                 world.render(gc);
+                // update
                 if (connection instanceof Server) world.update(l);
                 if (connection instanceof Client) world.time = l;
                 if (connection != null) connection.update();
@@ -104,6 +106,7 @@ public class BombermanGame extends Application {
         // Show
         stage.setScene(scene);
         this.stage = stage;
+        this.stage.setResizable(false);
         stage.show();
     }
 
@@ -210,6 +213,8 @@ public class BombermanGame extends Application {
                 menuController.chatInput.setDisable(true);
         });
         scene.setOnKeyReleased(x -> connection.onKeyReleased(x.getCode().getName()));
+        // Bomber change property event
+        connection.setOnChangeBomberDisplay(menuController::update);
     }
 
     private boolean createServer(String name) {
@@ -276,7 +281,6 @@ public class BombermanGame extends Application {
         createMap();
         server.addBombers();
         playBGM();
-
     }
 
     private void endGame(boolean isWinner) {
@@ -311,6 +315,5 @@ public class BombermanGame extends Application {
         canvas.setWidth(0);
         canvas.setHeight(0);
         stage.sizeToScene();
-
     }
 }
