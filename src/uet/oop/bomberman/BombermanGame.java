@@ -115,9 +115,7 @@ public class BombermanGame extends Application {
 
     public void createMap() {
 
-
-
-        File file = new File("D:\\btl\\Bomberman\\res\\levels\\Level2.txt");
+        File file = new File("res/levels/Level" + level + ".txt");
 
         Scanner scanner;
         try {
