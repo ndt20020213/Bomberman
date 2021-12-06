@@ -119,7 +119,6 @@ public class Oneal extends Enemy {
                     Move.clear();
                     Move.addAll(move);
                     Move.poll();
-                    System.out.println("Successfully!");
                     return;
                 }
             }
