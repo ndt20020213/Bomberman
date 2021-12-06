@@ -1,5 +1,6 @@
 package uet.oop.bomberman.entities.enemies;
 
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.container.MatrixWorld;
@@ -13,8 +14,6 @@ import java.util.*;
 public abstract class Enemy extends Entity implements canDestroy {
     protected int hp;
 
-    /* MoveHistory sử dụng kí hiệu 'U' là di chuyển lên,
-     'D' là xuống, 'R' là sang phải, 'L' là sang trái. */
     protected Cell MoveHistory = new Cell(0,0);
 
     /* Lưu các bước sẽ đi */
@@ -88,6 +87,10 @@ public abstract class Enemy extends Entity implements canDestroy {
         }
 
         return false;
+    }
+
+    public void render(GraphicsContext gc) {
+        gc.drawImage(img, position.x, position.y);
     }
 }
 

@@ -4,6 +4,7 @@ import uet.oop.bomberman.entities.player.Bomber;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.structure.Cell;
 import uet.oop.bomberman.structure.Point;
+import uet.oop.bomberman.structure.Rect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +24,6 @@ public class Oneal extends Enemy {
     @Override
     public void update() {
 
-        getMove();
-
         double speed;
 
         if (status == 0) {
@@ -32,13 +31,21 @@ public class Oneal extends Enemy {
         } else {
             speed = HighSpeed;
         }
-        System.out.println(Move.size());
+        if (Move.isEmpty()) getMove();
+        if (Move.isEmpty()) return;
+
         Point move = new Point(Move.peek());
+
+        if (entitiesMatrix[Move.peek().x][Move.peek().y] != null) {
+            Move.clear();
+            getMove();
+        }
 
         if (position.x < move.x) {
             if (position.x + speed >= move.x) {
                 position.x = move.x;
                 Move.poll();
+
             } else {
                 position.x += speed;
             }
@@ -71,7 +78,7 @@ public class Oneal extends Enemy {
     private void getMove() {
         Cell cell = super.getUnit();
 
-        double distance = 150;
+        double distance = 140;
         Cell end = null;
         for (Bomber bomber : world.bombers) {
             double x = position.distance(bomber.getPosition());
@@ -86,9 +93,11 @@ public class Oneal extends Enemy {
                 MoveEnd = end;
                 status = 1;
                 List<Cell> move = new ArrayList<>();
+                move.add(cell);
                 if (FindTheWay(cell, end, move)) {
                     Move.clear();
                     Move.addAll(move);
+                    Move.poll();
                     System.out.println("Successfully!");
                     return;
                 }
