@@ -6,7 +6,7 @@ import uet.oop.bomberman.graphics.Sprite;
 
 public class WallPassItem extends Item {
 
-    public static final int wallPass = 10;
+    public static final int wallPass = 10;      // Đơn vị s
 
     public WallPassItem(int xUnit, int yUnit) {
         super(xUnit, yUnit, Sprite.powerup_wallpass.getFxImage());
