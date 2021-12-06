@@ -1,5 +1,6 @@
 package uet.oop.bomberman.entities.enemies;
 
+import javafx.scene.canvas.GraphicsContext;
 import uet.oop.bomberman.entities.background.Wall;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.structure.Cell;
@@ -17,6 +18,9 @@ public class Balloom extends Enemy {
         Cell cell = super.getUnit();
         if (Move.isEmpty()) {
             MoveRandom();
+        }
+        if (Move.peek() == null) {
+            return;
         }
         Point move = new Point(Move.peek());
         if (position.x < move.x) {
