@@ -37,7 +37,7 @@ public class Bomber extends Entity implements canDestroy,
 
     public boolean playing = false;
 
-    public Sound sound = Sound.getInstance();
+    public Sound sound = new Sound();
 
 
     @Override
@@ -170,6 +170,7 @@ public class Bomber extends Entity implements canDestroy,
 
     // Điều khiển
     public void keyPressed(String key) {
+        if (status.equals("Dead")) return;
         switch (key) {
             case "W":
             case "Up":
@@ -201,6 +202,7 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     public void keyReleased(String key) {
+        if (status.equals("Dead")) return;
         if (key == null) {
             status = "Stand";
             return;

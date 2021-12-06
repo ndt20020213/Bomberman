@@ -6,7 +6,7 @@ import uet.oop.bomberman.graphics.Sprite;
 
 public class BombPassItem extends Item {
 
-    public static final int bombPass = 2;
+    public static final int bombPass = 10;
 
     public BombPassItem(int xUnit, int yUnit) {
         super(xUnit, yUnit, Sprite.powerup_bombpass.getFxImage());

@@ -78,7 +78,7 @@ public class Flame extends Entity {
         for (Flame flame : flames)
             if (flame != null) world.addEntity(flame);
 
-        Sound sound = Sound.getInstance();
+        Sound sound = new Sound();
         sound.setFile(4);
         sound.play();
     }

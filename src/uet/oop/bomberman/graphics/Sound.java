@@ -15,9 +15,9 @@ public class Sound {
     Clip clip;
     URL soundURL[] = new URL[10];
     long time = 0;
-    private static Sound sound;
+    //private static Sound sound;
 
-    private Sound() {
+    public Sound() {
         soundURL[0] = getClass().getResource("/sounds/bomberGo.wav");
         soundURL[1] = getClass().getResource("/sounds/getExtraItems.wav");
         soundURL[2] = getClass().getResource("/sounds/passLevel.wav");
@@ -26,12 +26,12 @@ public class Sound {
         soundURL[5] = getClass().getResource("/sounds/death.wav");
         soundURL[6] = getClass().getResource("/sounds/background.wav");
     }
-
+/*
     public static Sound getInstance() {
         if (sound == null) sound = new Sound();
         return sound;
     }
-
+*/
 
     public void setFile(int i) {
         try {
@@ -75,17 +75,7 @@ public class Sound {
         }
     }
 
-    public void playBGM() {
-        sound.setFile(6);
-        sound.play();
-        sound.loop();
-    }
 
-    public void pausedBGM() {
-        if (clip.isRunning()) {
-            clip.stop();
-        }
-    }
 
     public float getDuration(int i) {
         float durationInSeconds = 0;

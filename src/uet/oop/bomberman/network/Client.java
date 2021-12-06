@@ -99,17 +99,23 @@ public class Client extends Connection {
                 if (data.length <= 0) continue;
                 switch (data[0]) {
                     case "Start":
-                    case "End":
                         world.entities.clear();
                         world.stillObjects.clear();
                         break;
+                    case "End":
+                        if (data.length >= 2 && endGame != null)
+                            endGame.accept(Boolean.parseBoolean(data[1]));
+                        break;
                     case "Chat":
-                        receiveMessage.accept(data[1]);
+                        if (data.length >= 2 && receiveMessage != null)
+                            receiveMessage.accept(data[1]);
                         break;
                     case "Map":
-                        if (data.length < 3) break;
-                        int w = Integer.parseInt(data[1]);
-                        int h = Integer.parseInt(data[2]);
+                        if (data.length < 2) break;
+                        String[] size = data[1].split(" ");
+                        if (size.length < 2) break;
+                        int w = Integer.parseInt(size[0]);
+                        int h = Integer.parseInt(size[1]);
                         if (w > 0 && h > 0) setMap.accept(w, h);
                         break;
                     case "Add":

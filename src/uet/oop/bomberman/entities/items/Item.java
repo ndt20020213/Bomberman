@@ -19,7 +19,7 @@ public abstract class Item extends Entity {
         for (Bomber bomber : world.bombers)
             if (impact(bomber)) {
                 use(bomber);
-                Sound sound = Sound.getInstance();
+                Sound sound = new Sound();
                 sound.setFile(1);
                 sound.play();
                 return;

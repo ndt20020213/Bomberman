@@ -27,6 +27,7 @@ public class Server extends Connection {
         listen();
         world.addAction = this::addEntity;
         world.removeAction = this::removeEntity;
+        endGame = isWinner -> clientSockets.forEach(client -> client.SendLine("End#" + isWinner));
     }
 
     // Lắng nghe kết nối client
