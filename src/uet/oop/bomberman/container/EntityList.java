@@ -6,12 +6,12 @@ import java.util.*;
 
 class EntityList<T> implements List<T> {
 
-    private World world;
+    private final World world;
     public final List<T> data;
 
     public EntityList(World world) {
         this.world = world;
-        data = new ArrayList<T>();
+        data = new ArrayList<>();
     }
 
     @Override
@@ -61,7 +61,7 @@ class EntityList<T> implements List<T> {
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        for (T x : c) if (!add(x)) return false;
+        for (T x : c) add(x);
         return true;
     }
 
@@ -83,7 +83,7 @@ class EntityList<T> implements List<T> {
 
     @Override
     public void clear() {
-        data.forEach(x -> remove(x));
+        for (int i = data.size() - 1; i >= 0; i--) remove(data.get(i));
     }
 
     @Override
@@ -98,7 +98,6 @@ class EntityList<T> implements List<T> {
 
     @Override
     public void add(int index, T element) {
-        return;
     }
 
     @Override

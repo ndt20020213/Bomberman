@@ -24,6 +24,7 @@ public class Sound {
         soundURL[3] = getClass().getResource("/sounds/putBomb.wav");
         soundURL[4] = getClass().getResource("/sounds/BombExplode.wav");
         soundURL[5] = getClass().getResource("/sounds/death.wav");
+        soundURL[6] = getClass().getResource("/sounds/background.wav");
     }
 
     public static Sound getInstance() {
@@ -58,13 +59,13 @@ public class Sound {
     public void loop() {
         clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
-    
 
     public void close() {
         clip.close();
     }
 
     public void reset() {
+
         clip.setMicrosecondPosition(0);
     }
 
@@ -74,6 +75,17 @@ public class Sound {
         }
     }
 
+    public void playBGM() {
+        sound.setFile(6);
+        sound.play();
+        sound.loop();
+    }
+
+    public void pausedBGM() {
+        if (clip.isRunning()) {
+            clip.stop();
+        }
+    }
 
     public float getDuration(int i) {
         float durationInSeconds = 0;

@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.function.BiConsumer;
 
 public class Client extends Connection {
 
@@ -82,6 +83,12 @@ public class Client extends Connection {
         sendLine("Chat#" + message);
     }
 
+    private BiConsumer<Integer, Integer> setMap = (w, h) -> {};
+
+    public void getMap(BiConsumer<Integer, Integer> setMap) {
+        this.setMap = setMap;
+    }
+
     @Override
     public void update() {
         while (commands.size() > 0) {
@@ -98,6 +105,12 @@ public class Client extends Connection {
                         break;
                     case "Chat":
                         receiveMessage.accept(data[1]);
+                        break;
+                    case "Map":
+                        if (data.length < 3) break;
+                        int w = Integer.parseInt(data[1]);
+                        int h = Integer.parseInt(data[2]);
+                        if (w > 0 && h > 0) setMap.accept(w, h);
                         break;
                     case "Add":
                         Entity entity = (Entity) IConnected.getConnectedEntity(data[2], data[3]);

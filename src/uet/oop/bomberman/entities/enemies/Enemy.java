@@ -8,20 +8,17 @@ import uet.oop.bomberman.entities.attack.effects.canDestroy;
 import uet.oop.bomberman.structure.Cell;
 import uet.oop.bomberman.structure.Point;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Stack;
+import java.util.*;
 
 public abstract class Enemy extends Entity implements canDestroy {
     protected int hp;
 
     /* MoveHistory sử dụng kí hiệu 'U' là di chuyển lên,
      'D' là xuống, 'R' là sang phải, 'L' là sang trái. */
-    protected Stack<Cell> MoveHistory = new Stack<>();
+    protected Cell MoveHistory = new Cell(0,0);
 
     /* Lưu các bước sẽ đi */
-    protected Stack<Cell> Move = new Stack<>();
+    protected Queue<Cell> Move = new LinkedList<>();
 
     protected Entity[][] entitiesMatrix = null;
 
@@ -34,38 +31,62 @@ public abstract class Enemy extends Entity implements canDestroy {
      * Tạo bước di chuyển ngẫu nhiên.
      */
     public void MoveRandom() {
+
         Cell cell = super.getUnit();
         List<Cell> random = new ArrayList<>();
-        if (MoveHistory.empty()) {
-            MoveHistory.add(cell.Above());
-        }
-        if (entitiesMatrix[cell.Above().x][cell.Above().y] == null && !MoveHistory.peek().equals(cell.Above())) {
-            random.add(cell.Above());
-        }
-        if (entitiesMatrix[cell.Bellow().x][cell.Bellow().y] == null && !MoveHistory.peek().equals(cell.Bellow())) {
-            random.add(cell.Bellow());
-        }
-        if (entitiesMatrix[cell.Left().x][cell.Left().y] == null && !MoveHistory.peek().equals(cell.Left())) {
-            random.add(cell.Left());
-        }
-        if (entitiesMatrix[cell.Right().x][cell.Right().y] == null && !MoveHistory.peek().equals(cell.Right())) {
-            random.add(cell.Right());
-        }
+        random.add(cell.Above());
+        random.add(cell.Bellow());
+        random.add(cell.Left());
+        random.add(cell.Right());
+        random.removeIf(element -> entitiesMatrix[element.x][element.y] != null || element.equals(MoveHistory));
+
         if (random.size() == 0) {
-            Move.add(MoveHistory.peek());
-        } else if (random.size() == 1) {
-            Move.add(random.get(0));
+            Move.add(MoveHistory);
         } else {
             Random rand = new Random();
             Move.add(random.get(rand.nextInt(random.size())));
         }
-        MoveHistory.push(cell);
+        MoveHistory = cell;
     }
 
-    public boolean FindTheWay(Cell start,Cell end, int x, Stack<Cell> move) {
-        if (start.x == end.x && start.y == end.y) {
+    public boolean FindTheWay(Cell start,Cell end, List<Cell> move) {
+
+        if (start.equals(end)) {
             return true;
         }
+
+        if (move.size() == 5) {
+            return false;
+        }
+
+        if (entitiesMatrix[start.Above().x][start.Above().y] == null && !move.contains(start.Above())) {
+            move.add(start.Above());
+            if (FindTheWay(start.Above(), end, move)) {
+                return true;
+            } else move.remove(move.size() - 1);
+        }
+
+        if (entitiesMatrix[start.Bellow().x][start.Bellow().y] == null && !move.contains(start.Bellow())) {
+            move.add(start.Bellow());
+            if (FindTheWay(start.Bellow(), end, move)) {
+                return true;
+            } else move.remove(move.size() - 1);
+        }
+
+        if (entitiesMatrix[start.Left().x][start.Left().y] == null && !move.contains(start.Left())) {
+            move.add(start.Left());
+            if (FindTheWay(start.Left(), end, move)) {
+                return true;
+            } else move.remove(move.size() - 1);
+        }
+
+        if (entitiesMatrix[start.Right().x][start.Right().y] == null && !move.contains(start.Right())) {
+            move.add(start.Right());
+            if (FindTheWay(start.Right(), end, move)) {
+                return true;
+            } else move.remove(move.size() - 1);
+        }
+
         return false;
     }
 }

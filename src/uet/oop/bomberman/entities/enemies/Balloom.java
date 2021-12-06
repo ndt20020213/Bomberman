@@ -15,35 +15,35 @@ public class Balloom extends Enemy {
     @Override
     public void update() {
         Cell cell = super.getUnit();
-        if (Move.empty()) {
+        if (Move.isEmpty()) {
             MoveRandom();
         }
         Point move = new Point(Move.peek());
         if (position.x < move.x) {
             if (position.x + speed >= move.x) {
                 position.x = move.x;
-                Move.pop();
+                Move.poll();
             } else {
                 position.x += speed;
             }
         } else if (position.x > move.x) {
             if (position.x - speed <= move.x) {
                 position.x = move.x;
-                Move.pop();
+                Move.poll();
             } else {
                 position.x -= speed;
             }
         } else if (position.y < move.y) {
             if (position.y + speed >= move.y) {
                 position.y = move.y;
-                Move.pop();
+                Move.poll();
             } else {
                 position.y += speed;
             }
         } else if (position.y > move.y) {
             if (position.y - speed <= move.y) {
                 position.y = move.y;
-                Move.pop();
+                Move.poll();
             } else {
                 position.y -= speed;
             }

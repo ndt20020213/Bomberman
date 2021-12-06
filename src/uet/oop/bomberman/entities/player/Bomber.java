@@ -10,30 +10,30 @@ import uet.oop.bomberman.entities.attack.effects.canDestroy;
 import uet.oop.bomberman.entities.background.*;
 import uet.oop.bomberman.entities.player.effects.*;
 import uet.oop.bomberman.entities.player.properties.*;
+import uet.oop.bomberman.network.IConnected;
 import uet.oop.bomberman.structure.*;
 
 public class Bomber extends Entity implements canDestroy,
         SpeedProperty, BombProperty, FlameProperty, HealthProperty,
         WallPassEffect, BombPassEffect, FlamePassEffect {
 
-    private String name;
-
     public Bomber(int x, int y) {
         super(x, y, Sprite.player_down.getFxImage());
     }
+
+    private String name;
 
     public void setName(String name) {
         this.name = name;
     }
 
-    @Override
-    public void render(GraphicsContext gc) {
-        gc.drawImage(img, position.x + 4, position.y);
-    }
-
     // Di chuyển và trạng thái.
     private long oldTime = 0;
-    private char status = ' ';
+
+    private String status = "Stand";    // Stand Move Dead
+    private char direction = 'D';       // W D S A
+
+    private final int deadCircle = (int) 8e8;   // Đơn vị: ns
 
     public boolean playing = false;
 
@@ -42,52 +42,113 @@ public class Bomber extends Entity implements canDestroy,
 
     @Override
     public void update() {
-        long time = world.time; //tg hiện tại
-        Point oldPosition = new Point(position.x, position.y);
-        Rect oldRect = getRect();
 
-        // tg hiện tại >= tg lần trước gần nhất gọi âm thanh + độ dài âm thanh thì mới gọi tiếp
-
-
-        switch (status) {
-            case 'W':
-                position.y -= speed * (time - oldTime) / 1e9;
-                if (playing && time > oldTime + 1e8/5) {
-                    sound.setFile(0);
-                    sound.play();
-                }
-                break;
-            case 'S':
-                position.y += speed * (time - oldTime) / 1e9;
-                if (playing && time > oldTime + 1e8/5) {
-                    sound.setFile(0);
-                    sound.play();
-                }
-                break;
-            case 'A':
-                position.x -= speed * (time - oldTime) / 1e9;
-                if (playing && time > oldTime + 1e8/5) {
-                    sound.setFile(0);
-                    sound.play();
-                }
-                break;
-            case 'D':
-                position.x += speed * (time - oldTime) / 1e9;
-                if (playing && time > oldTime + 1e8/5) {
-                    sound.setFile(0);
-                    sound.play();
-                }
-                break;
+        long time = world.time;
+        if (status.equals("Move")) {
+            Point oldPosition = new Point(position.x, position.y);
+            Rect oldRect = getRect();
+            switch (direction) {
+                case 'W':
+                    position.y -= speed * (time - oldTime) / 1e9;
+                    if (time > oldTime + 1e8/5) {
+                        sound.setFile(0);
+                        sound.play();
+                    }
+                    break;
+                case 'S':
+                    position.y += speed * (time - oldTime) / 1e9;
+                    if (time > oldTime + 1e8/5) {
+                        sound.setFile(0);
+                        sound.play();
+                    }
+                    break;
+                case 'A':
+                    position.x -= speed * (time - oldTime) / 1e9;
+                    if (time > oldTime + 1e8/5) {
+                        sound.setFile(0);
+                        sound.play();
+                    }
+                    break;
+                case 'D':
+                    position.x += speed * (time - oldTime) / 1e9;
+                    if (time > oldTime + 1e8/5) {
+                        sound.setFile(0);
+                        sound.play();
+                    }
+                    break;
+            }
+            Rect newRect = getRect();
+            if (!newRect.equals(oldRect)) {
+                if (!checkWallPass(oldRect, newRect)) position = oldPosition;
+                if (!checkBombPass(oldRect, newRect)) position = oldPosition;
+            }
+        } else if (status.equals("Dead")) {
+            if (deadTime > 0 && world.time > deadTime + deadCircle) world.removeEntity(this);
         }
         oldTime = time;
-
-        Rect newRect = getRect();
-        if (!newRect.equals(oldRect)) {
-            if (!checkWallPass(oldRect, newRect)) position = oldPosition;
-            if (!checkBombPass(oldRect, newRect)) position = oldPosition;
-        }
     }
 
+    @Override
+    public void render(GraphicsContext gc) {
+        int time = (int) (world.time / 1e6);
+        if (status.equals("Move")) {
+            final int circle = 1500 * Sprite.SCALED_SIZE / speed;     // Đơn vị: ms
+            switch (direction) {
+                case 'W':
+                    img = Sprite.movingSprite(Sprite.player_up_1, Sprite.player_up_2, time, circle).getFxImage();
+                    break;
+                case 'S':
+                    img = Sprite.movingSprite(Sprite.player_down_1, Sprite.player_down_2, time, circle).getFxImage();
+                    break;
+                case 'A':
+                    img = Sprite.movingSprite(Sprite.player_left_1, Sprite.player_left_2, time, circle).getFxImage();
+                    break;
+                case 'D':
+                    img = Sprite.movingSprite(Sprite.player_right_1, Sprite.player_right_2, time, circle).getFxImage();
+            }
+        } else if (status.equals("Stand")) {
+            switch (direction) {
+                case 'W':
+                    img = Sprite.player_up.getFxImage();
+                    break;
+                case 'S':
+                    img = Sprite.player_down.getFxImage();
+                    break;
+                case 'A':
+                    img = Sprite.player_left.getFxImage();
+                    break;
+                case 'D':
+                    img = Sprite.player_right.getFxImage();
+                    break;
+            }
+        } else {
+            int dentaTime = (int) (world.time - deadTime);
+            if (dentaTime <= deadCircle)
+            img = Sprite.movingSprite(Sprite.player_dead1, Sprite.player_dead2, Sprite.player_dead3, dentaTime, deadCircle).getFxImage();
+
+        }
+        gc.drawImage(img, position.x + 4, position.y);
+    }
+
+    // IConnected
+
+    @Override
+    public IConnected update(String status) {
+        String[] data = status.split(" ");
+        position.x = Integer.parseInt(data[0]);
+        position.y = Integer.parseInt(data[1]);
+        this.status = data[2];
+        if (this.status.equals("Dead")) deadTime = world.time;
+        direction = data[3].charAt(0);
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return position.getX() + " " + position.getY() + " " + status + " " + direction;
+    }
+
+    // Hàm hỗ trợ
     @Override
     public Cell getUnit() {
         Point position = getPosition();
@@ -107,31 +168,29 @@ public class Bomber extends Entity implements canDestroy,
         return new Rect(point.x, point.y, 12, 10);
     }
 
+    // Điều khiển
     public void keyPressed(String key) {
         switch (key) {
             case "W":
             case "Up":
-                status = 'W';
-                img = Sprite.player_up.getFxImage();
-                playing = true;
+
+                status = "Move";
+                direction = 'W';
                 break;
             case "S":
             case "Down":
-                status = 'S';
-                img = Sprite.player_down.getFxImage();
-                playing = true;
+                status = "Move";
+                direction = 'S';
                 break;
             case "A":
             case "Left":
-                status = 'A';
-                img = Sprite.player_left.getFxImage();
-                playing = true;
+                status = "Move";
+                direction = 'A';
                 break;
             case "D":
             case "Right":
-                status = 'D';
-                img = Sprite.player_right.getFxImage();
-                playing = true;
+                status = "Move";
+                direction = 'D';
                 break;
             case "Space":
                 putBomb();
@@ -143,7 +202,7 @@ public class Bomber extends Entity implements canDestroy,
 
     public void keyReleased(String key) {
         if (key == null) {
-            status = ' ';
+            status = "Stand";
             return;
         }
         switch (key) {
@@ -168,7 +227,7 @@ public class Bomber extends Entity implements canDestroy,
                 playing = false;
                 break;
         }
-        if (status == key.charAt(0)) status = ' ';
+        if (status.equals("Move") && direction == key.charAt(0)) status = "Stand";
     }
 
     public void putBomb() {
@@ -188,14 +247,20 @@ public class Bomber extends Entity implements canDestroy,
     }
 
     //canDestroy
+    private long deadTime = -1L;
+
     @Override
     public void destroy() {
         if (checkFlamePass()) health--;
-        if (health <= 0) world.removeEntity(this);
+        if (health <= 0) {
+            status = "Dead";
+            deadTime = world.time;
+        }
+        System.out.println(health);
     }
 
     //SpeedProperty
-    private int speed = 150;
+    private int speed = 96;    // Đơn vị pixel/s:  96pixel/s = 3cell/s
 
     @Override
     public boolean addSpeed(int speed) {

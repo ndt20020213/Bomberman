@@ -75,6 +75,12 @@ public class Server extends Connection {
         clientSockets.forEach(client -> client.SendLine("Chat#" + message));
     }
 
+    public void setMap(int w, int h) {
+        if (w <= 0 || h <= 0) return;
+        String command = "Map#" + w + " " + h;
+        clientSockets.forEach(client -> client.SendLine(command));
+    }
+
     @Override
     public void update() {
         // Đọc tin nhắn
