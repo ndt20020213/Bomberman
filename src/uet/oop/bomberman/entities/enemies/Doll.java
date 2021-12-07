@@ -18,12 +18,17 @@ public class Doll extends Enemy {
         Cell cell = super.getUnit();
         if (direction.equals("Dead")) {
             if (world.time >= timed + 8e8) {
-                world.addEntity(new Minvo(cell.x, cell.y));
-                world.addEntity(new Minvo(cell.x, cell.y));
-                world.addEntity(new Minvo(cell.x, cell.y));
                 world.removeEntity(this);
             }
             return;
+        }
+        if (world.time >= timed + 5e9) {
+            timed = world.time;
+            if ((cell.x + cell.y) % 2 == 0 ) {
+                world.addEntity(new Balloom(cell.x,cell.y));
+            } else {
+                world.addEntity(new Minvo(cell.x,cell.y));
+            }
         }
         if (Move.isEmpty()) {
             MoveRandom();

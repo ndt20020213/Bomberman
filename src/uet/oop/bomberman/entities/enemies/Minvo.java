@@ -1,6 +1,8 @@
 package uet.oop.bomberman.entities.enemies;
 
 import javafx.scene.canvas.GraphicsContext;
+import uet.oop.bomberman.BombermanGame;
+import uet.oop.bomberman.entities.attack.Flame;
 import uet.oop.bomberman.entities.player.Bomber;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.structure.Cell;
@@ -18,6 +20,9 @@ public class Minvo extends Enemy {
         if (direction.equals("Dead")) {
             if (world.time >= timed + 8e8) {
                 world.removeEntity(this);
+                Flame flame = new Flame(position.getX() / Sprite.SCALED_SIZE, position.getY() / Sprite.SCALED_SIZE, 2);
+                world.addEntity(flame);
+                BombermanGame.playSound( null,"BombExplode");
             }
             return;
         }
