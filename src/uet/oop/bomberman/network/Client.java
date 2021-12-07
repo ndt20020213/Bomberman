@@ -122,7 +122,6 @@ public class Client extends Connection {
                         if (w > 0 && h > 0) setMap.accept(w, h);
                         break;
                     case "BomberDisplay":
-                        System.out.println(command);
                         if (data.length < 3) break;
                         bombersDisplay.put(data[1], data[2]);
                         changingBomberDisplay.run();

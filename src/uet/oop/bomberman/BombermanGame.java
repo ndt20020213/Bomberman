@@ -16,7 +16,7 @@ import uet.oop.bomberman.container.World;
 import uet.oop.bomberman.display.MenuController;
 import uet.oop.bomberman.entities.background.Brick;
 import uet.oop.bomberman.entities.background.Grass;
-import uet.oop.bomberman.entities.background.Portal;
+import uet.oop.bomberman.entities.Portal;
 import uet.oop.bomberman.entities.background.Wall;
 import uet.oop.bomberman.entities.enemies.Balloom;
 import uet.oop.bomberman.entities.enemies.Oneal;
