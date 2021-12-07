@@ -16,7 +16,7 @@ public class Doll extends Enemy {
     @Override
     public void update() {
         if (hp == 0) {
-            if (world.time >= timedead + deadtime) {
+            if (world.time >= timed + 8e8) {
                 world.removeEntity(this);
             }
             direction = "Dead";
@@ -62,10 +62,12 @@ public class Doll extends Enemy {
             }
         }
 
-        for (Bomber bomber : world.bombers) {
-            if (impact(bomber)) {
-                destroy();
-                bomber.kill(1);
+        if (world.time >= timed + 3e9) {
+            for (Bomber bomber : world.bombers) {
+                if (impact(bomber)) {
+                    timed = world.time;
+                    bomber.kill(1);
+                }
             }
         }
     }
@@ -92,7 +94,7 @@ public class Doll extends Enemy {
     public void destroy() {
         hp--;
         if (hp == 0) {
-            timedead = world.time;
+            timed = world.time;
         }
     }
 }

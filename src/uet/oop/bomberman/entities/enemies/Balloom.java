@@ -1,7 +1,6 @@
 package uet.oop.bomberman.entities.enemies;
 
 import javafx.scene.canvas.GraphicsContext;
-import uet.oop.bomberman.entities.background.Wall;
 import uet.oop.bomberman.entities.player.Bomber;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.structure.Cell;
@@ -18,7 +17,7 @@ public class Balloom extends Enemy {
     public void update() {
 
         if (hp == 0) {
-            if (world.time >= timedead + deadtime) {
+            if (world.time >= timed + (long) 8e8) {
                 world.removeEntity(this);
             }
             direction = "Dead";
@@ -64,10 +63,12 @@ public class Balloom extends Enemy {
                 position.y -= speed;
             }
         }
-        for (Bomber bomber : world.bombers) {
-            if (impact(bomber)) {
-                destroy();
-                bomber.kill(1);
+        if (world.time >= timed + 3e9) {
+            for (Bomber bomber : world.bombers) {
+                if (impact(bomber)) {
+                    timed = world.time;
+                    bomber.kill(1);
+                }
             }
         }
     }
@@ -94,7 +95,7 @@ public class Balloom extends Enemy {
     public void destroy() {
         hp--;
         if (hp == 0) {
-            timedead = world.time;
+            timed = world.time;
         }
     }
 }

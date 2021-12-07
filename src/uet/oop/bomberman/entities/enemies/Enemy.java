@@ -15,9 +15,8 @@ import java.util.*;
 public abstract class Enemy extends Entity implements canDestroy {
     protected int hp = 1;
 
-    protected long timedead;
-
-    protected long deadtime = (long) 8e8 ;
+    /* Đánh dấu các mốc thời gian,*/
+    protected long timed;
 
     protected String direction = "Left";
 

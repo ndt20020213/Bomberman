@@ -120,6 +120,7 @@ public class BombermanGame extends Application {
 
         File file = new File("res/levels/Level" + level + ".txt");
 
+       // File file = new File("res/levels/test.txt");
 
         Scanner scanner;
         try {
