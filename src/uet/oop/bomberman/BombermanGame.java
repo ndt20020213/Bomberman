@@ -102,7 +102,7 @@ public class BombermanGame extends Application {
         menuController.createServer = this::createServer;
         menuController.createClient = this::createClient;
         menuController.startButton.setOnAction(x -> startGame());
-        menuController.soundButton.setOnAction(x -> {
+        menuController.soundButton.setOnMouseClicked(x -> {
             sounds.changeSoundStatus();
             canvas.requestFocus();
         });
@@ -223,8 +223,10 @@ public class BombermanGame extends Application {
             String key = x.getCode().getName();
             if (key.equals("Enter")) menuController.chatInput.setDisable(!menuController.chatInput.isDisable());
             else connection.onKeyPressed(key);
-            if (key.equals("Up") || key.equals("Down") || key.equals("Left") || key.equals("Right"))
+            if (key.equals("Up") || key.equals("Down") || key.equals("Left") || key.equals("Right")) {
                 menuController.chatInput.setDisable(true);
+                canvas.requestFocus();
+            }
         });
         scene.setOnKeyReleased(x -> connection.onKeyReleased(x.getCode().getName()));
         // Bomber change property event
@@ -317,8 +319,8 @@ public class BombermanGame extends Application {
     }
 
     public static void playSound(String name, String sound) {
-        if (connection == null || sound == null) return;
-        if (connection.name.equals(name) || name == null) {
+        if (connection == null || name == null || sound == null) return;
+        if (connection.name.equals(name) || name.equals("All")) {
             switch (sound) {
                 case "bomberGo":
                     sounds.playBomberGoSound();
