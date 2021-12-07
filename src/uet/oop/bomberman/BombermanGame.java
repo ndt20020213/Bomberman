@@ -102,6 +102,10 @@ public class BombermanGame extends Application {
         menuController.createServer = this::createServer;
         menuController.createClient = this::createClient;
         menuController.startButton.setOnAction(x -> startGame());
+        menuController.soundButton.setOnAction(x -> {
+            sounds.changeSoundStatus();
+            canvas.requestFocus();
+        });
 
         Portal.endGame = () -> endGame(true);
 

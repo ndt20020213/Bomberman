@@ -6,6 +6,19 @@ public class GameSound {
 
     private final HashMap<String, Sound> sounds = new HashMap<>();
 
+    private boolean soundStatus = true;
+
+    public void changeSoundStatus() {
+        if (soundStatus) {
+            soundStatus = false;
+            sounds.forEach((name, sound) -> {
+                if (!name.equals("background")) sound.stop();
+            });
+        } else {
+            soundStatus = true;
+        }
+    }
+
     public GameSound() {
         // bomberGo
         Sound bomberGo = new Sound();
@@ -38,20 +51,24 @@ public class GameSound {
     }
 
     public void playPutBombSound() {
+        if (!soundStatus) return;
         sounds.get("putBomb").play();
     }
 
     public void playGetExtraItemsSound() {
+        if (!soundStatus) return;
         sounds.get("getExtraItems").play();
     }
 
     public void playBombExplodeSound() {
+        if (!soundStatus) return;
         sounds.get("BombExplode").play();
     }
 
     private boolean isBomberGoSoundPlaying = false;
 
     public void playBomberGoSound() {
+        if (!soundStatus) return;
         if (!isBomberGoSoundPlaying) {
             Sound sound = sounds.get("bomberGo");
             sound.play();
@@ -66,14 +83,17 @@ public class GameSound {
     }
 
     public void playWinSound() {
+        if (!soundStatus) return;
         sounds.get("passLevel").play();
     }
 
     public void playLoseSound() {
+        if (!soundStatus) return;
         sounds.get("death").play();
     }
 
     public void playBGM() {
+        if (!soundStatus) return;
         Sound sound = sounds.get("background");
         if (sound != null) {
             sound.play();
