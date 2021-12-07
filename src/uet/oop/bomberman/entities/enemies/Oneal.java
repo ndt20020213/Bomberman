@@ -24,7 +24,7 @@ public class Oneal extends Enemy {
     @Override
     public void update() {
 
-        if (hp == 0) {
+        if (direction.equals("Dead")) {
             if (world.time >= timed + 8e8) {
                 world.removeEntity(this);
             }
@@ -40,27 +40,22 @@ public class Oneal extends Enemy {
         }
         if (Move.isEmpty()) {
             getMove();
-            if (Move.isEmpty()) return;
-            if (entitiesMatrix[Move.peek().x][Move.peek().y] != null) {
-                Move.clear();
-                getMove();
-            }
         }
 
         if (Move.isEmpty()) return;
 
         Point move = new Point(Move.peek());
 
-        if (entitiesMatrix[Move.peek().x][Move.peek().y] != null) {
-            Move.clear();
-            getMove();
-        }
-
         if (position.x < move.x) {
             direction = "Right";
             if (position.x + speed >= move.x) {
                 position.x = move.x;
                 Move.poll();
+                if (!Move.isEmpty()) {
+                    if (entitiesMatrix[Move.peek().x][Move.peek().y] != null) {
+                        Move.clear();
+                    }
+                }
             } else {
                 position.x += speed;
             }
@@ -69,6 +64,11 @@ public class Oneal extends Enemy {
             if (position.x - speed <= move.x) {
                 position.x = move.x;
                 Move.poll();
+                if (!Move.isEmpty()) {
+                    if (entitiesMatrix[Move.peek().x][Move.peek().y] != null) {
+                        Move.clear();
+                    }
+                }
             } else {
                 position.x -= speed;
             }
@@ -76,6 +76,11 @@ public class Oneal extends Enemy {
             if (position.y + speed >= move.y) {
                 position.y = move.y;
                 Move.poll();
+                if (!Move.isEmpty()) {
+                    if (entitiesMatrix[Move.peek().x][Move.peek().y] != null) {
+                        Move.clear();
+                    }
+                }
             } else {
                 position.y += speed;
             }
@@ -83,11 +88,21 @@ public class Oneal extends Enemy {
             if (position.y - speed <= move.y) {
                 position.y = move.y;
                 Move.poll();
+                if (!Move.isEmpty()) {
+                    if (entitiesMatrix[Move.peek().x][Move.peek().y] != null) {
+                        Move.clear();
+                    }
+                }
             } else {
                 position.y -= speed;
             }
         } else {
             Move.poll();
+            if (!Move.isEmpty()) {
+                if (entitiesMatrix[Move.peek().x][Move.peek().y] != null) {
+                    Move.clear();
+                }
+            }
         }
 
         if (world.time >= timed + 3e9) {
@@ -164,7 +179,7 @@ public class Oneal extends Enemy {
     @Override
     public void destroy() {
         hp--;
-        if (hp == 0) {
+        if (hp <= 0) {
             direction = "Dead";
             timed = world.time;
         }

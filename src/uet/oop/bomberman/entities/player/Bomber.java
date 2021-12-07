@@ -255,7 +255,9 @@ public class Bomber extends Entity implements canDestroy,
 
     @Override
     public boolean kill(int health) {
-        if (world.time > killedTime + 3e9 && !status.equals("Dead")) this.health -= health;
+        if (world.time >= killedTime + 3e9 && !status.equals("Dead")) {
+            this.health -= health;
+        }
         else return false;
         if (this.health <= 0) {
             status = "Dead";

@@ -16,7 +16,7 @@ public class Balloom extends Enemy {
     @Override
     public void update() {
 
-        if (hp == 0) {
+        if (direction.equals("Dead")) {
             if (world.time >= timed + (long) 8e8) {
                 world.removeEntity(this);
             }
@@ -93,7 +93,7 @@ public class Balloom extends Enemy {
     @Override
     public void destroy() {
         hp--;
-        if (hp == 0) {
+        if (hp <= 0) {
             direction = "Dead";
             timed = world.time;
         }
