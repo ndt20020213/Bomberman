@@ -96,44 +96,59 @@ public class Bomber extends Entity implements canDestroy,
 
     @Override
     public void render(GraphicsContext gc) {
+        Sprite imgSprite = null;
         int time = (int) (world.time / 1e6);
         if (status.equals("Move")) {
             final int circle = 1500 * Sprite.SCALED_SIZE / speed;     // Đơn vị: ms
             switch (direction) {
                 case 'W':
-                    img = Sprite.movingSprite(Sprite.player_up_1, Sprite.player_up_2, time, circle).getFxImage();
+                    imgSprite = Sprite.movingSprite(Sprite.player_up_1, Sprite.player_up_2, time, circle);
                     break;
                 case 'S':
-                    img = Sprite.movingSprite(Sprite.player_down_1, Sprite.player_down_2, time, circle).getFxImage();
+                    imgSprite = Sprite.movingSprite(Sprite.player_down_1, Sprite.player_down_2, time, circle);
                     break;
                 case 'A':
-                    img = Sprite.movingSprite(Sprite.player_left_1, Sprite.player_left_2, time, circle).getFxImage();
+                    imgSprite = Sprite.movingSprite(Sprite.player_left_1, Sprite.player_left_2, time, circle);
                     break;
                 case 'D':
-                    img = Sprite.movingSprite(Sprite.player_right_1, Sprite.player_right_2, time, circle).getFxImage();
+                    imgSprite = Sprite.movingSprite(Sprite.player_right_1, Sprite.player_right_2, time, circle);
+            }
+            if (world.time < killedTime + 3e9) {
+                int dentaTime = (int) ((int) (world.time - killedTime) / 1e6);
+                imgSprite = Sprite.movingSprite(null, imgSprite, dentaTime, 200);
             }
         } else if (status.equals("Stand")) {
             switch (direction) {
                 case 'W':
-                    img = Sprite.player_up.getFxImage();
+                    imgSprite = Sprite.player_up;
                     break;
                 case 'S':
-                    img = Sprite.player_down.getFxImage();
+                    imgSprite = Sprite.player_down;
                     break;
                 case 'A':
-                    img = Sprite.player_left.getFxImage();
+                    imgSprite = Sprite.player_left;
                     break;
                 case 'D':
-                    img = Sprite.player_right.getFxImage();
+                    imgSprite = Sprite.player_right;
                     break;
+            }
+            if (world.time < killedTime + 3e9) {
+                int dentaTime = (int) ((int) (world.time - killedTime) / 1e6);
+                imgSprite = Sprite.movingSprite(null, imgSprite, dentaTime, 200);
             }
         } else {
             int dentaTime = (int) (world.time - deadTime);
             if (dentaTime <= deadCircle)
-                img = Sprite.movingSprite(Sprite.player_dead1, Sprite.player_dead2, Sprite.player_dead3, dentaTime, deadCircle).getFxImage();
+                imgSprite = Sprite.movingSprite(Sprite.player_dead1,
+                        Sprite.player_dead2,
+                        Sprite.player_dead3,
+                        dentaTime, deadCircle);
 
         }
-        gc.drawImage(img, position.x + 4, position.y);
+        if (imgSprite != null) {
+            img = imgSprite.getFxImage();
+            gc.drawImage(img, position.x + 4, position.y);
+        }
     }
 
     // IConnected
@@ -149,12 +164,18 @@ public class Bomber extends Entity implements canDestroy,
         else if (this.status.equals("Stand")) BombermanGame.stopSound(name, "bomberGo");
         if (this.status.equals("Dead")) deadTime = world.time;
         direction = data[4].charAt(0);
+        if (data.length >= 6) killedTime = world.time - Long.parseLong(data[5]);
         return this;
     }
 
     @Override
     public String toString() {
-        return name + " " + position.getX() + " " + position.getY() + " " + status + " " + direction;
+        if (world.time < killedTime + 3e9)
+            return name + " " + position.getX() + " " + position.getY() +
+                    " " + status + " " + direction +
+                    " " + (world.time - killedTime);
+        else return name + " " + position.getX() + " " + position.getY() +
+                " " + status + " " + direction;
     }
 
     // Hàm hỗ trợ
@@ -280,7 +301,10 @@ public class Bomber extends Entity implements canDestroy,
 
     @Override
     public void destroy() {
-        if (world.time > flamePassTime) health--;
+        if (world.time <= killedTime + 3e9) return;
+        if (world.time <= flamePassTime) return;
+        health--;
+        killedTime = world.time;
         if (health <= 0) {
             status = "Dead";
             deadTime = world.time;
