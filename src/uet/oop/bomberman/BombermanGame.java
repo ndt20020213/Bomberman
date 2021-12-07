@@ -284,7 +284,6 @@ public class BombermanGame extends Application {
         server.started = true;
         createMap();
         server.addBombers();
-        playSound(connection.name, "background");
     }
 
     private void endGame(boolean isWinner) {
@@ -300,13 +299,11 @@ public class BombermanGame extends Application {
         Alert alert = new Alert(Alert.AlertType.NONE);
         if (isWinner) {
             level++;
-            sounds.stopBGM();
             sounds.playWinSound();
             alert.setTitle("End Game");
             alert.setHeaderText("Winner");
             alert.setContentText("You are winner.");
         } else {
-            sounds.stopBGM();
             sounds.playLoseSound();
             alert.setTitle("Game Over");
             alert.setHeaderText("Loser");
@@ -323,9 +320,6 @@ public class BombermanGame extends Application {
         if (connection == null || name == null || sound == null) return;
         if (name.equals(connection.name)) {
             switch (sound) {
-                case "background":
-                    sounds.playBGM();
-                    break;
                 case "bomberGo":
                     sounds.playBomberGoSound();
                     break;

@@ -8,17 +8,6 @@ public class GameSound {
 
     private boolean soundStatus = true;
 
-    public void changeSoundStatus() {
-        if (soundStatus) {
-            soundStatus = false;
-            sounds.forEach((name, sound) -> {
-                if (!name.equals("background")) sound.stop();
-            });
-        } else {
-            soundStatus = true;
-        }
-    }
-
     public GameSound() {
         // bomberGo
         Sound bomberGo = new Sound();
@@ -48,6 +37,17 @@ public class GameSound {
         Sound background = new Sound();
         background.setFile(6);
         sounds.put("background", background);
+        playBGM();
+    }
+
+    public void changeSoundStatus() {
+        if (soundStatus) {
+            soundStatus = false;
+            sounds.forEach((name, sound) -> sound.stop());
+        } else {
+            soundStatus = true;
+            playBGM();
+        }
     }
 
     public void playPutBombSound() {

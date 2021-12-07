@@ -103,7 +103,6 @@ public class Client extends Connection {
                     case "Start":
                         world.entities.clear();
                         world.stillObjects.clear();
-                        BombermanGame.playSound(name, "background");
                         break;
                     case "End":
                         bombersDisplay.clear();
