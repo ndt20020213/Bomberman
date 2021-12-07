@@ -16,7 +16,7 @@ public class Doll extends Enemy {
     @Override
     public void update() {
         Cell cell = super.getUnit();
-        if (hp == 0) {
+        if (direction.equals("Dead")) {
             if (world.time >= timed + 8e8) {
                 world.addEntity(new Minvo(cell.x, cell.y));
                 world.addEntity(new Minvo(cell.x, cell.y));
@@ -95,7 +95,7 @@ public class Doll extends Enemy {
     @Override
     public void destroy() {
         hp--;
-        if (hp == 0) {
+        if (hp <= 0) {
             direction = "Dead";
             timed = world.time;
         }
