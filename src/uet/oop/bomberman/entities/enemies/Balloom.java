@@ -20,7 +20,6 @@ public class Balloom extends Enemy {
             if (world.time >= timed + (long) 8e8) {
                 world.removeEntity(this);
             }
-            direction = "Dead";
             return;
         }
 
@@ -95,6 +94,7 @@ public class Balloom extends Enemy {
     public void destroy() {
         hp--;
         if (hp == 0) {
+            direction = "Dead";
             timed = world.time;
         }
     }

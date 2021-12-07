@@ -28,7 +28,6 @@ public class Oneal extends Enemy {
             if (world.time >= timed + 8e8) {
                 world.removeEntity(this);
             }
-            direction = "Dead";
             return;
         }
 
@@ -166,6 +165,7 @@ public class Oneal extends Enemy {
     public void destroy() {
         hp--;
         if (hp == 0) {
+            direction = "Dead";
             timed = world.time;
         }
     }
