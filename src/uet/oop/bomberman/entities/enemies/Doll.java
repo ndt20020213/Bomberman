@@ -15,13 +15,16 @@ public class Doll extends Enemy {
 
     @Override
     public void update() {
+        Cell cell = super.getUnit();
         if (hp == 0) {
             if (world.time >= timed + 8e8) {
+                world.addEntity(new Minvo(cell.x, cell.y));
+                world.addEntity(new Minvo(cell.x, cell.y));
+                world.addEntity(new Minvo(cell.x, cell.y));
                 world.removeEntity(this);
             }
             return;
         }
-        Cell cell = super.getUnit();
         if (Move.isEmpty()) {
             MoveRandom();
         }

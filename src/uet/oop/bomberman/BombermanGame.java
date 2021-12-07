@@ -19,6 +19,8 @@ import uet.oop.bomberman.entities.background.Grass;
 import uet.oop.bomberman.entities.Portal;
 import uet.oop.bomberman.entities.background.Wall;
 import uet.oop.bomberman.entities.enemies.Balloom;
+import uet.oop.bomberman.entities.enemies.Doll;
+import uet.oop.bomberman.entities.enemies.Minvo;
 import uet.oop.bomberman.entities.enemies.Oneal;
 import uet.oop.bomberman.entities.items.*;
 import uet.oop.bomberman.graphics.Sound;
@@ -118,9 +120,9 @@ public class BombermanGame extends Application {
 
     public void createMap() {
 
-        File file = new File("res/levels/Level" + level + ".txt");
+       // File file = new File("res/levels/Level" + level + ".txt");
 
-       // File file = new File("res/levels/test.txt");
+        File file = new File("res/levels/test.txt");
 
         Scanner scanner;
         try {
@@ -163,6 +165,11 @@ public class BombermanGame extends Application {
                         case '2':
                             world.addEntity(new Oneal(j, i));
                             break;
+                        case '3' :
+                            world.addEntity(new Minvo(j, i));
+                            break;
+                        case '4' :
+                            world.addEntity(new Doll(j,i));
                         //Items.
                         case 'b':
                             world.addEntity(new Brick(j, i, new BombItem(j, i)));

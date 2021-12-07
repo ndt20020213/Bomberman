@@ -38,14 +38,6 @@ public class Oneal extends Enemy {
         } else {
             speed = HighSpeed;
         }
-        if (Move.isEmpty()) {
-            getMove();
-            if (Move.isEmpty()) return;
-            if (entitiesMatrix[Move.peek().x][Move.peek().y] != null) {
-                Move.clear();
-                getMove();
-            }
-        }
 
         if (Move.isEmpty()) return;
 
@@ -88,6 +80,16 @@ public class Oneal extends Enemy {
             }
         } else {
             Move.poll();
+        }
+        if (!Move.isEmpty()) {
+            if (entitiesMatrix[Move.peek().x][Move.peek().y] != null) {
+                if (position.x == move.x && position.y == move.y) {
+                    Move.clear();
+                    getMove();
+                }
+            }
+        } else {
+            getMove();
         }
 
         if (world.time >= timed + 3e9) {
