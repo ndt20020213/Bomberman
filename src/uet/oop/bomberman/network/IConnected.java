@@ -6,7 +6,7 @@ import uet.oop.bomberman.entities.attack.HFlame;
 import uet.oop.bomberman.entities.attack.VFlame;
 import uet.oop.bomberman.entities.background.Brick;
 import uet.oop.bomberman.entities.background.Grass;
-import uet.oop.bomberman.entities.background.Portal;
+import uet.oop.bomberman.entities.Portal;
 import uet.oop.bomberman.entities.background.Wall;
 import uet.oop.bomberman.entities.enemies.Balloom;
 import uet.oop.bomberman.entities.enemies.Oneal;

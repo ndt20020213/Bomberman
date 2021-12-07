@@ -1,6 +1,5 @@
 package uet.oop.bomberman.network;
 
-import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.player.Bomber;
 
 import java.io.BufferedReader;
@@ -37,7 +36,7 @@ class ClientSocket {
 
     public void setBomber(Bomber bomber) {
         this.bomber = bomber;
-        this.bomber.setName(name);
+        this.bomber.name = name;
     }
 
     private void listen() {
@@ -65,7 +64,7 @@ class ClientSocket {
                             break;
                         case "Close":
                             clientSockets.remove(this);
-                            BombermanGame.world.removeEntity(bomber);
+                            bomber.kill();
                             server.messageHistory.add(name + " đã thoát!");
                             for (ClientSocket clientSocket : clientSockets)
                                 if (clientSocket != this) clientSocket.SendLine("Chat#" + name + " đã thoát!");

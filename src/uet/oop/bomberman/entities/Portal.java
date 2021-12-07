@@ -1,6 +1,5 @@
-package uet.oop.bomberman.entities.background;
+package uet.oop.bomberman.entities;
 
-import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.player.Bomber;
 import uet.oop.bomberman.graphics.Sprite;
 

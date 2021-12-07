@@ -1,17 +1,24 @@
 package uet.oop.bomberman.entities.player;
 
 import javafx.scene.canvas.GraphicsContext;
-import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.Entity;
-import uet.oop.bomberman.graphics.Sound;
-import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.entities.attack.Bomb;
 import uet.oop.bomberman.entities.attack.effects.canDestroy;
-import uet.oop.bomberman.entities.background.*;
-import uet.oop.bomberman.entities.player.effects.*;
-import uet.oop.bomberman.entities.player.properties.*;
+import uet.oop.bomberman.entities.background.Brick;
+import uet.oop.bomberman.entities.background.Wall;
+import uet.oop.bomberman.entities.player.effects.BombPassEffect;
+import uet.oop.bomberman.entities.player.effects.FlamePassEffect;
+import uet.oop.bomberman.entities.player.effects.WallPassEffect;
+import uet.oop.bomberman.entities.player.properties.BombProperty;
+import uet.oop.bomberman.entities.player.properties.FlameProperty;
+import uet.oop.bomberman.entities.player.properties.HealthProperty;
+import uet.oop.bomberman.entities.player.properties.SpeedProperty;
+import uet.oop.bomberman.graphics.Sound;
+import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.network.IConnected;
-import uet.oop.bomberman.structure.*;
+import uet.oop.bomberman.structure.Cell;
+import uet.oop.bomberman.structure.Point;
+import uet.oop.bomberman.structure.Rect;
 
 public class Bomber extends Entity implements canDestroy,
         SpeedProperty, BombProperty, FlameProperty, HealthProperty,
@@ -21,10 +28,23 @@ public class Bomber extends Entity implements canDestroy,
         super(x, y, Sprite.player_down.getFxImage());
     }
 
-    private String name;
+    public String name;
 
-    public void setName(String name) {
-        this.name = name;
+    public String display() {
+        int wallPassTime = (int) ((this.wallPassTime - world.time) / 1e9);
+        int bombPassTime = (int) ((this.bombPassTime - world.time) / 1e9);
+        int flamePassTime = (int) ((this.flamePassTime - world.time) / 1e9);
+        if (wallPassTime < 0) wallPassTime = 0;
+        if (bombPassTime < 0) bombPassTime = 0;
+        if (flamePassTime < 0) flamePassTime = 0;
+        return name + ":\t" +
+                "       Health: " + health +
+                "       Speed: " + speed + "\t" +
+                "       Bomb: " + bomb +
+                "       Flame: " + flame + "\t" +
+                "   Wall pass time: " + wallPassTime + "\t" +
+                "   Bomb pass time: " + bombPassTime + "\t" +
+                "   Flame pass time: " + flamePassTime;
     }
 
     // Di chuyển và trạng thái.
@@ -50,28 +70,28 @@ public class Bomber extends Entity implements canDestroy,
             switch (direction) {
                 case 'W':
                     position.y -= speed * (time - oldTime) / 1e9;
-                    if (time > oldTime + 1e8/5) {
+                    if (time > oldTime + 1e8 / 5) {
                         sound.setFile(0);
                         sound.play();
                     }
                     break;
                 case 'S':
                     position.y += speed * (time - oldTime) / 1e9;
-                    if (time > oldTime + 1e8/5) {
+                    if (time > oldTime + 1e8 / 5) {
                         sound.setFile(0);
                         sound.play();
                     }
                     break;
                 case 'A':
                     position.x -= speed * (time - oldTime) / 1e9;
-                    if (time > oldTime + 1e8/5) {
+                    if (time > oldTime + 1e8 / 5) {
                         sound.setFile(0);
                         sound.play();
                     }
                     break;
                 case 'D':
                     position.x += speed * (time - oldTime) / 1e9;
-                    if (time > oldTime + 1e8/5) {
+                    if (time > oldTime + 1e8 / 5) {
                         sound.setFile(0);
                         sound.play();
                     }
@@ -122,7 +142,7 @@ public class Bomber extends Entity implements canDestroy,
         } else {
             int dentaTime = (int) (world.time - deadTime);
             if (dentaTime <= deadCircle)
-            img = Sprite.movingSprite(Sprite.player_dead1, Sprite.player_dead2, Sprite.player_dead3, dentaTime, deadCircle).getFxImage();
+                img = Sprite.movingSprite(Sprite.player_dead1, Sprite.player_dead2, Sprite.player_dead3, dentaTime, deadCircle).getFxImage();
 
         }
         gc.drawImage(img, position.x + 4, position.y);

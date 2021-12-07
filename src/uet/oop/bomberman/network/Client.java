@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 public class Client extends Connection {
@@ -103,6 +104,8 @@ public class Client extends Connection {
                         world.stillObjects.clear();
                         break;
                     case "End":
+                        bombersDisplay.clear();
+                        changingBomberDisplay.run();
                         if (data.length >= 2 && endGame != null)
                             endGame.accept(Boolean.parseBoolean(data[1]));
                         break;
@@ -118,6 +121,10 @@ public class Client extends Connection {
                         int h = Integer.parseInt(size[1]);
                         if (w > 0 && h > 0) setMap.accept(w, h);
                         break;
+                    case "BomberDisplay":
+                        if (data.length < 3) break;
+                        bombersDisplay.put(data[1], data[2]);
+                        changingBomberDisplay.run();
                     case "Add":
                         Entity entity = (Entity) IConnected.getConnectedEntity(data[2], data[3]);
                         if (entity == null) break;

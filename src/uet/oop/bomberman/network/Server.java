@@ -9,6 +9,7 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Server extends Connection {
     private final ServerSocket server;
@@ -27,7 +28,11 @@ public class Server extends Connection {
         listen();
         world.addAction = this::addEntity;
         world.removeAction = this::removeEntity;
-        endGame = isWinner -> clientSockets.forEach(client -> client.SendLine("End#" + isWinner));
+        endGame = isWinner -> {
+            bombersDisplay.clear();
+            changingBomberDisplay.run();
+            clientSockets.forEach(client -> client.SendLine("End#" + isWinner));
+        };
     }
 
     // Lắng nghe kết nối client
@@ -52,7 +57,7 @@ public class Server extends Connection {
     private Bomber bomber;
     public void addBombers() {
         bomber = new Bomber(1,1);
-        bomber.setName(name);
+        bomber.name = name;
         world.addEntity(bomber);
         clientSockets.forEach(clientSocket -> {
             Bomber temp = new Bomber(1,1);
@@ -92,16 +97,26 @@ public class Server extends Connection {
         // Gửi trạng thái world từ server tới client
         StringBuilder states = new StringBuilder();
         for (Entity entity : world.entities) {
-            String temp = "Update#" + entity.getKey() + "#" + entity + "\n";
+            String newStatus = entity.toString();
             String oldStatus = statusHistory.get(entity.getKey());
-            if (oldStatus == null) {
-                statusHistory.put(entity.getKey(), temp);
-                states.append(temp);
-            } else if (!temp.equals(oldStatus)) {
-                statusHistory.put(entity.getKey(), temp);
-                states.append(temp);
+            if (!newStatus.equals(oldStatus)) {
+                statusHistory.put(entity.getKey(), newStatus);
+                states.append("Update#").append(entity.getKey()).append('#').append(newStatus).append('\n');
             }
         }
+        // Gửi trạng thái Bombers cho Display và Client
+        boolean hasChanging = false;
+        for (Bomber bomber : world.bombers) {
+            String display = bomber.display();
+            String oldDisplay = bombersDisplay.get(bomber.name);
+            if (!display.equals(oldDisplay)) {
+                hasChanging = true;
+                states.append("BomberDisplay#").append(bomber.name).append('#').append(display).append('\n');
+                bombersDisplay.put(bomber.name, display);
+            }
+        }
+        if (hasChanging) changingBomberDisplay.run();
+        // Gửi cho Client
         String command = states.toString();
         if (command.length() > 0)
             for (ClientSocket clientSocket : clientSockets)

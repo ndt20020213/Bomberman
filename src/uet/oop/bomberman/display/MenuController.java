@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -35,6 +36,9 @@ public class MenuController implements Initializable {
     public HBox buttonContainer;
 
     @FXML
+    public ListView<String> bomberListView;
+
+    @FXML
     public ListView<String> chatView;
 
     @FXML
@@ -46,6 +50,7 @@ public class MenuController implements Initializable {
         info.setDisable(false);
         chatView.setDisable(true);
         chatInput.setDisable(true);
+        bomberListView.setFocusTraversable(false);
         chatView.setFocusTraversable(false);
         try {
             host.setText(InetAddress.getLocalHost().getHostAddress());
@@ -80,5 +85,12 @@ public class MenuController implements Initializable {
             chatInput.setDisable(false);
             buttonContainer.getChildren().clear();
         }
+    }
+
+    public void update(List<String> bomberDisplaysList) {
+        bomberListView.getItems().clear();
+        for (String display : bomberDisplaysList)
+            if (display != null)
+                bomberListView.getItems().add(display.replace('\t', '\n'));
     }
 }
