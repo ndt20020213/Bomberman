@@ -23,11 +23,12 @@ import uet.oop.bomberman.entities.enemies.Doll;
 import uet.oop.bomberman.entities.enemies.Minvo;
 import uet.oop.bomberman.entities.enemies.Oneal;
 import uet.oop.bomberman.entities.items.*;
-import uet.oop.bomberman.graphics.Sound;
+import uet.oop.bomberman.sound.GameSound;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.network.Client;
 import uet.oop.bomberman.network.Connection;
 import uet.oop.bomberman.network.Server;
+import uet.oop.bomberman.sound.Sound;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,7 +40,14 @@ public class BombermanGame extends Application {
     public static int WIDTH = 0;
     public static int HEIGHT = 0;
 
+    private static int level = 0;
+
     public static final World world = new MatrixWorld();
+
+    private static Connection connection;
+
+    private static final GameSound sounds = new GameSound();
+
 
     private MenuController menuController;
 
@@ -50,13 +58,6 @@ public class BombermanGame extends Application {
 
     private Stage stage;
 
-    private Connection connection;
-
-    private int level = 0;
-
-    public static boolean isMove = true;
-
-    public Sound sound = new Sound();
 
     public static void main(String[] args) {
         Application.launch(BombermanGame.class);
@@ -272,16 +273,6 @@ public class BombermanGame extends Application {
         stage.sizeToScene();
     }
 
-    public void playBGM() {
-        sound.setFile(6);
-        sound.play();
-        sound.loop();
-    }
-
-    public void stopBGM() {
-        sound.stop();
-    }
-
     private void startGame() {
         System.gc();
         if (!(connection instanceof Server)) return;
@@ -290,7 +281,7 @@ public class BombermanGame extends Application {
         server.started = true;
         createMap();
         server.addBombers();
-        playBGM();
+        sounds.playBGM();
     }
 
     private void endGame(boolean isWinner) {
@@ -306,16 +297,14 @@ public class BombermanGame extends Application {
         Alert alert = new Alert(Alert.AlertType.NONE);
         if (isWinner) {
             level++;
-            stopBGM();
-            sound.setFile(2);
-            sound.play();
+            sounds.stopBGM();
+            sounds.playWinSound();
             alert.setTitle("End Game");
             alert.setHeaderText("Winner");
             alert.setContentText("You are winner.");
         } else {
-            stopBGM();
-            sound.setFile(5);
-            sound.play();
+            sounds.stopBGM();
+            sounds.playLoseSound();
             alert.setTitle("Game Over");
             alert.setHeaderText("Loser");
             alert.setContentText("You are loser.");
@@ -325,5 +314,33 @@ public class BombermanGame extends Application {
         canvas.setWidth(0);
         canvas.setHeight(0);
         stage.sizeToScene();
+    }
+
+    public static void playSound(String name, String sound) {
+        if (connection == null || name == null || sound == null) return;
+        if (name.equals(connection.name)) {
+            switch (sound) {
+                case "bomberGo":
+                    sounds.playBomberGoSound();
+                    break;
+                case "getExtraItems":
+                    sounds.playGetExtraItemsSound();
+                    break;
+                case "putBomb":
+                    sounds.playPutBombSound();
+                    break;
+                case "BombExplode":
+                    sounds.playBombExplodeSound();
+                    break;
+            }
+        } else {
+            if (!sound.equals("bomberGo")) ((Server) connection).playSound(name, sound);
+        }
+    }
+
+    public static void stopSound(String name, String sound) {
+        if (connection == null || name == null || sound == null) return;
+        if (!name.equals(connection.name)) return;
+        if (sound.equals("bomberGo")) sounds.stopBomberGoSound();
     }
 }

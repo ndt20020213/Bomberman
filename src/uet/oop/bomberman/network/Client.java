@@ -1,5 +1,6 @@
 package uet.oop.bomberman.network;
 
+import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.container.World;
 import uet.oop.bomberman.entities.Entity;
 
@@ -125,6 +126,11 @@ public class Client extends Connection {
                         if (data.length < 3) break;
                         bombersDisplay.put(data[1], data[2]);
                         changingBomberDisplay.run();
+                        break;
+                    case "Sound":
+                        System.out.println(command);
+                        if (data.length == 3) BombermanGame.playSound(data[1], data[2]);
+                        break;
                     case "Add":
                         Entity entity = (Entity) IConnected.getConnectedEntity(data[2], data[3]);
                         if (entity == null) break;

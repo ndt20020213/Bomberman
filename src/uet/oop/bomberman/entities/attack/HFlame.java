@@ -2,8 +2,6 @@ package uet.oop.bomberman.entities.attack;
 
 import javafx.scene.canvas.GraphicsContext;
 import uet.oop.bomberman.entities.Entity;
-import uet.oop.bomberman.entities.background.Brick;
-import uet.oop.bomberman.entities.background.Wall;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.structure.Cell;
 
