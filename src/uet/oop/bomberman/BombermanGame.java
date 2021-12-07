@@ -317,8 +317,8 @@ public class BombermanGame extends Application {
     }
 
     public static void playSound(String name, String sound) {
-        if (connection == null || name == null || sound == null) return;
-        if (name.equals(connection.name)) {
+        if (connection == null || sound == null) return;
+        if (connection.name.equals(name) || name == null) {
             switch (sound) {
                 case "bomberGo":
                     sounds.playBomberGoSound();
