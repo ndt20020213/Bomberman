@@ -266,9 +266,12 @@ public class Bomber extends Entity implements canDestroy,
         return true;
     }
 
+    private long killedTime = 0;
+
     @Override
     public boolean kill(int health) {
-        this.health -= health;
+        if (world.time > killedTime + 3e9 && !status.equals("Dead")) this.health -= health;
+        else return false;
         if (this.health <= 0) {
             status = "Dead";
             deadTime = world.time;
@@ -290,7 +293,7 @@ public class Bomber extends Entity implements canDestroy,
     @Override
     public void destroy() {
         if (world.time > flamePassTime) health--;
-        if (this.health <= 0) {
+        if (health <= 0) {
             status = "Dead";
             deadTime = world.time;
         }
