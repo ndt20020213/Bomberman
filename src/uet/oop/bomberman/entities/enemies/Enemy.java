@@ -20,7 +20,7 @@ public abstract class Enemy extends Entity implements canDestroy {
 
     protected String direction = "Left";
 
-    protected Cell MoveHistory = new Cell(0,0);
+    protected Cell MoveHistory;
 
     /* Lưu các bước sẽ đi */
     protected Queue<Cell> Move = new LinkedList<>();
@@ -48,9 +48,11 @@ public abstract class Enemy extends Entity implements canDestroy {
         if (random.size() == 0) {
             return;
         } else if (random.size() == 1) {
-            Move.add(MoveHistory);
+            Move.add(random.get(0));
         } else {
-            random.removeIf(element -> element.equals(MoveHistory));
+            if (MoveHistory != null) {
+                random.removeIf(element -> element.equals(MoveHistory));
+            }
             Random rand = new Random();
             Move.add(random.get(rand.nextInt(random.size())));
         }
