@@ -8,7 +8,6 @@ import uet.oop.bomberman.entities.background.Brick;
 import uet.oop.bomberman.entities.background.Wall;
 import uet.oop.bomberman.entities.enemies.Enemy;
 import uet.oop.bomberman.entities.player.Bomber;
-import uet.oop.bomberman.graphics.Sound;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.network.IConnected;
 import uet.oop.bomberman.structure.Cell;
@@ -77,10 +76,6 @@ public class Flame extends Entity {
 
         for (Flame flame : flames)
             if (flame != null) world.addEntity(flame);
-
-        Sound sound = new Sound();
-        sound.setFile(4);
-        sound.play();
     }
 
     protected Flame checkImpact(Flame flame) {

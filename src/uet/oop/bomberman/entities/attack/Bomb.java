@@ -1,6 +1,7 @@
 package uet.oop.bomberman.entities.attack;
 
 import javafx.scene.canvas.GraphicsContext;
+import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.attack.effects.canDestroy;
 import uet.oop.bomberman.entities.player.Bomber;
@@ -42,6 +43,7 @@ public class Bomb extends Entity implements canDestroy {
         world.removeEntity(this);
         Flame flame = new Flame(position.getX() / Sprite.SCALED_SIZE, position.getY() / Sprite.SCALED_SIZE, length);
         world.addEntity(flame);
+        BombermanGame.playSound(bomber.name, "BombExplode");
     }
 
     /**

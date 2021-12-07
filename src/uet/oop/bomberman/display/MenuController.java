@@ -21,7 +21,9 @@ public class MenuController implements Initializable {
     public BiFunction<String, String, Boolean> createClient;
     public Function<String, Boolean> createServer;
 
-    public Button startButton = new Button("Start");
+    public final Button startButton = new Button("Start");
+
+    public final Button soundButton = new Button("Âm thanh");
 
     @FXML
     public GridPane info;
@@ -73,6 +75,7 @@ public class MenuController implements Initializable {
             chatInput.setDisable(false);
             buttonContainer.getChildren().clear();
             buttonContainer.getChildren().add(startButton);
+            buttonContainer.getChildren().add(soundButton);
         }
     }
 
@@ -84,6 +87,7 @@ public class MenuController implements Initializable {
             chatView.setDisable(false);
             chatInput.setDisable(false);
             buttonContainer.getChildren().clear();
+            buttonContainer.getChildren().add(soundButton);
         }
     }
 

@@ -9,7 +9,6 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 
 public class Server extends Connection {
     private final ServerSocket server;
@@ -84,6 +83,11 @@ public class Server extends Connection {
     public void setMap(int w, int h) {
         if (w <= 0 || h <= 0) return;
         String command = "Map#" + w + " " + h;
+        clientSockets.forEach(client -> client.SendLine(command));
+    }
+
+    public void playSound(String name, String sound) {
+        String command = "Sound#" + name + '#' + sound;
         clientSockets.forEach(client -> client.SendLine(command));
     }
 

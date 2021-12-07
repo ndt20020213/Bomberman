@@ -1,6 +1,7 @@
 package uet.oop.bomberman.entities.player;
 
 import javafx.scene.canvas.GraphicsContext;
+import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.attack.Bomb;
 import uet.oop.bomberman.entities.attack.effects.canDestroy;
@@ -13,7 +14,6 @@ import uet.oop.bomberman.entities.player.properties.BombProperty;
 import uet.oop.bomberman.entities.player.properties.FlameProperty;
 import uet.oop.bomberman.entities.player.properties.HealthProperty;
 import uet.oop.bomberman.entities.player.properties.SpeedProperty;
-import uet.oop.bomberman.graphics.Sound;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.network.IConnected;
 import uet.oop.bomberman.structure.Cell;
@@ -51,58 +51,46 @@ public class Bomber extends Entity implements canDestroy,
     private long oldTime = 0;
 
     private String status = "Stand";    // Stand Move Dead
+
     private char direction = 'D';       // W D S A
 
     private final int deadCircle = (int) 8e8;   // Đơn vị: ns
 
-    public boolean playing = false;
-
-    public Sound sound = new Sound();
-
-
     @Override
     public void update() {
-
         long time = world.time;
-        if (status.equals("Move")) {
-            Point oldPosition = new Point(position.x, position.y);
-            Rect oldRect = getRect();
-            switch (direction) {
-                case 'W':
-                    position.y -= speed * (time - oldTime) / 1e9;
-                    if (time > oldTime + 1e8 / 5) {
-                        sound.setFile(0);
-                        sound.play();
-                    }
-                    break;
-                case 'S':
-                    position.y += speed * (time - oldTime) / 1e9;
-                    if (time > oldTime + 1e8 / 5) {
-                        sound.setFile(0);
-                        sound.play();
-                    }
-                    break;
-                case 'A':
-                    position.x -= speed * (time - oldTime) / 1e9;
-                    if (time > oldTime + 1e8 / 5) {
-                        sound.setFile(0);
-                        sound.play();
-                    }
-                    break;
-                case 'D':
-                    position.x += speed * (time - oldTime) / 1e9;
-                    if (time > oldTime + 1e8 / 5) {
-                        sound.setFile(0);
-                        sound.play();
-                    }
-                    break;
-            }
-            if (oldPosition.x != position.x || oldPosition.y != position.y) {
-                if (checkWallPass(oldPosition, oldRect))
-                    checkBombPass(oldPosition, oldRect);
-            }
-        } else if (status.equals("Dead"))
-            if (deadTime > 0 && world.time > deadTime + deadCircle) world.removeEntity(this);
+        switch (status) {
+            case "Move":
+                BombermanGame.playSound(name, "bomberGo");
+                Point oldPosition = new Point(position.x, position.y);
+                Rect oldRect = getRect();
+                switch (direction) {
+                    case 'W':
+                        position.y -= speed * (time - oldTime) / 1e9;
+                        break;
+                    case 'S':
+                        position.y += speed * (time - oldTime) / 1e9;
+                        break;
+                    case 'A':
+                        position.x -= speed * (time - oldTime) / 1e9;
+                        break;
+                    case 'D':
+                        position.x += speed * (time - oldTime) / 1e9;
+                        break;
+                }
+                if (oldPosition.x != position.x || oldPosition.y != position.y) {
+                    if (checkWallPass(oldPosition, oldRect))
+                        checkBombPass(oldPosition, oldRect);
+                }
+                break;
+            case "Stand":
+                BombermanGame.stopSound(name, "bomberGo");
+                break;
+            case "Dead":
+                BombermanGame.stopSound(name, "bomberGo");
+                if (deadTime > 0 && world.time > deadTime + deadCircle) world.removeEntity(this);
+                break;
+        }
         oldTime = time;
     }
 
@@ -153,17 +141,20 @@ public class Bomber extends Entity implements canDestroy,
     @Override
     public IConnected update(String status) {
         String[] data = status.split(" ");
-        position.x = Integer.parseInt(data[0]);
-        position.y = Integer.parseInt(data[1]);
-        this.status = data[2];
+        name = data[0];
+        position.x = Integer.parseInt(data[1]);
+        position.y = Integer.parseInt(data[2]);
+        this.status = data[3];
+        if (this.status.equals("Move")) BombermanGame.playSound(name, "bomberGo");
+        else if (this.status.equals("Stand")) BombermanGame.stopSound(name, "bomberGo");
         if (this.status.equals("Dead")) deadTime = world.time;
-        direction = data[3].charAt(0);
+        direction = data[4].charAt(0);
         return this;
     }
 
     @Override
     public String toString() {
-        return position.getX() + " " + position.getY() + " " + status + " " + direction;
+        return name + " " + position.getX() + " " + position.getY() + " " + status + " " + direction;
     }
 
     // Hàm hỗ trợ
@@ -192,7 +183,6 @@ public class Bomber extends Entity implements canDestroy,
         switch (key) {
             case "W":
             case "Up":
-
                 status = "Move";
                 direction = 'W';
                 break;
@@ -213,8 +203,7 @@ public class Bomber extends Entity implements canDestroy,
                 break;
             case "Space":
                 putBomb();
-                sound.setFile(3);
-                sound.play();
+                BombermanGame.playSound(name, "putBomb");
                 break;
         }
     }
@@ -229,22 +218,18 @@ public class Bomber extends Entity implements canDestroy,
             case "W":
             case "Up":
                 key = "W";
-                playing = false;
                 break;
             case "S":
             case "Down":
                 key = "S";
-                playing = false;
                 break;
             case "A":
             case "Left":
                 key = "A";
-                playing = false;
                 break;
             case "D":
             case "Right":
                 key = "D";
-                playing = false;
                 break;
         }
         if (status.equals("Move") && direction == key.charAt(0)) status = "Stand";
