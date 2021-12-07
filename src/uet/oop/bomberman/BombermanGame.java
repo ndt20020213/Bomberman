@@ -333,9 +333,11 @@ public class BombermanGame extends Application {
                     sounds.playBombExplodeSound();
                     break;
             }
-        } else {
-            if (!sound.equals("bomberGo")) ((Server) connection).playSound(name, sound);
         }
+        if (connection instanceof Server)
+            if (!connection.name.equals(name))
+                if (!sound.equals("bomberGo"))
+                    ((Server) connection).playSound(name, sound);
     }
 
     public static void stopSound(String name, String sound) {
