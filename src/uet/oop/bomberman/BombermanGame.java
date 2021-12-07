@@ -14,21 +14,20 @@ import javafx.stage.Stage;
 import uet.oop.bomberman.container.MatrixWorld;
 import uet.oop.bomberman.container.World;
 import uet.oop.bomberman.display.MenuController;
+import uet.oop.bomberman.entities.Portal;
 import uet.oop.bomberman.entities.background.Brick;
 import uet.oop.bomberman.entities.background.Grass;
-import uet.oop.bomberman.entities.Portal;
 import uet.oop.bomberman.entities.background.Wall;
 import uet.oop.bomberman.entities.enemies.Balloom;
 import uet.oop.bomberman.entities.enemies.Doll;
 import uet.oop.bomberman.entities.enemies.Minvo;
 import uet.oop.bomberman.entities.enemies.Oneal;
 import uet.oop.bomberman.entities.items.*;
-import uet.oop.bomberman.sound.GameSound;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.network.Client;
 import uet.oop.bomberman.network.Connection;
 import uet.oop.bomberman.network.Server;
-import uet.oop.bomberman.sound.Sound;
+import uet.oop.bomberman.sound.GameSound;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -281,7 +280,7 @@ public class BombermanGame extends Application {
         server.started = true;
         createMap();
         server.addBombers();
-        sounds.playBGM();
+        playSound(connection.name, "background");
     }
 
     private void endGame(boolean isWinner) {
@@ -320,6 +319,9 @@ public class BombermanGame extends Application {
         if (connection == null || name == null || sound == null) return;
         if (name.equals(connection.name)) {
             switch (sound) {
+                case "background":
+                    sounds.playBGM();
+                    break;
                 case "bomberGo":
                     sounds.playBomberGoSound();
                     break;
@@ -341,6 +343,12 @@ public class BombermanGame extends Application {
     public static void stopSound(String name, String sound) {
         if (connection == null || name == null || sound == null) return;
         if (!name.equals(connection.name)) return;
-        if (sound.equals("bomberGo")) sounds.stopBomberGoSound();
+        switch (sound) {
+            case "bomberGo":
+                sounds.stopBomberGoSound();
+                break;
+            case "background":
+                sounds.stopBGM();
+        }
     }
 }
