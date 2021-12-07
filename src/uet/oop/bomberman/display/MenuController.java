@@ -3,6 +3,7 @@ package uet.oop.bomberman.display;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -23,7 +24,7 @@ public class MenuController implements Initializable {
 
     public final Button startButton = new Button("Start");
 
-    public final Button soundButton = new Button("Âm thanh");
+    public final Button soundButton = new Button("Âm thanh: Bật");
 
     @FXML
     public GridPane info;
@@ -75,8 +76,9 @@ public class MenuController implements Initializable {
             chatView.setDisable(false);
             chatInput.setDisable(false);
             buttonContainer.getChildren().clear();
-            buttonContainer.getChildren().add(startButton);
-            buttonContainer.getChildren().add(soundButton);
+            Label temp = new Label(" ");
+            temp.setMinWidth(10);
+            buttonContainer.getChildren().addAll(startButton, temp, soundButton);
         }
     }
 

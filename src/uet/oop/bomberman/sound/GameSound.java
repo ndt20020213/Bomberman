@@ -40,7 +40,7 @@ public class GameSound {
         playBGM();
     }
 
-    public void changeSoundStatus() {
+    public boolean changeSoundStatus() {
         if (soundStatus) {
             soundStatus = false;
             sounds.forEach((name, sound) -> sound.stop());
@@ -48,6 +48,7 @@ public class GameSound {
             soundStatus = true;
             playBGM();
         }
+        return soundStatus;
     }
 
     public void playPutBombSound() {

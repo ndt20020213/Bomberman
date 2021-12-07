@@ -103,7 +103,7 @@ public class BombermanGame extends Application {
         menuController.createClient = this::createClient;
         menuController.startButton.setOnAction(x -> startGame());
         menuController.soundButton.setOnMouseClicked(x -> {
-            sounds.changeSoundStatus();
+            menuController.soundButton.setText(sounds.changeSoundStatus() ? "Âm thanh: Bật" : "Âm thanh: Tắt");
             canvas.requestFocus();
         });
 
