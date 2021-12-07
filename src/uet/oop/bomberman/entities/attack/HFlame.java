@@ -35,7 +35,8 @@ public class HFlame extends Flame {
         if (length < 0) flames.add(checkImpact(new HFlame(unit.x - 1, unit.y, length, impactHistory)));
         else if (length > 0) flames.add(checkImpact(new HFlame(unit.x + 1, unit.y, length, impactHistory)));
 
-        for (Flame flame : flames) world.addEntity(flame);
+        for (Flame flame : flames)
+            if (flame != null) world.addEntity(flame);
     }
 
     @Override
