@@ -36,6 +36,9 @@ public class MenuController implements Initializable {
     public HBox buttonContainer;
 
     @FXML
+    public Label levelView;
+
+    @FXML
     public ListView<String> bomberListView;
 
     @FXML

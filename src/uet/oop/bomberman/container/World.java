@@ -35,8 +35,11 @@ public class World {
     public void update(long time) {
         this.time = time;
         for (int i = entities.size() - 1; i >= 0; i--) {
-            Entity entity = entities.get(i);
-            if (entity != null) entity.update();
+            try {
+                Entity entity = entities.get(i);
+                if (entity != null) entity.update();
+            } catch (Exception ignored) {
+            }
         }
     }
 

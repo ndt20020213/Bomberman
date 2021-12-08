@@ -38,7 +38,7 @@ public class BombermanGame extends Application {
     public static int WIDTH = 0;
     public static int HEIGHT = 0;
 
-    private static int level = 1;
+    public static int level = 1;
 
     public static final World world = new MatrixWorld();
 
@@ -88,10 +88,12 @@ public class BombermanGame extends Application {
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
                 world.render(gc);
                 // update
-                if (connection instanceof Server) world.update(l);
+                if (connection instanceof Server) {
+                    world.update(l);
+                    if (world.bombers.size() == 0 && world.enemies.size() > 0) endGame(false);
+                }
                 if (connection instanceof Client) world.time = l;
                 if (connection != null) connection.update();
-                if (world.bombers.size() == 0 && world.enemies.size() > 0) endGame(false);
             }
         };
         timer.start();
@@ -279,6 +281,10 @@ public class BombermanGame extends Application {
                 } catch (Exception ignored) {
                 }
             });
+            ((Client) connection).getLevel(level -> {
+                BombermanGame.level = level;
+                menuController.levelView.setText("Level: " + level);
+            });
             // End event
             connection.endGame = this::endGame;
             return true;
@@ -296,7 +302,11 @@ public class BombermanGame extends Application {
         WIDTH = width;
         HEIGHT = height;
         ((MatrixWorld) world).reSize(WIDTH, HEIGHT);
-        if (connection instanceof Server) ((Server) connection).setMap(WIDTH, HEIGHT);
+        if (connection instanceof Server) {
+            Server server = (Server) connection;
+            server.setLevel(level);
+            server.setMap(WIDTH, HEIGHT);
+        }
         canvas.setWidth(WIDTH * Sprite.SCALED_SIZE);
         canvas.setHeight(HEIGHT * Sprite.SCALED_SIZE);
         stage.sizeToScene();
@@ -309,16 +319,12 @@ public class BombermanGame extends Application {
         Server server = (Server) connection;
         server.started = true;
         createMap();
+        menuController.levelView.setText("Level: " + level);
+        server.setLevel(level);
         server.addBombers();
     }
 
     private void endGame(boolean isWinner) {
-        if (connection instanceof Server) {
-            menuController.startButton.setDisable(false);
-            Server server = (Server) connection;
-            server.listen();
-            server.endGame.accept(isWinner);
-        }
         world.entities.clear();
         world.stillObjects.clear();
         sounds.stopBomberGoSound();
@@ -341,6 +347,14 @@ public class BombermanGame extends Application {
         canvas.setWidth(0);
         canvas.setHeight(0);
         stage.sizeToScene();
+        if (connection instanceof Server) {
+            menuController.startButton.setDisable(false);
+            Server server = (Server) connection;
+            server.listen();
+            server.endGame.accept(isWinner);
+            menuController.levelView.setText("Level: " + level);
+            server.setLevel(level);
+        }
     }
 
     public static void playSound(String name, String sound) {
