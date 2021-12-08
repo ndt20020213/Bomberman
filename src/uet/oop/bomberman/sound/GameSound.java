@@ -63,7 +63,10 @@ public class GameSound {
 
     public void playBombExplodeSound() {
         if (!soundStatus) return;
-        sounds.get("BombExplode").play();
+        // BombExplode
+        Sound BombExplode = new Sound();
+        BombExplode.setFile(4);
+        BombExplode.play();
     }
 
     private boolean isBomberGoSoundPlaying = false;

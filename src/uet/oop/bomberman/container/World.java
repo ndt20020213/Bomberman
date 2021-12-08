@@ -34,7 +34,10 @@ public class World {
 
     public void update(long time) {
         this.time = time;
-        for (int i = entities.size() - 1; i >= 0; i--) entities.get(i).update();
+        for (int i = entities.size() - 1; i >= 0; i--) {
+            Entity entity = entities.get(i);
+            if (entity != null) entity.update();
+        }
     }
 
     public void render(GraphicsContext gc) {

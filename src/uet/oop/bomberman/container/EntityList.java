@@ -88,6 +88,7 @@ class EntityList<T> implements List<T> {
 
     @Override
     public T get(int index) {
+        if (index < 0 || index >= data.size()) return null;
         return data.get(index);
     }
 
