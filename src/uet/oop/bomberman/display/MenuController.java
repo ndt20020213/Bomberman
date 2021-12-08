@@ -2,10 +2,7 @@ package uet.oop.bomberman.display;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
@@ -63,9 +60,28 @@ public class MenuController implements Initializable {
         }
     }
 
+    private boolean checkName(String name) {
+        if (name == null) return false;
+        else if (name.isEmpty()) return false;
+        else if (name.equals("All")) return false;
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            boolean check = (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
+            if (!check) return false;
+        }
+        return true;
+    }
+
     @FXML
     public void onCreateServer() {
-        if (name.getText().isEmpty()) return;
+        if (!checkName(name.getText())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Tên không hợp lệ!");
+            alert.setHeaderText("Tên không hợp lệ!");
+            alert.setContentText("Tên chỉ chứa kí tự: a->z, A->Z, 0->9.");
+            alert.show();
+            return;
+        }
         try {
             host.setText(InetAddress.getLocalHost().getHostAddress());
         } catch (UnknownHostException e) {
@@ -84,7 +100,14 @@ public class MenuController implements Initializable {
 
     @FXML
     public void onJoinServer() {
-        if (name.getText().isEmpty()) return;
+        if (!checkName(name.getText())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Tên không hợp lệ!");
+            alert.setHeaderText("Tên không hợp lệ!");
+            alert.setContentText("Tên chỉ chứa kí tự: a->z, A->Z, 0->9.");
+            alert.show();
+            return;
+        }
         if (createClient.apply(host.getText(), name.getText())) {
             info.setDisable(true);
             chatView.setDisable(false);
