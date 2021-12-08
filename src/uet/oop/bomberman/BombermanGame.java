@@ -296,6 +296,7 @@ public class BombermanGame extends Application {
         }
         world.entities.clear();
         world.stillObjects.clear();
+        sounds.stopBomberGoSound();
         System.gc();
         Alert alert = new Alert(Alert.AlertType.NONE);
         if (isWinner) {
