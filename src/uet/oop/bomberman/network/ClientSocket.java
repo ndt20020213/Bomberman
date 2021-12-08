@@ -64,7 +64,7 @@ class ClientSocket {
                             break;
                         case "Close":
                             clientSockets.remove(this);
-                            bomber.kill();
+                            if (bomber != null) bomber.kill();
                             server.messageHistory.add(name + " đã thoát!");
                             for (ClientSocket clientSocket : clientSockets)
                                 if (clientSocket != this) clientSocket.SendLine("Chat#" + name + " đã thoát!");

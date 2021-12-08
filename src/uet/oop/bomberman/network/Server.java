@@ -49,7 +49,10 @@ public class Server extends Connection {
             while (!started && !server.isClosed()) {
                 try {
                     ClientSocket clientSocket = new ClientSocket(this, clientSockets, server.accept());
-                    clientSockets.add(clientSocket);
+                    if (started) {
+                        sendMessage("Kết nối không hợp lệ");
+                        clientSocket.close();
+                    } else clientSockets.add(clientSocket);
                 } catch (IOException e) {
                     sendMessage("Ai đó vừa kết nối thất bại!");
                 }
@@ -83,6 +86,11 @@ public class Server extends Connection {
     @Override
     public void sendMessage(String message) {
         clientSockets.forEach(client -> client.SendLine("Chat#" + message));
+    }
+
+    public void setLevel(int l) {
+        String command = "Level#" + l;
+        clientSockets.forEach(client -> client.SendLine(command));
     }
 
     public void setMap(int w, int h) {

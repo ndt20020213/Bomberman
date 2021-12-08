@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class Client extends Connection {
 
@@ -85,6 +86,12 @@ public class Client extends Connection {
         sendLine("Chat#" + message);
     }
 
+    private Consumer<Integer> setLevel = l -> {};
+
+    public void getLevel(Consumer<Integer> setLevel) {
+        this.setLevel = setLevel;
+    }
+
     private BiConsumer<Integer, Integer> setMap = (w, h) -> {};
 
     public void getMap(BiConsumer<Integer, Integer> setMap) {
@@ -113,6 +120,9 @@ public class Client extends Connection {
                     case "Chat":
                         if (data.length >= 2 && receiveMessage != null)
                             receiveMessage.accept(data[1]);
+                        break;
+                    case "Level":
+                        if (data.length >= 2) setLevel.accept(Integer.parseInt(data[1]));
                         break;
                     case "Map":
                         if (data.length < 2) break;

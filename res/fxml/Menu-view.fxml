@@ -36,7 +36,7 @@
                   <Font name="System Bold" size="24.0" />
                </font>
                <VBox.margin>
-                  <Insets bottom="10.0" top="10.0" />
+                  <Insets bottom="5.0" top="10.0" />
                </VBox.margin>
             </Label>
             <GridPane fx:id="info">
@@ -77,6 +77,11 @@
                   </Button>
                </children>
             </HBox>
+            <Label fx:id="levelView" minHeight="20.0">
+               <VBox.margin>
+                  <Insets bottom="-5.0" top="5.0" />
+               </VBox.margin>
+            </Label>
          </children>
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
