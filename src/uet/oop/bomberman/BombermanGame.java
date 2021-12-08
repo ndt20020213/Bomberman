@@ -18,10 +18,7 @@ import uet.oop.bomberman.entities.Portal;
 import uet.oop.bomberman.entities.background.Brick;
 import uet.oop.bomberman.entities.background.Grass;
 import uet.oop.bomberman.entities.background.Wall;
-import uet.oop.bomberman.entities.enemies.Balloom;
-import uet.oop.bomberman.entities.enemies.Doll;
-import uet.oop.bomberman.entities.enemies.Minvo;
-import uet.oop.bomberman.entities.enemies.Oneal;
+import uet.oop.bomberman.entities.enemies.*;
 import uet.oop.bomberman.entities.items.*;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.network.Client;
@@ -39,7 +36,7 @@ public class BombermanGame extends Application {
     public static int WIDTH = 0;
     public static int HEIGHT = 0;
 
-    private static int level = 0;
+    private static int level = 1;
 
     public static final World world = new MatrixWorld();
 
@@ -125,7 +122,7 @@ public class BombermanGame extends Application {
     public void createMap() {
 
         File file = new File("res/levels/Level" + level + ".txt");
-
+        //File file = new File("D:\\finalBomberman\\Bomberman\\res\\levels\\Level2.txt");
        // File file = new File("res/levels/test.txt");
 
         Scanner scanner;
@@ -175,6 +172,8 @@ public class BombermanGame extends Application {
                         case '4':
                             world.addEntity(new Minvo(j, i));
                             break;
+                        case '5':
+                            world.addEntity(new Kondoria(j, i));
                         //Items.
                         case 'b':
                             world.addEntity(new Brick(j, i, new BombItem(j, i)));
