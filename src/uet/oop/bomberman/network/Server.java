@@ -23,7 +23,7 @@ public class Server extends Connection {
     public final LinkedList<String> messageHistory = new LinkedList<>();
 
     // Lưu dữ liệu gửi tới Client
-    private final StringBuilder states = new StringBuilder();
+    private final StringBuffer states = new StringBuffer();
 
     public Server(World world, String name) throws IOException {
         super(world, name);
