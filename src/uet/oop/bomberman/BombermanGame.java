@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -29,6 +30,7 @@ import uet.oop.bomberman.sound.GameSound;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class BombermanGame extends Application {
@@ -36,7 +38,7 @@ public class BombermanGame extends Application {
     public static int WIDTH = 0;
     public static int HEIGHT = 0;
 
-    private static int level = 1;
+    private static int level = 6;
 
     public static final World world = new MatrixWorld();
 
@@ -127,9 +129,33 @@ public class BombermanGame extends Application {
         try {
             scanner = new Scanner(file);
         } catch (FileNotFoundException e) {
-            System.out.println("Load map error!");
-            if (level > 0) level--;
-            else System.exit(-1);
+            if (level > 1) {
+                Alert alert = new Alert(Alert.AlertType.NONE);
+
+                alert.setTitle("Winner");
+                alert.setHeaderText("Game kết thúc!");
+                alert.setContentText("Bạn đã chơi hết level.\nHãy đợi bản cập nhật thêm của Game!\nBạn có thể chơi lại hoặc thoát:");
+
+                ButtonType level1 = new ButtonType("Chơi lại lv1", ButtonBar.ButtonData.APPLY);
+                ButtonType levelMax = new ButtonType("Chơi lại lv" + (level-1), ButtonBar.ButtonData.APPLY);
+                ButtonType out = new ButtonType("Thoát", ButtonBar.ButtonData.APPLY);
+
+                alert.getButtonTypes().addAll(level1, levelMax, out);
+
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.get() == level1) {
+                    level = 1;
+                    createMap();
+                } else if (result.get() == levelMax) {
+                    level--;
+                    createMap();
+                } else System.exit(0);
+            }
+            else {
+                System.out.println("Load map error!");
+                System.exit(-1);
+            }
             return;
         }
         String info = scanner.nextLine();
