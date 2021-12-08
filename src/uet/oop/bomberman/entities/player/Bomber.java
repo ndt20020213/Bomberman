@@ -386,6 +386,16 @@ public class Bomber extends Entity implements canDestroy,
                 position = oldPosition;
                 return false;
             }
+        if (position.x <= 0 || position.y <= 0) {
+            position = oldPosition;
+            return false;
+        } else if (position.x >= (BombermanGame.WIDTH - 1) * Sprite.SCALED_SIZE) {
+            position = oldPosition;
+            return false;
+        } else if (position.y >= (BombermanGame.HEIGHT - 1) * Sprite.SCALED_SIZE) {
+            position = oldPosition;
+            return false;
+        }
         return true;
     }
 
