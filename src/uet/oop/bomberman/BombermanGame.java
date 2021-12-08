@@ -172,6 +172,7 @@ public class BombermanGame extends Application {
                             break;
                         case '5':
                             world.addEntity(new Kondoria(j, i));
+                            break;
                         //Items.
                         case 'b':
                             world.addEntity(new Brick(j, i, new BombItem(j, i)));
