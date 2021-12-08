@@ -39,7 +39,7 @@ public class BombermanGame extends Application {
     public static int WIDTH = 0;
     public static int HEIGHT = 0;
 
-    private static int level = 0;
+    private static int level = 1;
 
     public static final World world = new MatrixWorld();
 
@@ -124,9 +124,9 @@ public class BombermanGame extends Application {
 
     public void createMap() {
 
-        File file = new File("res/levels/Level" + level + ".txt");
+       // File file = new File("res/levels/Level" + level + ".txt");
         //File file = new File("D:\\finalBomberman\\Bomberman\\res\\levels\\Level1.txt");
-       // File file = new File("res/levels/test.txt");
+        File file = new File("res/levels/test.txt");
 
         Scanner scanner;
         try {

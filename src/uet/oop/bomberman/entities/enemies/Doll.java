@@ -22,7 +22,7 @@ public class Doll extends Enemy {
             }
             return;
         }
-        if (world.time >= timed + 5e9) {
+        if (world.time >= timed + 60e9) {
             timed = world.time;
             if ((cell.x + cell.y) % 2 == 0 ) {
                 world.addEntity(new Balloom(cell.x,cell.y));
