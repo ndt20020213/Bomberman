@@ -6,6 +6,8 @@ import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.structure.Cell;
 import uet.oop.bomberman.structure.Point;
 
+import java.util.Random;
+
 public class Doll extends Enemy {
     public static final double speed = 1;
 
@@ -23,11 +25,14 @@ public class Doll extends Enemy {
             return;
         }
         if (world.time >= timed + 30e9) {
-            timed = world.time;
-            if ((cell.x + cell.y) % 2 == 0 ) {
-                world.addEntity(new Balloom(cell.x,cell.y));
-            } else {
-                world.addEntity(new Minvo(cell.x,cell.y));
+            if (world.enemies.size() < 10) {
+                timed = world.time;
+                Random random = new Random();
+                if (random.nextInt(2) % 2 == 0) {
+                    world.addEntity(new Balloom(cell.x, cell.y));
+                } else {
+                    world.addEntity(new Minvo(cell.x, cell.y));
+                }
             }
         }
         if (Move.isEmpty()) {

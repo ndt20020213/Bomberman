@@ -22,7 +22,7 @@ public class Minvo extends Enemy {
                 world.removeEntity(this);
                 Flame flame = new Flame(position.getX() / Sprite.SCALED_SIZE, position.getY() / Sprite.SCALED_SIZE, 2);
                 world.addEntity(flame);
-                BombermanGame.playSound( null,"BombExplode");
+                BombermanGame.playSound( "All","BombExplode");
             }
             return;
         }
