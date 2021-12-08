@@ -38,7 +38,7 @@ public class BombermanGame extends Application {
     public static int WIDTH = 0;
     public static int HEIGHT = 0;
 
-    private static int level = 1;
+    private static int level = 0;
 
     public static final World world = new MatrixWorld();
 
