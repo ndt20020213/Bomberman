@@ -2,6 +2,7 @@ package uet.oop.bomberman.network;
 
 import uet.oop.bomberman.container.World;
 import uet.oop.bomberman.entities.Entity;
+import uet.oop.bomberman.entities.enemies.Enemy;
 import uet.oop.bomberman.entities.player.Bomber;
 
 import java.io.IOException;
@@ -21,10 +22,14 @@ public class Server extends Connection {
     // Bộ đệm lưu message
     public final LinkedList<String> messageHistory = new LinkedList<>();
 
+    // Lưu dữ liệu gửi tới Client
+    private final StringBuilder states = new StringBuilder();
+
     public Server(World world, String name) throws IOException {
         super(world, name);
         server = new ServerSocket("BaTe".hashCode() % 5000 + 1000);
         listen();
+        updateToClient();
         world.addAction = this::addEntity;
         world.removeAction = this::removeEntity;
         endGame = isWinner -> {
@@ -91,6 +96,24 @@ public class Server extends Connection {
         clientSockets.forEach(client -> client.SendLine(command));
     }
 
+    // Gửi dữ liệu tới Client
+    private void updateToClient() {
+        new Thread(() -> {
+            while (!server.isClosed()) {
+                try {
+                    if (states.length() > 0) {
+                        String commands = states.toString();
+                        for (ClientSocket clientSocket : clientSockets)
+                            clientSocket.SendLine(commands);
+                        states.setLength(0);
+                    }
+                    Thread.sleep(5);
+                } catch (Exception ignored) {
+                }
+            }
+        }).start();
+    }
+
     @Override
     public void update() {
         // Đọc tin nhắn
@@ -99,13 +122,17 @@ public class Server extends Connection {
             if (message != null) receiveMessage.accept(message);
         }
         // Gửi trạng thái world từ server tới client
-        StringBuilder states = new StringBuilder();
+        //StringBuilder states = new StringBuilder();
         for (Entity entity : world.entities) {
             String newStatus = entity.toString();
-            String oldStatus = statusHistory.get(entity.getKey());
-            if (!newStatus.equals(oldStatus)) {
-                statusHistory.put(entity.getKey(), newStatus);
+            if (entity instanceof Enemy)
                 states.append("Update#").append(entity.getKey()).append('#').append(newStatus).append('\n');
+            else {
+                String oldStatus = statusHistory.get(entity.getKey());
+                if (!newStatus.equals(oldStatus)) {
+                    statusHistory.put(entity.getKey(), newStatus);
+                    states.append("Update#").append(entity.getKey()).append('#').append(newStatus).append('\n');
+                }
             }
         }
         // Gửi trạng thái Bombers cho Display và Client
@@ -120,11 +147,6 @@ public class Server extends Connection {
             }
         }
         if (hasChanging) changingBomberDisplay.run();
-        // Gửi cho Client
-        String command = states.toString();
-        if (command.length() > 0)
-            for (ClientSocket clientSocket : clientSockets)
-                clientSocket.SendLine(command);
     }
 
     // Gửi yêu cầu thêm Entity đến client
