@@ -99,6 +99,15 @@ public abstract class Enemy extends Entity implements canDestroy {
 
         return false;
     }
+
+    @Override
+    public void destroy() {
+        hp--;
+        if (hp <= 0) {
+            direction = "Dead";
+            timed = world.time;
+        }
+    }
 }
 
 

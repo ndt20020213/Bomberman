@@ -102,12 +102,4 @@ public class Doll extends Enemy {
         gc.drawImage(img, position.x, position.y);
     }
 
-    @Override
-    public void destroy() {
-        hp--;
-        if (hp <= 0) {
-            direction = "Dead";
-            timed = world.time;
-        }
-    }
 }
