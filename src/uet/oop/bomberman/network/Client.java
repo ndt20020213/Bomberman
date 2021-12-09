@@ -3,6 +3,7 @@ package uet.oop.bomberman.network;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.container.World;
 import uet.oop.bomberman.entities.Entity;
+import uet.oop.bomberman.entities.player.Bomber;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +12,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -100,10 +100,10 @@ public class Client extends Connection {
 
     @Override
     public void update() {
-        while (commands.size() > 0) {
+        while (true) {
             try {
                 String command = commands.poll();
-                if (command == null) continue;
+                if (command == null) break;
                 String[] data = command.split("#");
                 if (data.length <= 0) continue;
                 switch (data[0]) {
@@ -112,10 +112,12 @@ public class Client extends Connection {
                         world.stillObjects.clear();
                         break;
                     case "End":
-                        bombersDisplay.clear();
-                        changingBomberDisplay.run();
+                        System.out.println(command);
                         if (data.length >= 2 && endGame != null)
                             endGame.accept(Boolean.parseBoolean(data[1]));
+                        else System.out.println(command);
+                        bombersDisplay.clear();
+                        changingBomberDisplay.run();
                         break;
                     case "Chat":
                         if (data.length >= 2 && receiveMessage != null)
@@ -151,7 +153,11 @@ public class Client extends Connection {
                         connectedEntities.get(Integer.parseInt(data[1])).update(data[2]);
                         break;
                     case "Remove":
-                        world.removeEntity((Entity) connectedEntities.remove(Integer.parseInt(data[1])));
+                        Entity removeEntity = (Entity) connectedEntities.remove(Integer.parseInt(data[1]));
+                        world.removeEntity(removeEntity);
+                        if (removeEntity instanceof Bomber)
+                            if (((Bomber) removeEntity).name.equals(name))
+                                BombermanGame.stopSound(name, "bomberGo");
                         break;
                     case "Close":
                         out.close();
@@ -159,7 +165,7 @@ public class Client extends Connection {
                         client.close();
                         System.exit(0);
                 }
-            } catch (Exception ignored) {
+            } catch (Exception e) {
             }
         }
     }

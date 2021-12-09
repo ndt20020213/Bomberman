@@ -90,7 +90,9 @@ public class BombermanGame extends Application {
                 // update
                 if (connection instanceof Server) {
                     world.update(l);
-                    if (world.bombers.size() == 0 && world.enemies.size() > 0) endGame(false);
+                    // Check endGame
+                    if (((Server) connection).started && world.bombers.size() == 0)
+                        endGame(Portal.bomberCount > 0);
                 }
                 if (connection instanceof Client) world.time = l;
                 if (connection != null) connection.update();
@@ -107,8 +109,6 @@ public class BombermanGame extends Application {
             menuController.soundButton.setText(sounds.changeSoundStatus() ? "Âm thanh: Bật" : "Âm thanh: Tắt");
             canvas.requestFocus();
         });
-
-        Portal.endGame = () -> endGame(true);
 
         // Show
         stage.setScene(scene);
@@ -139,7 +139,7 @@ public class BombermanGame extends Application {
                 alert.setContentText("Bạn đã chơi hết level.\nHãy đợi bản cập nhật thêm của Game!\nBạn có thể chơi lại hoặc thoát:");
 
                 ButtonType level1 = new ButtonType("Chơi lại lv1", ButtonBar.ButtonData.APPLY);
-                ButtonType levelMax = new ButtonType("Chơi lại lv" + (level-1), ButtonBar.ButtonData.APPLY);
+                ButtonType levelMax = new ButtonType("Chơi lại lv" + (level - 1), ButtonBar.ButtonData.APPLY);
                 ButtonType out = new ButtonType("Thoát", ButtonBar.ButtonData.APPLY);
 
                 alert.getButtonTypes().addAll(level1, levelMax, out);
@@ -153,8 +153,7 @@ public class BombermanGame extends Application {
                     level--;
                     createMap();
                 } else System.exit(0);
-            }
-            else {
+            } else {
                 System.out.println("Load map error!");
                 System.exit(-1);
             }
@@ -266,6 +265,9 @@ public class BombermanGame extends Application {
             return true;
         } catch (IOException e) {
             connection = null;
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Tạo server thất bại!");
+            alert.show();
             return false;
         }
     }
@@ -290,6 +292,9 @@ public class BombermanGame extends Application {
             return true;
         } catch (IOException e) {
             connection = null;
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Không thể tham gia server");
+            alert.show();
             return false;
         }
     }
@@ -302,11 +307,7 @@ public class BombermanGame extends Application {
         WIDTH = width;
         HEIGHT = height;
         ((MatrixWorld) world).reSize(WIDTH, HEIGHT);
-        if (connection instanceof Server) {
-            Server server = (Server) connection;
-            server.setLevel(level);
-            server.setMap(WIDTH, HEIGHT);
-        }
+        if (connection instanceof Server) ((Server) connection).setMap(WIDTH, HEIGHT);
         canvas.setWidth(WIDTH * Sprite.SCALED_SIZE);
         canvas.setHeight(HEIGHT * Sprite.SCALED_SIZE);
         stage.sizeToScene();
@@ -316,18 +317,25 @@ public class BombermanGame extends Application {
         System.gc();
         if (!(connection instanceof Server)) return;
         menuController.startButton.setDisable(true);
-        Server server = (Server) connection;
-        server.started = true;
         createMap();
+        Server server = (Server) connection;
         menuController.levelView.setText("Level: " + level);
         server.setLevel(level);
         server.addBombers();
+        server.started = true;
     }
 
     private void endGame(boolean isWinner) {
+        System.out.println(isWinner);
         world.entities.clear();
         world.stillObjects.clear();
         sounds.stopBomberGoSound();
+        if (connection instanceof Server) {
+            menuController.startButton.setDisable(false);
+            Server server = (Server) connection;
+            server.listen();
+            server.endGame.accept(isWinner);
+        }
         System.gc();
         Alert alert = new Alert(Alert.AlertType.NONE);
         if (isWinner) {
@@ -347,14 +355,7 @@ public class BombermanGame extends Application {
         canvas.setWidth(0);
         canvas.setHeight(0);
         stage.sizeToScene();
-        if (connection instanceof Server) {
-            menuController.startButton.setDisable(false);
-            Server server = (Server) connection;
-            server.listen();
-            server.endGame.accept(isWinner);
-            menuController.levelView.setText("Level: " + level);
-            server.setLevel(level);
-        }
+        menuController.levelView.setText("Level: " + level);
     }
 
     public static void playSound(String name, String sound) {

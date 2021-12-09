@@ -28,7 +28,7 @@ public abstract class Connection {
 
     public abstract void onKeyReleased(String key);
 
-    protected Runnable changingBomberDisplay = null;
+    protected Runnable changingBomberDisplay = () -> {};
 
     public void setOnChangeBomberDisplay(Consumer<List<String>> changingBomberDisplay) {
         this.changingBomberDisplay = () -> {

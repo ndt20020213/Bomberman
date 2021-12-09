@@ -22,20 +22,17 @@ public class Server extends Connection {
     // Bộ đệm lưu message
     public final LinkedList<String> messageHistory = new LinkedList<>();
 
-    // Lưu dữ liệu gửi tới Client
-    private final StringBuffer states = new StringBuffer();
-
     public Server(World world, String name) throws IOException {
         super(world, name);
         server = new ServerSocket("BaTe".hashCode() % 5000 + 1000);
         listen();
-        updateToClient();
         world.addAction = this::addEntity;
         world.removeAction = this::removeEntity;
         endGame = isWinner -> {
+            String command = "End#" + isWinner;
+            clientSockets.forEach(client -> client.SendLine(command));
             bombersDisplay.clear();
             changingBomberDisplay.run();
-            clientSockets.forEach(client -> client.SendLine("End#" + isWinner));
         };
     }
 
@@ -50,11 +47,13 @@ public class Server extends Connection {
                 try {
                     ClientSocket clientSocket = new ClientSocket(this, clientSockets, server.accept());
                     if (started) {
+                        messageHistory.add("Kết nối không hợp lệ");
                         sendMessage("Kết nối không hợp lệ");
                         clientSocket.close();
                     } else clientSockets.add(clientSocket);
                 } catch (IOException e) {
-                    sendMessage("Ai đó vừa kết nối thất bại!");
+                    messageHistory.add("Kết nối không hợp lệ");
+                    sendMessage("Kết nối không hợp lệ");
                 }
             }
         }).start();
@@ -104,24 +103,6 @@ public class Server extends Connection {
         clientSockets.forEach(client -> client.SendLine(command));
     }
 
-    // Gửi dữ liệu tới Client
-    private void updateToClient() {
-        new Thread(() -> {
-            while (!server.isClosed()) {
-                try {
-                    if (states.length() > 0) {
-                        String commands = states.toString();
-                        for (ClientSocket clientSocket : clientSockets)
-                            clientSocket.SendLine(commands);
-                        states.setLength(0);
-                    }
-                    Thread.sleep(5);
-                } catch (Exception ignored) {
-                }
-            }
-        }).start();
-    }
-
     @Override
     public void update() {
         // Đọc tin nhắn
@@ -130,16 +111,16 @@ public class Server extends Connection {
             if (message != null) receiveMessage.accept(message);
         }
         // Gửi trạng thái world từ server tới client
-        //StringBuilder states = new StringBuilder();
+        StringBuilder states = new StringBuilder();
         for (Entity entity : world.entities) {
             String newStatus = entity.toString();
             if (entity instanceof Enemy)
-                states.append("Update#").append(entity.getKey()).append('#').append(newStatus).append('\n');
+                states.append("Update#").append(entity.getKey()).append('#').append(newStatus).append("\r\n");
             else {
                 String oldStatus = statusHistory.get(entity.getKey());
                 if (!newStatus.equals(oldStatus)) {
                     statusHistory.put(entity.getKey(), newStatus);
-                    states.append("Update#").append(entity.getKey()).append('#').append(newStatus).append('\n');
+                    states.append("Update#").append(entity.getKey()).append('#').append(newStatus).append("\r\n");
                 }
             }
         }
@@ -150,11 +131,16 @@ public class Server extends Connection {
             String oldDisplay = bombersDisplay.get(bomber.name);
             if (!display.equals(oldDisplay)) {
                 hasChanging = true;
-                states.append("BomberDisplay#").append(bomber.name).append('#').append(display).append('\n');
+                states.append("BomberDisplay#").append(bomber.name).append('#').append(display).append("\r\n");
                 bombersDisplay.put(bomber.name, display);
             }
         }
         if (hasChanging) changingBomberDisplay.run();
+        String commands = states.toString();
+        if (commands.length() > 0) {
+            for (ClientSocket clientSocket : clientSockets)
+                clientSocket.SendLine(commands);
+        }
     }
 
     // Gửi yêu cầu thêm Entity đến client
