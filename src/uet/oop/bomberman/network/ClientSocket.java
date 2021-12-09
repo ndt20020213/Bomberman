@@ -15,22 +15,17 @@ class ClientSocket {
     private final ArrayList<ClientSocket> clientSockets;
 
     private final Socket socket;
-    private BufferedReader in;
-    private PrintWriter out;
+    private final BufferedReader in;
+    private final PrintWriter out;
     private Bomber bomber;
     private String name;
 
-    public ClientSocket(Server server, ArrayList<ClientSocket> clientSockets, Socket socket) {
+    public ClientSocket(Server server, ArrayList<ClientSocket> clientSockets, Socket socket) throws IOException {
         this.server = server;
         this.clientSockets = clientSockets;
         this.socket = socket;
-        try {
-            out = new PrintWriter(this.socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-        } catch (Exception e) {
-            System.out.println("new ClientSocket Error!");
-            System.out.println(e.getMessage());
-        }
+        out = new PrintWriter(this.socket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
         listen();
     }
 

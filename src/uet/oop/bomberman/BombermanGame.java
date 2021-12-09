@@ -90,7 +90,11 @@ public class BombermanGame extends Application {
                 // update
                 if (connection instanceof Server) {
                     world.update(l);
-                    if (world.bombers.size() == 0 && world.enemies.size() > 0) endGame(false);
+                    // Check endGame
+                    if (world.stillObjects.size() > 0) {
+                        if (world.bombers.size() == 0 && world.enemies.size() > 0) endGame(false);
+                        if (world.bombers.size() == 0 && world.enemies.size() == 0 && Portal.bomberCount > 0) endGame(true);
+                    }
                 }
                 if (connection instanceof Client) world.time = l;
                 if (connection != null) connection.update();
@@ -107,8 +111,6 @@ public class BombermanGame extends Application {
             menuController.soundButton.setText(sounds.changeSoundStatus() ? "Âm thanh: Bật" : "Âm thanh: Tắt");
             canvas.requestFocus();
         });
-
-        Portal.endGame = () -> endGame(true);
 
         // Show
         stage.setScene(scene);

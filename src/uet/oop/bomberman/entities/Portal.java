@@ -6,10 +6,11 @@ import uet.oop.bomberman.graphics.Sprite;
 
 public class Portal extends Entity {
 
-    public static Runnable endGame;
+    public static int bomberCount = 0;
 
     public Portal(int xUnit, int yUnit) {
         super(xUnit, yUnit, Sprite.portal.getFxImage());
+        bomberCount = 0;
     }
 
     @Override
@@ -20,9 +21,9 @@ public class Portal extends Entity {
                 if (impact(bomber)) {
                     BombermanGame.stopSound(bomber.name, "bomberGo");
                     world.removeEntity(bomber);
+                    bomberCount++;
                 }
             }
-            if (world.bombers.size() == 0) endGame.run();
         }
     }
 }

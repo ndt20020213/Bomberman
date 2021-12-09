@@ -115,12 +115,12 @@ public class Server extends Connection {
         for (Entity entity : world.entities) {
             String newStatus = entity.toString();
             if (entity instanceof Enemy)
-                states.append("Update#").append(entity.getKey()).append('#').append(newStatus).append('\n');
+                states.append("Update#").append(entity.getKey()).append('#').append(newStatus).append("\r\n");
             else {
                 String oldStatus = statusHistory.get(entity.getKey());
                 if (!newStatus.equals(oldStatus)) {
                     statusHistory.put(entity.getKey(), newStatus);
-                    states.append("Update#").append(entity.getKey()).append('#').append(newStatus).append('\n');
+                    states.append("Update#").append(entity.getKey()).append('#').append(newStatus).append("\r\n");
                 }
             }
         }
@@ -131,7 +131,7 @@ public class Server extends Connection {
             String oldDisplay = bombersDisplay.get(bomber.name);
             if (!display.equals(oldDisplay)) {
                 hasChanging = true;
-                states.append("BomberDisplay#").append(bomber.name).append('#').append(display).append('\n');
+                states.append("BomberDisplay#").append(bomber.name).append('#').append(display).append("\r\n");
                 bombersDisplay.put(bomber.name, display);
             }
         }

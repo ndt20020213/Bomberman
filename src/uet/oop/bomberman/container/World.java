@@ -39,6 +39,7 @@ public class World {
                 Entity entity = entities.get(i);
                 if (entity != null) entity.update();
             } catch (Exception ignored) {
+                ignored.printStackTrace();
             }
         }
     }
