@@ -259,7 +259,11 @@ public class Bomber extends Entity implements canDestroy,
     public void putBomb() {
         if (this.bomb <= 0 || health <= 0) return;
         Bomb bomb = new Bomb(this, flame);
-        for (Bomb bomb1 : world.bombs) if (bomb.impact(bomb1)) return;
+        for (Bomb bomb1 : world.bombs)
+            if (bomb.impact(bomb1)) {
+                this.bomb++;
+                return;
+            }
         world.entities.add(bomb);
     }
 

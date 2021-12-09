@@ -12,6 +12,7 @@ public class Bomb extends Entity implements canDestroy {
     private final Bomber bomber;
     private final int length;
     private final long startTime;
+    protected boolean exploded = false;
 
     public Bomb(Bomber bomber, int length) {
         super(bomber.getUnit().x, bomber.getUnit().y, Sprite.bomb.getFxImage());
@@ -39,11 +40,14 @@ public class Bomb extends Entity implements canDestroy {
      * Xử lý khi bomb nổ.
      */
     private void explosive() {
-        bomber.addBomb(1);
-        world.removeEntity(this);
-        Flame flame = new Flame(position.getX() / Sprite.SCALED_SIZE, position.getY() / Sprite.SCALED_SIZE, length);
-        world.addEntity(flame);
-        BombermanGame.playSound(bomber.name, "BombExplode");
+        if (!exploded) {
+            bomber.addBomb(1);
+            world.removeEntity(this);
+            Flame flame = new Flame(position.getX() / Sprite.SCALED_SIZE, position.getY() / Sprite.SCALED_SIZE, length);
+            world.addEntity(flame);
+            BombermanGame.playSound(bomber.name, "BombExplode");
+            exploded = true;
+        }
     }
 
     /**
