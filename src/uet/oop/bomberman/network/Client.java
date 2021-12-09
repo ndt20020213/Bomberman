@@ -166,6 +166,7 @@ public class Client extends Connection {
                         System.exit(0);
                 }
             } catch (Exception e) {
+                break;
             }
         }
     }
