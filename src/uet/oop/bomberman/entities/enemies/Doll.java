@@ -18,12 +18,14 @@ public class Doll extends Enemy {
     @Override
     public void update() {
         Cell cell = super.getUnit();
+
         if (direction.equals("Dead")) {
             if (world.time >= timed + 8e8) {
                 world.removeEntity(this);
             }
             return;
         }
+
         if (world.time >= timed + 30e9) {
             if (world.enemies.size() < 10) {
                 timed = world.time;
@@ -35,13 +37,17 @@ public class Doll extends Enemy {
                 }
             }
         }
+
         if (Move.isEmpty()) {
             MoveRandom();
         }
+
         if (Move.peek() == null) {
             return;
         }
+
         Point move = new Point(Move.peek());
+
         if (position.x < move.x) {
             direction = "Right";
             if (position.x + speed >= move.x) {

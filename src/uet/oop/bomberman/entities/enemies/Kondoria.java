@@ -40,6 +40,7 @@ public class Kondoria extends Enemy {
         } else {
             speed = HighSpeed;
         }
+
         if (Move.isEmpty()) {
             getMove();
         }

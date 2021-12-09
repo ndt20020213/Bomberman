@@ -28,13 +28,17 @@ public class Minvo extends Enemy {
         }
 
         Cell cell = super.getUnit();
+
         if (Move.isEmpty()) {
             MoveRandom();
         }
+
         if (Move.peek() == null) {
             return;
         }
+
         Point move = new Point(Move.peek());
+
         if (position.x < move.x) {
             direction = "Right";
             if (position.x + speed >= move.x) {

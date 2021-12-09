@@ -19,6 +19,7 @@ public abstract class Enemy extends Entity implements canDestroy {
     /* Đánh dấu các mốc thời gian,*/
     protected long timed;
 
+    /* Lưu trạng thái di chuyển của Enemy*/
     protected String direction = "Left";
 
     protected Cell MoveHistory;
