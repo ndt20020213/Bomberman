@@ -112,10 +112,12 @@ public class Client extends Connection {
                         world.stillObjects.clear();
                         break;
                     case "End":
-                        bombersDisplay.clear();
-                        changingBomberDisplay.run();
+                        System.out.println(command);
                         if (data.length >= 2 && endGame != null)
                             endGame.accept(Boolean.parseBoolean(data[1]));
+                        else System.out.println(command);
+                        bombersDisplay.clear();
+                        changingBomberDisplay.run();
                         break;
                     case "Chat":
                         if (data.length >= 2 && receiveMessage != null)
@@ -159,7 +161,8 @@ public class Client extends Connection {
                         client.close();
                         System.exit(0);
                 }
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
         }
     }

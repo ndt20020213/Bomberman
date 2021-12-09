@@ -266,6 +266,9 @@ public class BombermanGame extends Application {
             return true;
         } catch (IOException e) {
             connection = null;
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Tạo server thất bại!");
+            alert.show();
             return false;
         }
     }
@@ -289,7 +292,9 @@ public class BombermanGame extends Application {
             connection.endGame = this::endGame;
             return true;
         } catch (IOException e) {
-            connection = null;
+            connection = null;Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Không thể tham gia server");
+            alert.show();
             return false;
         }
     }
@@ -302,11 +307,7 @@ public class BombermanGame extends Application {
         WIDTH = width;
         HEIGHT = height;
         ((MatrixWorld) world).reSize(WIDTH, HEIGHT);
-        if (connection instanceof Server) {
-            Server server = (Server) connection;
-            server.setLevel(level);
-            server.setMap(WIDTH, HEIGHT);
-        }
+        if (connection instanceof Server) ((Server) connection).setMap(WIDTH, HEIGHT);
         canvas.setWidth(WIDTH * Sprite.SCALED_SIZE);
         canvas.setHeight(HEIGHT * Sprite.SCALED_SIZE);
         stage.sizeToScene();
@@ -325,9 +326,16 @@ public class BombermanGame extends Application {
     }
 
     private void endGame(boolean isWinner) {
+        System.out.println(isWinner);
         world.entities.clear();
         world.stillObjects.clear();
         sounds.stopBomberGoSound();
+        if (connection instanceof Server) {
+            menuController.startButton.setDisable(false);
+            Server server = (Server) connection;
+            server.listen();
+            server.endGame.accept(isWinner);
+        }
         System.gc();
         Alert alert = new Alert(Alert.AlertType.NONE);
         if (isWinner) {
@@ -347,14 +355,7 @@ public class BombermanGame extends Application {
         canvas.setWidth(0);
         canvas.setHeight(0);
         stage.sizeToScene();
-        if (connection instanceof Server) {
-            menuController.startButton.setDisable(false);
-            Server server = (Server) connection;
-            server.listen();
-            server.endGame.accept(isWinner);
-            menuController.levelView.setText("Level: " + level);
-            server.setLevel(level);
-        }
+        menuController.levelView.setText("Level: " + level);
     }
 
     public static void playSound(String name, String sound) {
