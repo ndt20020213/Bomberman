@@ -326,7 +326,6 @@ public class BombermanGame extends Application {
     }
 
     private void endGame(boolean isWinner) {
-        System.out.println(isWinner);
         world.entities.clear();
         world.stillObjects.clear();
         sounds.stopBomberGoSound();

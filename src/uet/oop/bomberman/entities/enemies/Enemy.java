@@ -6,6 +6,7 @@ import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.container.MatrixWorld;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.attack.effects.canDestroy;
+import uet.oop.bomberman.network.IConnected;
 import uet.oop.bomberman.structure.Cell;
 import uet.oop.bomberman.structure.Point;
 
@@ -30,6 +31,20 @@ public abstract class Enemy extends Entity implements canDestroy {
     public Enemy(int xUnit, int yUnit, Image img) {
         super(xUnit, yUnit, img);
         if (world instanceof MatrixWorld) entitiesMatrix = ((MatrixWorld) world).entitiesMatrix;
+    }
+
+    @Override
+    public IConnected update(String status) {
+        String[] data = status.split(" ");
+        position.x = Integer.parseInt(data[0]);
+        position.y = Integer.parseInt(data[1]);
+        direction = data[2];
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return position.getX() + " " + position.getY() + " " + direction;
     }
 
     /**
