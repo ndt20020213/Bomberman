@@ -9,9 +9,7 @@ import uet.oop.bomberman.entities.background.Grass;
 import uet.oop.bomberman.entities.Portal;
 import uet.oop.bomberman.entities.background.Wall;
 import uet.oop.bomberman.entities.enemies.*;
-import uet.oop.bomberman.entities.items.BombItem;
-import uet.oop.bomberman.entities.items.FlameItem;
-import uet.oop.bomberman.entities.items.SpeedItem;
+import uet.oop.bomberman.entities.items.*;
 import uet.oop.bomberman.entities.player.Bomber;
 
 public interface IConnected {
@@ -51,6 +49,14 @@ public interface IConnected {
                 return new BombItem(0, 0).update(data);
             case "FlameItem":
                 return new FlameItem(0, 0).update(data);
+            case "HealthItem":
+                return new HealthItem(0, 0).update(data);
+            case "WallPassItem":
+                return new WallPassItem(0, 0).update(data);
+            case "BombPassItem":
+                return new BombPassItem(0, 0).update(data);
+            case "FlamePassItem":
+                return new FlamePassItem(0, 0).update(data);
 
             case "Balloom":
                 return new Balloom(0, 0).update(data);
